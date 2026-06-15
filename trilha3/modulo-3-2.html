@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="inema-course" content="antigravity">
+  <title>Módulo 3.2 · Levar sites para GoHighLevel/WordPress | AntiGravity</title>
+
+  <!-- ANTI-FOUC: bloqueante, ANTES do Tailwind e de qualquer <style>/<link> -->
+  <script>
+  (function () {
+    try {
+      var html = document.documentElement;
+      var DEF = { theme: 'inema-dark', font: 'inter', fontScale: 100, lineWidth: 68, leading: 1.7, accent: 'emerald' };
+      function clone(o) { var r = {}; for (var x in o) r[x] = o[x]; return r; }
+      var p = clone(DEF);
+      try {
+        var raw = localStorage.getItem('inema.prefs');
+        if (raw) {
+          var parsed = JSON.parse(raw);
+          if (parsed && typeof parsed === 'object') { for (var k in DEF) if (parsed[k] != null) p[k] = parsed[k]; }
+        } else {
+          var legacy = localStorage.getItem('theme');
+          if (legacy === 'light') p.theme = 'claro';
+          else if (legacy === 'dark') p.theme = 'inema-dark';
+        }
+      } catch (e) { p = clone(DEF); }
+      var THEMES = {
+        'inema-dark': { dark: true,  attr: null,        cs: 'dark'  },
+        'claro':      { dark: false, attr: null,        cs: 'light' },
+        'sepia':      { dark: false, attr: 'sepia',     cs: 'light' },
+        'foco':       { dark: null,  attr: 'foco',      cs: null    },
+        'contraste':  { dark: true,  attr: 'contraste', cs: 'dark'  }
+      };
+      var t = THEMES[p.theme] || THEMES['inema-dark'];
+      if (t.dark === true) html.classList.add('dark');
+      else if (t.dark === false) html.classList.remove('dark');
+      if (t.attr) html.setAttribute('data-theme', t.attr); else html.removeAttribute('data-theme');
+      html.style.colorScheme = (t.cs ? t.cs : (html.classList.contains('dark') ? 'dark' : 'light'));
+      html.setAttribute('data-font', p.font || 'inter');
+      html.setAttribute('data-accent', p.accent || 'emerald');
+      var s = html.style, scale = (+p.fontScale || 100);
+      s.setProperty('--inema-font-scale', (scale / 100).toString());
+      s.setProperty('font-size', scale + '%');
+      s.setProperty('--measure', (+p.lineWidth || 68) + 'ch');
+      s.setProperty('--lh-body', (+p.leading || 1.7).toString());
+      var fam = p.font === 'system' ? 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif'
+        : (p.font === 'leitura' ? '"Atkinson Hyperlegible", "Inter", system-ui, sans-serif' : '"Inter", system-ui, sans-serif');
+      s.setProperty('--font-body', fam);
+      var ACC = { emerald:[152,76,45], blue:[217,91,60], purple:[258,90,66], amber:[38,92,50], teal:[174,72,41], rose:[350,89,60] };
+      var a = ACC[p.accent] || ACC.emerald;
+      s.setProperty('--accent-h', a[0] + ''); s.setProperty('--accent-s', a[1] + '%'); s.setProperty('--accent-l', a[2] + '%');
+      s.setProperty('--accent', 'hsl(' + a[0] + ' ' + a[1] + '% ' + a[2] + '%)');
+    } catch (err) {
+      try { document.documentElement.classList.add('dark'); document.documentElement.style.colorScheme = 'dark'; } catch (e) {}
+    }
+  })();
+  </script>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: { extend: { colors: {
+        primary: '#FACC15',
+        dark: { 900: '#111827', 800: '#1f2937', 700: '#374151', 600: '#4b5563' }
+      } } }
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .dark body { background-color: #111827; }
+    .topic-explanation { display: none; }
+    .topic-explanation.active { display: block; }
+    [id] { scroll-margin-top: 4.5rem; }
+    .skip { position:absolute; left:-999px; top:0; background:#FACC15; color:#111827; padding:.5rem 1rem; border-radius:.5rem; z-index:100; }
+    .skip:focus { left:1rem; top:.5rem; }
+    :focus-visible { outline: 3px solid #38bdf8; outline-offset: 2px; }
+
+    /* Light mode - base */
+    html:not(.dark) body { background-color: #f8fafc; }
+    html:not(.dark) .bg-dark-900 { background-color: #ffffff; }
+    html:not(.dark) .bg-dark-800 { background-color: #f9fafb; }
+    html:not(.dark) .bg-dark-700 { background-color: #f3f4f6; }
+    html:not(.dark) .bg-dark-600 { background-color: #e5e7eb; }
+    html:not(.dark) .text-neutral-100 { color: #111827; }
+    html:not(.dark) .text-neutral-300 { color: #4b5563; }
+    html:not(.dark) .text-neutral-400 { color: #6b7280; }
+    html:not(.dark) .text-neutral-500 { color: #9ca3af; }
+    html:not(.dark) .border-dark-600 { border-color: #d1d5db; }
+    html:not(.dark) .border-dark-700 { border-color: #e5e7eb; }
+
+    /* Light mode - cores de acento (todas as trilhas) */
+    html:not(.dark) .text-emerald-400 { color: #059669; }
+    html:not(.dark) .bg-emerald-500\/20 { background-color: rgba(5,150,105,0.12); }
+    html:not(.dark) .bg-emerald-500\/10 { background-color: rgba(5,150,105,0.08); }
+    html:not(.dark) .border-emerald-500\/30 { border-color: rgba(5,150,105,0.25); }
+    html:not(.dark) .hover\:bg-emerald-500\/30:hover { background-color: rgba(5,150,105,0.18); }
+    html:not(.dark) .hover\:text-emerald-400:hover { color: #059669; }
+    html:not(.dark) .hover\:bg-emerald-500\/10:hover { background-color: rgba(5,150,105,0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-emerald-400 { color: #059669; }
+    html:not(.dark) .text-blue-400 { color: #2563eb; }
+    html:not(.dark) .bg-blue-500\/20 { background-color: rgba(37,99,235,0.12); }
+    html:not(.dark) .bg-blue-500\/10 { background-color: rgba(37,99,235,0.08); }
+    html:not(.dark) .border-blue-500\/30 { border-color: rgba(37,99,235,0.25); }
+    html:not(.dark) .hover\:bg-blue-500\/30:hover { background-color: rgba(37,99,235,0.18); }
+    html:not(.dark) .hover\:text-blue-400:hover { color: #2563eb; }
+    html:not(.dark) .hover\:bg-blue-500\/10:hover { background-color: rgba(37,99,235,0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-blue-400 { color: #2563eb; }
+    html:not(.dark) .text-purple-400 { color: #7c3aed; }
+    html:not(.dark) .bg-purple-500\/20 { background-color: rgba(124,58,237,0.12); }
+    html:not(.dark) .bg-purple-500\/10 { background-color: rgba(124,58,237,0.08); }
+    html:not(.dark) .border-purple-500\/30 { border-color: rgba(124,58,237,0.25); }
+    html:not(.dark) .hover\:bg-purple-500\/30:hover { background-color: rgba(124,58,237,0.18); }
+    html:not(.dark) .hover\:text-purple-400:hover { color: #7c3aed; }
+    html:not(.dark) .hover\:bg-purple-500\/10:hover { background-color: rgba(124,58,237,0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-purple-400 { color: #7c3aed; }
+    html:not(.dark) .text-amber-400 { color: #92400e; }
+    html:not(.dark) .bg-amber-500\/20 { background-color: rgba(217,119,6,0.12); }
+    html:not(.dark) .bg-amber-500\/10 { background-color: rgba(217,119,6,0.08); }
+    html:not(.dark) .border-amber-500\/30 { border-color: rgba(217,119,6,0.25); }
+    html:not(.dark) .hover\:bg-amber-500\/30:hover { background-color: rgba(217,119,6,0.18); }
+    html:not(.dark) .hover\:text-amber-400:hover { color: #92400e; }
+    html:not(.dark) .hover\:bg-amber-500\/10:hover { background-color: rgba(217,119,6,0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-amber-400 { color: #92400e; }
+    html:not(.dark) .text-teal-400 { color: #0d9488; }
+    html:not(.dark) .bg-teal-500\/20 { background-color: rgba(13,148,136,0.12); }
+    html:not(.dark) .bg-teal-500\/10 { background-color: rgba(13,148,136,0.08); }
+    html:not(.dark) .border-teal-500\/30 { border-color: rgba(13,148,136,0.25); }
+    html:not(.dark) .hover\:bg-teal-500\/30:hover { background-color: rgba(13,148,136,0.18); }
+    html:not(.dark) .hover\:text-teal-400:hover { color: #0d9488; }
+    html:not(.dark) .hover\:bg-teal-500\/10:hover { background-color: rgba(13,148,136,0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-teal-400 { color: #0d9488; }
+
+    /* Light mode - remove gradientes + cores especiais */
+    html:not(.dark) [class*="bg-gradient-to"] { background-image: none !important; }
+    html:not(.dark) .text-primary { color: #a16207; }
+    html:not(.dark) .bg-primary\/10 { background-color: rgba(161,98,7,0.08); }
+    html:not(.dark) .border-primary\/30 { border-color: rgba(161,98,7,0.25); }
+    html:not(.dark) .border-primary\/40 { border-color: rgba(161,98,7,0.25); }
+    html:not(.dark) .text-sky-400 { color: #0369a1; }
+    html:not(.dark) .text-yellow-400 { color: #a16207; }
+    html:not(.dark) .hover\:text-sky-300:hover { color: #0284c7; }
+    html:not(.dark) .hover\:text-yellow-300:hover { color: #854d0e; }
+    html:not(.dark) .bg-dark-900\/95 { background-color: rgba(255,255,255,0.95); }
+
+    /* Dark mode - bordas suavizadas */
+    .dark .border-dark-600 { border-color: #374151; }
+    .dark .divide-dark-600 > :not([hidden]) ~ :not([hidden]) { border-color: #374151; }
+
+    /* SVG diagramas: suavizar no claro */
+    html:not(.dark) svg[role="img"] { filter: saturate(0.82) brightness(0.96); }
+
+    .inema-toc-link.is-active { color: #c084fc; font-weight: 600; }
+  </style>
+  <link rel="stylesheet" href="../assets/learn.css">
+
+  <script type="application/json" data-inema-manifest>
+  {
+    "course": "antigravity",
+    "tracks": [
+      { "n": "1", "title": "Fundamentos", "modules": [
+        { "id": "1-1", "title": "AntiGravity & o bolo de 3 camadas", "topics": 7 },
+        { "id": "1-2", "title": "No-code vs. apps com IA", "topics": 6 },
+        { "id": "1-3", "title": "Setup completo do ambiente", "topics": 8 }
+      ]},
+      { "n": "2", "title": "Construir & Publicar", "modules": [
+        { "id": "2-1", "title": "Seu primeiro app", "topics": 8 },
+        { "id": "2-2", "title": "Publicar e manter", "topics": 8 }
+      ]},
+      { "n": "3", "title": "Escalar a Produção", "modules": [
+        { "id": "3-1", "title": "Sistema de clonagem", "topics": 7 },
+        { "id": "3-2", "title": "GoHighLevel/WordPress", "topics": 6 }
+      ]},
+      { "n": "4", "title": "Profissionalizar", "modules": [
+        { "id": "4-1", "title": "Fluxo de trabalho profissional", "topics": 6 },
+        { "id": "4-2", "title": "Entregar e aplicar", "topics": 7 }
+      ]},
+      { "n": "5", "title": "Maestria & Biblioteca", "modules": [
+        { "id": "5-1", "title": "CODA & Claude Code", "topics": 7 },
+        { "id": "5-2", "title": "Biblioteca de Skills & Prompts", "topics": 7 }
+      ]}
+    ]
+  }
+  </script>
+</head>
+<body class="bg-dark-900 text-neutral-100 min-h-screen">
+  <a class="skip" href="#conteudo">Pular para o conteúdo</a>
+
+  <!-- NAVIGATION -->
+  <nav class="sticky top-0 z-50 bg-dark-900/95 backdrop-blur-sm border-b border-dark-600">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-14">
+        <div class="flex items-center space-x-4">
+          <a href="../index.html" class="flex items-center space-x-2 text-yellow-400 hover:text-yellow-300">
+            <span class="text-2xl">🛰️</span>
+            <span class="font-bold text-lg hidden sm:inline">AntiGravity</span>
+          </a>
+          <span class="text-neutral-600">|</span>
+          <a href="https://inema.club" target="_blank" class="text-sky-400 hover:text-sky-300 text-sm font-medium">INEMA.CLUB</a>
+        </div>
+        <div class="flex items-center space-x-1 sm:space-x-2">
+          <a href="../trilha1/index.html" class="px-2.5 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-emerald-400 hover:bg-emerald-500/10 transition-colors"><span class="sm:hidden">T1</span><span class="hidden sm:inline">Fundamentos</span></a>
+          <a href="../trilha2/index.html" class="px-2.5 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-blue-400 hover:bg-blue-500/10 transition-colors"><span class="sm:hidden">T2</span><span class="hidden sm:inline">Construir</span></a>
+          <a href="index.html" class="px-2.5 py-1.5 rounded-lg text-sm font-semibold text-purple-400 bg-purple-500/10"><span class="sm:hidden">T3</span><span class="hidden sm:inline">Escalar</span></a>
+          <a href="../trilha4/index.html" class="px-2.5 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-amber-400 hover:bg-amber-500/10 transition-colors"><span class="sm:hidden">T4</span><span class="hidden sm:inline">Profissional</span></a>
+          <a href="../trilha5/index.html" class="px-2.5 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-teal-400 hover:bg-teal-500/10 transition-colors"><span class="sm:hidden">T5</span><span class="hidden sm:inline">Maestria</span></a>
+          <div class="relative">
+            <button type="button" data-inema-appearance-toggle="[data-inema-appearance]" aria-expanded="false" title="Aparência e leitura" class="p-2 rounded-lg bg-dark-700 hover:bg-dark-600 transition-colors"><span aria-hidden="true">◑</span></button>
+            <div data-inema-appearance class="inema-appearance-pop" style="right:0">
+              <div><p class="text-xs text-neutral-400 mb-1">Tema</p><div class="inema-segment flex flex-wrap gap-1">
+                <button data-inema-set-theme="inema-dark" class="px-2 py-1 text-xs rounded bg-dark-700">Escuro</button>
+                <button data-inema-set-theme="claro" class="px-2 py-1 text-xs rounded bg-dark-700">Claro</button>
+                <button data-inema-set-theme="sepia" class="px-2 py-1 text-xs rounded bg-dark-700">Sépia</button>
+                <button data-inema-set-theme="foco" class="px-2 py-1 text-xs rounded bg-dark-700">Foco</button>
+                <button data-inema-set-theme="contraste" class="px-2 py-1 text-xs rounded bg-dark-700">Alto contraste</button>
+              </div></div>
+              <div><p class="text-xs text-neutral-400 mb-1">Fonte</p><div class="inema-segment flex gap-1">
+                <button data-inema-set-font="inter" class="px-2 py-1 text-xs rounded bg-dark-700">Inter</button>
+                <button data-inema-set-font="system" class="px-2 py-1 text-xs rounded bg-dark-700">Sistema</button>
+                <button data-inema-set-font="leitura" class="px-2 py-1 text-xs rounded bg-dark-700">Leitura</button>
+              </div></div>
+              <div><p class="text-xs text-neutral-400 mb-1">Tamanho</p><div class="inema-segment flex gap-1">
+                <button data-inema-set-fontscale="100" class="px-2 py-1 text-xs rounded bg-dark-700">A</button>
+                <button data-inema-set-fontscale="112" class="px-2 py-1 text-xs rounded bg-dark-700">A+</button>
+                <button data-inema-set-fontscale="125" class="px-2 py-1 text-xs rounded bg-dark-700">A++</button>
+              </div></div>
+              <div><p class="text-xs text-neutral-400 mb-1">Entrelinha</p><div class="inema-segment flex gap-1">
+                <button data-inema-set-leading="1.45" class="px-2 py-1 text-xs rounded bg-dark-700">Compacto</button>
+                <button data-inema-set-leading="1.7" class="px-2 py-1 text-xs rounded bg-dark-700">Confortável</button>
+              </div></div>
+            </div>
+          </div>
+          <button type="button" data-inema-journey-open title="Minha jornada" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-sm text-neutral-300 hover:text-neutral-100 hover:bg-dark-700 transition-colors">
+            <span aria-hidden="true">◷</span><span class="hidden sm:inline">Jornada</span>
+            <span class="inema-journey-badge" data-inema-journey-badge data-count="0"></span>
+          </button>
+          <button id="theme-toggle" title="Alternar claro/escuro" class="p-2 rounded-lg bg-dark-700 hover:bg-dark-600 transition-colors">
+            <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5 text-neutral-300" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+            <svg id="theme-toggle-light-icon" class="hidden w-5 h-5 text-neutral-300" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- BREADCRUMB -->
+  <nav class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+    <div class="flex items-center space-x-2 text-sm text-neutral-400">
+      <a href="../index.html" class="hover:text-purple-400">Início</a><span>/</span>
+      <a href="index.html" class="hover:text-purple-400">Trilha 3</a><span>/</span>
+      <span class="text-purple-400">Módulo 3.2</span>
+    </div>
+  </nav>
+
+  <!-- HEADER -->
+  <header class="bg-gradient-to-br from-purple-900/30 via-dark-800 to-dark-800 py-12 border-b border-dark-600">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <span class="inline-block px-3 py-1 bg-purple-500/20 text-purple-400 text-xs font-semibold rounded-full mb-4">MÓDULO 3.2</span>
+      <h1 class="text-3xl sm:text-4xl font-bold mb-4">🧩 Levar sites para GoHighLevel/WordPress</h1>
+      <p class="text-lg text-neutral-400 max-w-3xl">Sites feitos em frameworks não cabem direto nos construtores visuais. A solução: uma skill que converte o codebase num único HTML self-contained que cola no bloco "Custom HTML/JS" do GHL ou do WordPress — e ajustar o que escapar.</p>
+      <div class="grid grid-cols-4 gap-4 mt-8 max-w-2xl">
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600"><div class="text-xl font-bold text-purple-400">6</div><div class="text-xs text-neutral-400">Tópicos</div></div>
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600"><div class="text-xl font-bold text-purple-400">50</div><div class="text-xs text-neutral-400">Minutos</div></div>
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600"><div class="text-xl font-bold text-purple-400">Intermediário</div><div class="text-xs text-neutral-400">Nível</div></div>
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600"><div class="text-xl font-bold text-purple-400">Prática</div><div class="text-xs text-neutral-400">Tipo</div></div>
+      </div>
+    </div>
+  </header>
+
+  <main id="conteudo" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="lg:grid lg:grid-cols-[230px_minmax(0,1fr)] lg:gap-10">
+
+      <!-- TOC -->
+      <nav data-inema-toc aria-label="Índice da página" class="hidden lg:block sticky top-20 self-start">
+        <p class="text-sm text-neutral-400 mb-2">Seção <span data-inema-section-counter>1 de 6</span></p>
+        <ol class="space-y-1 text-sm">
+          <li><a href="#topico-1" class="inema-toc-link text-neutral-400 hover:text-purple-400">1. O problema</a></li>
+          <li><a href="#topico-2" class="inema-toc-link text-neutral-400 hover:text-purple-400">2. A Transformer Skill</a></li>
+          <li><a href="#topico-3" class="inema-toc-link text-neutral-400 hover:text-purple-400">3. Restrições do Custom HTML</a></li>
+          <li><a href="#topico-4" class="inema-toc-link text-neutral-400 hover:text-purple-400">4. Build design-first</a></li>
+          <li><a href="#topico-5" class="inema-toc-link text-neutral-400 hover:text-purple-400">5. HTML Sniping</a></li>
+          <li><a href="#topico-6" class="inema-toc-link text-neutral-400 hover:text-purple-400">6. Colar no GHL e ajustar</a></li>
+        </ol>
+        <div class="mt-4 pt-4 border-t border-dark-600">
+          <div data-inema-meter="modulo:3-2" class="text-sm"><span class="text-neutral-400" data-inema-meter-frac>0 de 6</span> · <span class="text-purple-400 font-bold" data-inema-meter-pct>0%</span><div class="inema-bar h-1.5 mt-2 rounded-full bg-dark-600 overflow-hidden"><div class="inema-bar__fill h-full rounded-full bg-purple-500" data-inema-meter-fill style="width:0%"></div></div></div>
+        </div>
+      </nav>
+
+      <article data-inema-module="3-2" data-inema-track="3" class="min-w-0">
+
+        <!-- TÓPICO 1 -->
+        <section id="topico-1" data-inema-topic="modulo-3-2#topico-1" class="mb-16">
+          <div class="flex items-center justify-between mb-6 gap-3">
+            <div class="flex items-center space-x-4">
+              <span class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 font-bold text-xl flex-shrink-0">1</span>
+              <h2 class="text-2xl font-bold">🧩 O problema</h2>
+            </div>
+            <button type="button" data-inema-doubt-toggle aria-pressed="false" title="Marcar dúvida neste tópico" class="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm flex-shrink-0"><span aria-hidden="true">?</span><span>Dúvida</span></button>
+          </div>
+
+          <p data-inema-block="m3-2-t1-p1" class="text-neutral-300 mb-6 leading-relaxed">Você construiu um site lindo num <strong class="text-purple-400">framework</strong> (React, Next, Vue, Svelte). Aí o cliente diz: "eu uso GoHighLevel" (ou WordPress). Problema: esses construtores são <strong>"arrastar e soltar"</strong> e <strong class="text-purple-400">não aceitam um codebase de framework direto</strong>. É um descompasso de linguagem.</p>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div class="bg-purple-900/20 rounded-xl border border-purple-500/30 p-6">
+              <h4 class="font-bold text-purple-400 mb-4">✓ O que você tem</h4>
+              <ul class="space-y-3 text-neutral-300 text-sm">
+                <li class="flex items-start space-x-2"><span class="text-purple-400">✓</span><span>Site em React / Next / Vue / Svelte</span></li>
+                <li class="flex items-start space-x-2"><span class="text-purple-400">✓</span><span>Vários arquivos, componentes, build</span></li>
+                <li class="flex items-start space-x-2"><span class="text-purple-400">✓</span><span>Roda lindo no localhost</span></li>
+              </ul>
+            </div>
+            <div class="bg-red-900/20 rounded-xl border border-red-500/30 p-6">
+              <h4 class="font-bold text-red-400 mb-4">✗ O que o construtor aceita</h4>
+              <ul class="space-y-3 text-neutral-300 text-sm">
+                <li class="flex items-start space-x-2"><span class="text-red-400">✗</span><span>Blocos visuais "arrastar e soltar"</span></li>
+                <li class="flex items-start space-x-2"><span class="text-red-400">✗</span><span>Não entende componentes nem build</span></li>
+                <li class="flex items-start space-x-2"><span class="text-red-400">✗</span><span>Cola o framework cru → quebra</span></li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="bg-primary/10 rounded-xl border border-primary/30 p-6 mb-6">
+            <h3 class="text-lg font-semibold text-primary mb-3 flex items-center"><span class="mr-2">💡</span> A ideia</h3>
+            <p class="text-neutral-300">O caminho não é desistir do framework — é <strong>traduzir</strong> o resultado para um formato que o construtor entenda. É disso que trata o resto do módulo.</p>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-purple-400 font-bold mb-1">Framework</div><p class="text-xs text-neutral-400">React/Next/Vue</p></div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-purple-400 font-bold mb-1">Construtor</div><p class="text-xs text-neutral-400">GHL / WordPress</p></div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-purple-400 font-bold mb-1">Descompasso</div><p class="text-xs text-neutral-400">linguagens diferentes</p></div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-purple-400 font-bold mb-1">Solução</div><p class="text-xs text-neutral-400">traduzir, não desistir</p></div>
+          </div>
+
+          <div class="flex justify-start mt-6">
+            <button type="button" data-inema-read-toggle aria-pressed="false">
+              <span class="inema-ico-todo" aria-hidden="true">○</span><span class="inema-ico-done" aria-hidden="true">●</span><span class="inema-label-todo">Marcar como lido</span><span class="inema-label-done">Lido</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- TÓPICO 2 -->
+        <section id="topico-2" data-inema-topic="modulo-3-2#topico-2" class="mb-16">
+          <div class="flex items-center justify-between mb-6 gap-3">
+            <div class="flex items-center space-x-4">
+              <span class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 font-bold text-xl flex-shrink-0">2</span>
+              <h2 class="text-2xl font-bold">🔄 A Transformer Skill</h2>
+            </div>
+            <button type="button" data-inema-doubt-toggle aria-pressed="false" title="Marcar dúvida neste tópico" class="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm flex-shrink-0"><span aria-hidden="true">?</span><span>Dúvida</span></button>
+          </div>
+
+          <p data-inema-block="m3-2-t2-p1" class="text-neutral-300 mb-6 leading-relaxed">A tradução é feita por uma <strong class="text-purple-400">Transformer Skill</strong>: uma skill que pega o codebase inteiro e o converte num <strong>único arquivo HTML self-contained</strong> — tudo num só lugar (HTML + CSS + JS), compatível com o bloco "Custom HTML/JS" do GHL.</p>
+
+          <!-- SVG -->
+          <div class="rounded-2xl border border-purple-500/30 bg-dark-900/40 p-3 sm:p-4 mb-6 overflow-hidden">
+            <svg viewBox="0 0 1000 200" class="w-full h-auto" role="img" aria-label="A Transformer Skill recebe um codebase com vários arquivos de framework e produz um único arquivo HTML self-contained pronto para colar no bloco Custom HTML do construtor">
+              <defs>
+                <linearGradient id="m32-grad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c084fc"/><stop offset="1" stop-color="#a855f7"/></linearGradient>
+                <filter id="m32-glow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="1.8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+                <pattern id="m32-grid" width="32" height="32" patternUnits="userSpaceOnUse"><circle cx="1.3" cy="1.3" r="1.3" fill="#a855f7" opacity="0.1"/></pattern>
+                <marker id="m32-ah" markerWidth="9" markerHeight="9" refX="6.5" refY="4.5" orient="auto"><path d="M0,0 L8,4.5 L0,9 L2.4,4.5 Z" fill="#c084fc"/></marker>
+              </defs>
+              <rect x="0" y="0" width="1000" height="200" fill="url(#m32-grid)"/>
+              <g fill="none" stroke="#c084fc" stroke-width="2" opacity="0.6">
+                <path d="M270,100 L380,100" marker-end="url(#m32-ah)"/>
+                <path d="M620,100 L730,100" marker-end="url(#m32-ah)"/>
+              </g>
+              <g font-family="Inter,sans-serif">
+                <rect x="40" y="60" width="230" height="80" rx="14" fill="#0e1b26" stroke="#38bdf8" stroke-width="2"/>
+                <text x="155" y="92" text-anchor="middle" fill="#bfe6ff" font-weight="600" font-size="15">Codebase</text>
+                <text x="155" y="113" text-anchor="middle" fill="#9ad6ff" font-size="12">muitos arquivos · build</text>
+                <g filter="url(#m32-glow)"><rect x="380" y="60" width="240" height="80" rx="14" fill="#1a1230" stroke="url(#m32-grad)" stroke-width="2.5"/></g>
+                <text x="500" y="92" text-anchor="middle" fill="#c084fc" font-weight="600" font-size="15">Transformer Skill</text>
+                <text x="500" y="113" text-anchor="middle" fill="#e9d5ff" font-size="12">converte tudo</text>
+                <rect x="730" y="60" width="230" height="80" rx="14" fill="#1a1230" stroke="#a855f7" stroke-width="2"/>
+                <text x="845" y="92" text-anchor="middle" fill="#c084fc" font-weight="600" font-size="15">1 HTML self-contained</text>
+                <text x="845" y="113" text-anchor="middle" fill="#e9d5ff" font-size="12">cola no Custom HTML</text>
+              </g>
+            </svg>
+          </div>
+
+          <div class="bg-primary/10 rounded-xl border border-primary/30 p-6 mb-6">
+            <h3 class="text-lg font-semibold text-primary mb-3 flex items-center"><span class="mr-2">💡</span> Dica prática</h3>
+            <p class="text-neutral-300">A Transformer Skill também está na <strong>Biblioteca (Trilha 5)</strong>. Use-a como ponto de partida e teste o HTML antes de entregar ao cliente.</p>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-purple-400 font-bold mb-1">Entrada</div><p class="text-xs text-neutral-400">codebase inteiro</p></div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-purple-400 font-bold mb-1">Skill</div><p class="text-xs text-neutral-400">converte</p></div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-purple-400 font-bold mb-1">Saída</div><p class="text-xs text-neutral-400">1 HTML único</p></div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-purple-400 font-bold mb-1">Destino</div><p class="text-xs text-neutral-400">Custom HTML/JS</p></div>
+          </div>
+
+          <div class="flex justify-start mt-6">
+            <button type="button" data-inema-read-toggle aria-pressed="false">
+              <span class="inema-ico-todo" aria-hidden="true">○</span><span class="inema-ico-done" aria-hidden="true">●</span><span class="inema-label-todo">Marcar como lido</span><span class="inema-label-done">Lido</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- TÓPICO 3 -->
+        <section id="topico-3" data-inema-topic="modulo-3-2#topico-3" class="mb-16">
+          <div class="flex items-center justify-between mb-6 gap-3">
+            <div class="flex items-center space-x-4">
+              <span class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 font-bold text-xl flex-shrink-0">3</span>
+              <h2 class="text-2xl font-bold">🚫 Restrições do bloco Custom HTML</h2>
+            </div>
+            <button type="button" data-inema-doubt-toggle aria-pressed="false" title="Marcar dúvida neste tópico" class="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm flex-shrink-0"><span aria-hidden="true">?</span><span>Dúvida</span></button>
+          </div>
+
+          <p data-inema-block="m3-2-t3-p1" class="text-neutral-300 mb-6 leading-relaxed">O bloco "Custom HTML/JS" é poderoso, mas tem <strong class="text-purple-400">regras claras</strong>. Conhecê-las é o que faz a conversão funcionar de primeira. Em resumo: nada de ferramentas de framework, só o básico da web.</p>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div class="bg-red-900/20 rounded-xl border border-red-500/30 p-6">
+              <h4 class="font-bold text-red-400 mb-4">✗ Não pode</h4>
+              <ul class="space-y-3 text-neutral-300 text-sm">
+                <li class="flex items-start space-x-2"><span class="text-red-400">✗</span><span>JSX / Babel</span></li>
+                <li class="flex items-start space-x-2"><span class="text-red-400">✗</span><span>ES modules (import / export)</span></li>
+                <li class="flex items-start space-x-2"><span class="text-red-400">✗</span><span>Build tools (Vite / Webpack)</span></li>
+                <li class="flex items-start space-x-2"><span class="text-red-400">✗</span><span>APIs de Node (process.env)</span></li>
+                <li class="flex items-start space-x-2"><span class="text-red-400">✗</span><span>Tags html / head / body (o GHL injeta o shell)</span></li>
+              </ul>
+            </div>
+            <div class="bg-purple-900/20 rounded-xl border border-purple-500/30 p-6">
+              <h4 class="font-bold text-purple-400 mb-4">✓ Pode</h4>
+              <ul class="space-y-3 text-neutral-300 text-sm">
+                <li class="flex items-start space-x-2"><span class="text-purple-400">✓</span><span>HTML + style + script vanilla</span></li>
+                <li class="flex items-start space-x-2"><span class="text-purple-400">✓</span><span>SVG inline</span></li>
+                <li class="flex items-start space-x-2"><span class="text-purple-400">✓</span><span>CDN (scripts externos por URL)</span></li>
+                <li class="flex items-start space-x-2"><span class="text-purple-400">✓</span><span>Tailwind via CDN</span></li>
+                <li class="flex items-start space-x-2"><span class="text-purple-400">✓</span><span>Prefixar as classes CSS pra não conflitar</span></li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="bg-red-900/20 rounded-xl border border-red-500/30 p-6 mb-6">
+            <h3 class="text-lg font-semibold text-red-400 mb-3 flex items-center"><span class="mr-2">⚠️</span> Armadilha comum</h3>
+            <p class="text-neutral-300">Esquecer de <strong>prefixar as classes</strong>. O construtor tem CSS próprio; se suas classes têm nomes genéricos, elas colidem e o layout quebra. Prefixe (ex.: <code class="font-mono text-purple-400">vf-</code>) e fique seguro.</p>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-purple-400 font-bold mb-1">Sem import</div><p class="text-xs text-neutral-400">nem export</p></div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-purple-400 font-bold mb-1">Sem build</div><p class="text-xs text-neutral-400">vanilla só</p></div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-purple-400 font-bold mb-1">CDN ok</div><p class="text-xs text-neutral-400">Tailwind via CDN</p></div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-purple-400 font-bold mb-1">Prefixe</div><p class="text-xs text-neutral-400">classes próprias</p></div>
+          </div>
+
+          <div class="flex justify-start mt-6">
+            <button type="button" data-inema-read-toggle aria-pressed="false">
+              <span class="inema-ico-todo" aria-hidden="true">○</span><span class="inema-ico-done" aria-hidden="true">●</span><span class="inema-label-todo">Marcar como lido</span><span class="inema-label-done">Lido</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- TÓPICO 4 -->
+        <section id="topico-4" data-inema-topic="modulo-3-2#topico-4" class="mb-16">
+          <div class="flex items-center justify-between mb-6 gap-3">
+            <div class="flex items-center space-x-4">
+              <span class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 font-bold text-xl flex-shrink-0">4</span>
+              <h2 class="text-2xl font-bold">🎬 Build "design-first" no AI Studio</h2>
+            </div>
+            <button type="button" data-inema-doubt-toggle aria-pressed="false" title="Marcar dúvida neste tópico" class="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm flex-shrink-0"><span aria-hidden="true">?</span><span>Dúvida</span></button>
+          </div>
+
+          <p data-inema-block="m3-2-t4-p1" class="text-neutral-300 mb-6 leading-relaxed">Um fluxo que dá um resultado mais bonito: construa <strong class="text-purple-400">primeiro numa plataforma focada em design</strong> (um AI Studio de design), baixe o arquivo, e <strong>depois</strong> clone no AntiGravity e converta. Esse caminho cobre <strong class="text-purple-400">~99% dos sites</strong> — só animações muito específicas podem não passar.</p>
+
+          <div class="space-y-6 mb-6">
+            <div class="flex items-start space-x-4">
+              <div class="flex-shrink-0 w-12 h-12 rounded-full bg-purple-500/20 flex items-center justify-center"><span class="text-purple-400 font-bold">1</span></div>
+              <div class="flex-1 bg-dark-800 rounded-xl p-6 border border-dark-600">
+                <h4 class="font-semibold text-white mb-2">Construa no AI Studio (design-first)</h4>
+                <p class="text-neutral-300 text-sm">Foque no visual numa plataforma de design — é onde o site fica bonito mais rápido.</p>
+              </div>
+            </div>
+            <div class="flex items-start space-x-4">
+              <div class="flex-shrink-0 w-12 h-12 rounded-full bg-purple-500/20 flex items-center justify-center"><span class="text-purple-400 font-bold">2</span></div>
+              <div class="flex-1 bg-dark-800 rounded-xl p-6 border border-dark-600">
+                <h4 class="font-semibold text-white mb-2">Baixe e clone no AntiGravity</h4>
+                <p class="text-neutral-300 text-sm">Traga o arquivo para o ambiente local, onde você tem controle total.</p>
+              </div>
+            </div>
+            <div class="flex items-start space-x-4">
+              <div class="flex-shrink-0 w-12 h-12 rounded-full bg-purple-500/20 flex items-center justify-center"><span class="text-purple-400 font-bold">3</span></div>
+              <div class="flex-1 bg-gradient-to-br from-purple-900/30 to-dark-800 rounded-xl p-6 border border-purple-500/30">
+                <h4 class="font-semibold text-purple-400 mb-2">Converta para 1 HTML</h4>
+                <p class="text-neutral-300 text-sm">Rode a Transformer Skill e gere o arquivo self-contained. Cobre ~99% dos casos.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-primary/10 rounded-xl border border-primary/30 p-6 mb-6">
+            <h3 class="text-lg font-semibold text-primary mb-3 flex items-center"><span class="mr-2">💡</span> Por que design-first</h3>
+            <p class="text-neutral-300">Começar pelo design entrega um site mais bonito <strong>antes</strong> da parte técnica. A conversão vem depois, sobre uma base que já agrada o cliente.</p>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-purple-400 font-bold mb-1">Design</div><p class="text-xs text-neutral-400">primeiro</p></div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-purple-400 font-bold mb-1">Baixar</div><p class="text-xs text-neutral-400">levar p/ local</p></div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-purple-400 font-bold mb-1">Converter</div><p class="text-xs text-neutral-400">1 HTML</p></div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-purple-400 font-bold mb-1">~99%</div><p class="text-xs text-neutral-400">cobre quase tudo</p></div>
+          </div>
+
+          <div class="flex justify-start mt-6">
+            <button type="button" data-inema-read-toggle aria-pressed="false">
+              <span class="inema-ico-todo" aria-hidden="true">○</span><span class="inema-ico-done" aria-hidden="true">●</span><span class="inema-label-todo">Marcar como lido</span><span class="inema-label-done">Lido</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- TÓPICO 5 -->
+        <section id="topico-5" data-inema-topic="modulo-3-2#topico-5" class="mb-16">
+          <div class="flex items-center justify-between mb-6 gap-3">
+            <div class="flex items-center space-x-4">
+              <span class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 font-bold text-xl flex-shrink-0">5</span>
+              <h2 class="text-2xl font-bold">✂️ HTML Sniping</h2>
+            </div>
+            <button type="button" data-inema-doubt-toggle aria-pressed="false" title="Marcar dúvida neste tópico" class="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm flex-shrink-0"><span aria-hidden="true">?</span><span>Dúvida</span></button>
+          </div>
+
+          <p data-inema-block="m3-2-t5-p1" class="text-neutral-300 mb-6 leading-relaxed">Nem sempre você quer migrar a página inteira. Às vezes o cliente já tem uma página no GHL/WordPress e só quer uma seção mais bonita. Aí entra o <strong class="text-purple-400">HTML Sniping</strong>: em vez de migrar tudo, você injeta <strong>blocos premium pontuais</strong> de HTML de alta qualidade dentro da página existente.</p>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div class="bg-dark-800 rounded-xl border border-dark-600 p-6">
+              <h4 class="font-semibold text-white mb-2">Migração completa</h4>
+              <p class="text-neutral-300 text-sm mb-2">A página inteira vira 1 HTML self-contained.</p>
+              <p class="text-neutral-400 text-xs">Quando: o site é novo ou todo refeito.</p>
+            </div>
+            <div class="bg-gradient-to-br from-purple-900/30 to-dark-800 rounded-xl border border-purple-500/30 p-6">
+              <h4 class="font-semibold text-purple-400 mb-2">HTML Sniping</h4>
+              <p class="text-neutral-300 text-sm mb-2">Um bloco premium pontual entra numa página que já existe.</p>
+              <p class="text-neutral-400 text-xs">Quando: só uma seção precisa de upgrade.</p>
+            </div>
+          </div>
+
+          <div class="bg-primary/10 rounded-xl border border-primary/30 p-6 mb-6">
+            <h3 class="text-lg font-semibold text-primary mb-3 flex items-center"><span class="mr-2">💡</span> Dica prática</h3>
+            <p class="text-neutral-300">Sniping é <strong>cirúrgico</strong>: gera valor visual sem mexer no resto. Ideal para "deixar essa dobra mais bonita" sem refazer a página toda.</p>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-purple-400 font-bold mb-1">Pontual</div><p class="text-xs text-neutral-400">só um bloco</p></div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-purple-400 font-bold mb-1">Premium</div><p class="text-xs text-neutral-400">alta qualidade</p></div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-purple-400 font-bold mb-1">Injetar</div><p class="text-xs text-neutral-400">na página existente</p></div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-purple-400 font-bold mb-1">Cirúrgico</div><p class="text-xs text-neutral-400">sem refazer tudo</p></div>
+          </div>
+
+          <div class="flex justify-start mt-6">
+            <button type="button" data-inema-read-toggle aria-pressed="false">
+              <span class="inema-ico-todo" aria-hidden="true">○</span><span class="inema-ico-done" aria-hidden="true">●</span><span class="inema-label-todo">Marcar como lido</span><span class="inema-label-done">Lido</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- TÓPICO 6 -->
+        <section id="topico-6" data-inema-topic="modulo-3-2#topico-6" class="mb-16">
+          <div class="flex items-center justify-between mb-6 gap-3">
+            <div class="flex items-center space-x-4">
+              <span class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 font-bold text-xl flex-shrink-0">6</span>
+              <h2 class="text-2xl font-bold">📋 Colar no GHL e ajustar</h2>
+            </div>
+            <button type="button" data-inema-doubt-toggle aria-pressed="false" title="Marcar dúvida neste tópico" class="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm flex-shrink-0"><span aria-hidden="true">?</span><span>Dúvida</span></button>
+          </div>
+
+          <p data-inema-block="m3-2-t6-p1" class="text-neutral-300 mb-6 leading-relaxed">Com o HTML em mãos, o passo final é mecânico. No editor do GHL: adicione um bloco <strong class="text-purple-400">"Custom Code"</strong> → cole o HTML → salve/publique → <strong>teste</strong>. Se quebrar no mobile, volte ao agente, peça o conserto, recopie e recole.</p>
+
+          <div class="space-y-4 mb-6">
+            <div class="flex items-start space-x-4">
+              <div class="flex-shrink-0 w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center"><span class="text-purple-400 font-bold">1</span></div>
+              <div class="flex-1 bg-dark-800 rounded-xl p-5 border border-dark-600"><h4 class="font-semibold text-white mb-1">Adicione "Custom Code"</h4><p class="text-neutral-300 text-sm">No editor, arraste o bloco de código personalizado para onde a seção deve aparecer.</p></div>
+            </div>
+            <div class="flex items-start space-x-4">
+              <div class="flex-shrink-0 w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center"><span class="text-purple-400 font-bold">2</span></div>
+              <div class="flex-1 bg-dark-800 rounded-xl p-5 border border-dark-600"><h4 class="font-semibold text-white mb-1">Cole, salve e publique</h4><p class="text-neutral-300 text-sm">Cole o HTML self-contained, salve e publique a página.</p></div>
+            </div>
+            <div class="flex items-start space-x-4">
+              <div class="flex-shrink-0 w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center"><span class="text-purple-400 font-bold">3</span></div>
+              <div class="flex-1 bg-dark-800 rounded-xl p-5 border border-dark-600"><h4 class="font-semibold text-white mb-1">Teste — inclusive no mobile</h4><p class="text-neutral-300 text-sm">Veja no desktop e no celular. Quebrou no mobile? Vá para o passo 4.</p></div>
+            </div>
+            <div class="flex items-start space-x-4">
+              <div class="flex-shrink-0 w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center"><span class="text-purple-400 font-bold">4</span></div>
+              <div class="flex-1 bg-gradient-to-br from-purple-900/30 to-dark-800 rounded-xl p-5 border border-purple-500/30"><h4 class="font-semibold text-purple-400 mb-1">Conserte e recole</h4><p class="text-neutral-300 text-sm">Diga ao agente "no mobile faz X, corrija". Pegue o novo HTML, recopie e recole.</p></div>
+            </div>
+          </div>
+
+          <div class="bg-red-900/20 rounded-xl border border-red-500/30 p-6 mb-6">
+            <h3 class="text-lg font-semibold text-red-400 mb-3 flex items-center"><span class="mr-2">⚠️</span> O loop de ajuste</h3>
+            <p class="text-neutral-300">Mobile é onde mais quebra. Trate como um ciclo curto: <strong>descreva o problema → corrige → recopie → recole → teste</strong>. Repita até ficar redondo nos dois tamanhos.</p>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-purple-400 font-bold mb-1">Custom Code</div><p class="text-xs text-neutral-400">o bloco certo</p></div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-purple-400 font-bold mb-1">Colar</div><p class="text-xs text-neutral-400">salvar + publicar</p></div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-purple-400 font-bold mb-1">Testar</div><p class="text-xs text-neutral-400">desktop + mobile</p></div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-purple-400 font-bold mb-1">Corrigir</div><p class="text-xs text-neutral-400">volte ao agente</p></div>
+          </div>
+
+          <div class="flex justify-start mt-6">
+            <button type="button" data-inema-read-toggle aria-pressed="false">
+              <span class="inema-ico-todo" aria-hidden="true">○</span><span class="inema-ico-done" aria-hidden="true">●</span><span class="inema-label-todo">Marcar como lido</span><span class="inema-label-done">Lido</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- EXEMPLO PRÁTICO -->
+        <section id="exemplo" class="mb-12">
+          <h2 class="text-2xl font-bold mb-6 flex items-center"><span class="mr-3">🔬</span> Exemplo prático</h2>
+          <div class="bg-dark-800 rounded-xl border border-dark-600 p-6">
+            <p class="text-neutral-300 mb-4">Você tem um site em <strong class="text-purple-400">React</strong> de uma oficina mecânica e o cliente usa GoHighLevel. O caminho:</p>
+            <ol class="space-y-2 text-neutral-300 mb-4 list-decimal list-inside">
+              <li>Rode a Transformer Skill: o codebase React vira <strong>1 HTML self-contained</strong> (sem import/export, sem build, classes prefixadas).</li>
+              <li>No GHL, adicione um bloco <strong>Custom Code</strong>, cole o HTML, salve e publique.</li>
+              <li>Abra no celular: a seção de preços está estourando a largura.</li>
+              <li>Volte ao agente: <em>"no mobile a tabela de preços vaza; corrija mantendo o HTML único"</em>. Recopie e recole.</li>
+            </ol>
+            <p class="text-neutral-400 text-sm">Resultado: o site React do cliente roda dentro do GoHighLevel, redondo no desktop e no mobile.</p>
+          </div>
+        </section>
+
+        <!-- EXERCÍCIO -->
+        <section id="exercicio" class="mb-12">
+          <h2 class="text-2xl font-bold mb-6 flex items-center"><span class="mr-3">🏋️</span> Exercício</h2>
+          <div class="bg-gradient-to-br from-purple-900/30 to-dark-800 rounded-xl border border-purple-500/30 p-6">
+            <p class="text-neutral-300 mb-4">Converta um site (feito antes) para <strong class="text-purple-400">1 HTML self-contained</strong> e cole num bloco Custom Code do GHL ou WordPress:</p>
+            <ol class="space-y-2 text-neutral-300 mb-4 list-decimal list-inside">
+              <li>Pegue um site seu da Trilha 2 (ou um clone da Trilha 3.1).</li>
+              <li>Rode a Transformer Skill e gere o HTML único — respeitando todas as restrições.</li>
+              <li>Cole num bloco Custom Code do GHL ou do WordPress, salve e publique.</li>
+              <li>Teste no <strong>mobile</strong> e rode o loop de ajuste até ficar redondo.</li>
+            </ol>
+            <p class="text-neutral-400 text-sm">Meta: um site de framework rodando dentro de um construtor visual, sem quebrar.</p>
+          </div>
+        </section>
+
+        <!-- PROMPTS PRONTOS -->
+        <section id="prompts" class="mb-12">
+          <h2 class="text-2xl font-bold mb-6 flex items-center"><span class="mr-3">⚡</span> Prompts prontos</h2>
+          <p class="text-neutral-400 mb-4 text-sm">Copie, cole no seu assistente de IA e adapte ao seu caso.</p>
+
+          <div data-prompt class="bg-dark-900 border border-dark-600 rounded-xl overflow-hidden mb-4">
+            <div class="flex items-center justify-between px-4 py-2 bg-dark-700/50 border-b border-dark-600"><span class="text-xs text-neutral-400 font-mono">clonar o repositório</span><button onclick="copyPrompt(this)" class="text-xs px-2 py-1 rounded bg-purple-600 hover:bg-purple-500 text-white">Copiar</button></div>
+            <pre class="p-4 text-sm text-neutral-200 whitespace-pre-wrap font-mono">Clone este repositório e adicione à esquerda: [URL].</pre>
+          </div>
+
+          <div data-prompt class="bg-dark-900 border border-dark-600 rounded-xl overflow-hidden mb-4">
+            <div class="flex items-center justify-between px-4 py-2 bg-dark-700/50 border-b border-dark-600"><span class="text-xs text-neutral-400 font-mono">converter para 1 HTML</span><button onclick="copyPrompt(this)" class="text-xs px-2 py-1 rounded bg-purple-600 hover:bg-purple-500 text-white">Copiar</button></div>
+            <pre class="p-4 text-sm text-neutral-200 whitespace-pre-wrap font-mono">Converta este codebase inteiro num único arquivo HTML self-contained,
+compatível com bloco Custom HTML (sem import/export, sem JSX, sem build,
+classes CSS prefixadas).</pre>
+          </div>
+
+          <div data-prompt class="bg-dark-900 border border-dark-600 rounded-xl overflow-hidden mb-4">
+            <div class="flex items-center justify-between px-4 py-2 bg-dark-700/50 border-b border-dark-600"><span class="text-xs text-neutral-400 font-mono">corrigir o mobile</span><button onclick="copyPrompt(this)" class="text-xs px-2 py-1 rounded bg-purple-600 hover:bg-purple-500 text-white">Copiar</button></div>
+            <pre class="p-4 text-sm text-neutral-200 whitespace-pre-wrap font-mono">No mobile, esta seção faz [X]. Corrija mantendo o HTML único.</pre>
+          </div>
+        </section>
+
+        <!-- RESUMO -->
+        <section class="mb-12">
+          <div class="bg-gradient-to-br from-purple-900/40 via-dark-800 to-dark-800 rounded-xl border border-purple-500/30 p-8">
+            <h2 class="text-2xl font-bold mb-6 flex items-center"><span class="mr-3">✅</span> Resumo do módulo</h2>
+            <div class="space-y-4 mb-8">
+              <div class="flex items-start space-x-3"><span class="text-purple-400 mt-1">✓</span><div><strong class="text-white">O problema</strong><span class="text-neutral-400"> — frameworks não cabem direto em GHL/WordPress; é descompasso de linguagem.</span></div></div>
+              <div class="flex items-start space-x-3"><span class="text-purple-400 mt-1">✓</span><div><strong class="text-white">Transformer Skill + restrições</strong><span class="text-neutral-400"> — converte tudo em 1 HTML vanilla, sem import/export/build, classes prefixadas.</span></div></div>
+              <div class="flex items-start space-x-3"><span class="text-purple-400 mt-1">✓</span><div><strong class="text-white">Design-first e HTML Sniping</strong><span class="text-neutral-400"> — construa bonito antes; ou injete só um bloco premium quando bastar.</span></div></div>
+              <div class="flex items-start space-x-3"><span class="text-purple-400 mt-1">✓</span><div><strong class="text-white">Colar e ajustar</strong><span class="text-neutral-400"> — Custom Code → colar → publicar → testar; loop curto pro mobile.</span></div></div>
+            </div>
+            <div class="bg-dark-800/50 rounded-lg p-4 mb-8"><h3 class="font-semibold text-purple-400 mb-2">Próxima trilha:</h3><p class="text-neutral-300">Trilha 4 — Profissionalizar</p></div>
+            <div class="flex flex-col sm:flex-row gap-4">
+              <a href="index.html" class="flex-1 text-center px-6 py-3 bg-dark-700 text-neutral-300 rounded-lg font-semibold hover:bg-dark-600 transition-colors">← Voltar para Trilha</a>
+              <a href="../trilha4/index.html" class="flex-1 text-center px-6 py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-500 transition-colors">Trilha 4: Profissionalizar →</a>
+            </div>
+          </div>
+        </section>
+
+      </article>
+    </div>
+  </main>
+
+  <footer class="border-t border-dark-600 py-8 mt-16">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-neutral-500 text-sm">
+      <p>AntiGravity — do Zero ao App Publicado com IA · <a href="https://inema.club" target="_blank" class="text-sky-400 hover:text-sky-300">INEMA.CLUB</a> · 2026</p>
+    </div>
+  </footer>
+
+  <script>
+    function toggleTopic(button) {
+      const topicItem = button.closest('.topic-item');
+      if (!topicItem) return;
+      const explanation = topicItem.querySelector('.topic-explanation');
+      const moduleCard = button.closest('.bg-dark-800') || document;
+      moduleCard.querySelectorAll('.topic-explanation.active').forEach(exp => { if (exp !== explanation) exp.classList.remove('active'); });
+      const willOpen = !explanation.classList.contains('active');
+      explanation.classList.toggle('active');
+      button.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+    }
+    (function () {
+      const themeToggle = document.getElementById('theme-toggle');
+      const di = document.getElementById('theme-toggle-dark-icon');
+      const li = document.getElementById('theme-toggle-light-icon');
+      const html = document.documentElement;
+      function paint() { const dark = html.classList.contains('dark'); di.classList.toggle('hidden', dark); li.classList.toggle('hidden', !dark); }
+      paint();
+      themeToggle && themeToggle.addEventListener('click', () => {
+        const nowDark = !html.classList.contains('dark');
+        if (window.INEMA && INEMA.setPref) { INEMA.setPref('theme', nowDark ? 'inema-dark' : 'claro'); }
+        else { html.classList.toggle('dark'); localStorage.setItem('theme', nowDark ? 'dark' : 'light'); }
+        paint();
+      });
+      document.addEventListener('inema:progress', paint);
+    })();
+    function openModal(modalId) { const m = document.getElementById(modalId); if (m) { m.classList.remove('hidden'); document.body.style.overflow = 'hidden'; } }
+    function closeModal() { document.querySelectorAll('.modal').forEach(m => m.classList.add('hidden')); document.body.style.overflow = 'auto'; }
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+    function copyPrompt(btn) {
+      const box = btn.closest('[data-prompt]'); const pre = box && box.querySelector('pre');
+      const txt = pre ? pre.innerText : '';
+      function done(){ const o = btn.textContent; btn.textContent = '✓ Copiado'; setTimeout(()=>{ btn.textContent = o; }, 1500); }
+      function fallback(){ const ta = document.createElement('textarea'); ta.value = txt; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch(e){} ta.remove(); done(); }
+      if (navigator.clipboard && window.isSecureContext) { navigator.clipboard.writeText(txt).then(done).catch(fallback); } else { fallback(); }
+    }
+  </script>
+  <script src="../assets/learn.js"></script>
+  <script>
+    if (window.INEMA && typeof window.INEMA.init === 'function') { window.INEMA.init(); }
+    // Liga controles da nav (fora do <main>, onde o learn.js delega cliques) à API do learn.js
+    (function () {
+      function wire() {
+        if (!window.INEMA) return;
+        document.querySelectorAll('[data-inema-journey-open]').forEach(function (b) { if (b.__w) return; b.__w = 1; b.addEventListener('click', function () { INEMA.openJourney && INEMA.openJourney(); }); });
+        document.querySelectorAll('[data-inema-appearance-toggle]').forEach(function (b) { if (b.__w) return; b.__w = 1; b.addEventListener('click', function (e) { e.stopPropagation(); var sel = b.getAttribute('data-inema-appearance-toggle'); var p = sel ? document.querySelector(sel) : document.querySelector('[data-inema-appearance]'); if (!p) return; var open = p.getAttribute('data-open') === 'true'; p.setAttribute('data-open', open ? 'false' : 'true'); b.setAttribute('aria-expanded', open ? 'false' : 'true'); }); });
+        [['data-inema-set-theme','theme'],['data-inema-set-font','font'],['data-inema-set-fontscale','fontScale'],['data-inema-set-leading','leading'],['data-inema-set-accent','accent'],['data-inema-set-linewidth','lineWidth']].forEach(function (m) { document.querySelectorAll('[' + m[0] + ']').forEach(function (b) { if (b.__w) return; b.__w = 1; b.addEventListener('click', function () { INEMA.setPref && INEMA.setPref(m[1], b.getAttribute(m[0])); }); }); });
+        document.addEventListener('click', function (e) { var p = document.querySelector('[data-inema-appearance][data-open="true"]'); if (!p) return; var t = document.querySelector('[data-inema-appearance-toggle]'); if (!p.contains(e.target) && (!t || !t.contains(e.target))) { p.setAttribute('data-open', 'false'); t && t.setAttribute('aria-expanded', 'false'); } });
+      }
+      if (document.readyState !== 'loading') setTimeout(wire, 0); else document.addEventListener('DOMContentLoaded', wire);
+    })();
+  </script>
+</body>
+</html>

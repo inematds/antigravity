@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="inema-course" content="antigravity">
+  <title>Módulo 4.2 · Entregar e aplicar profissionalmente | AntiGravity</title>
+
+  <!-- ANTI-FOUC: bloqueante, ANTES do Tailwind e de qualquer <style>/<link> -->
+  <script>
+  (function () {
+    try {
+      var html = document.documentElement;
+      var DEF = { theme: 'inema-dark', font: 'inter', fontScale: 100, lineWidth: 68, leading: 1.7, accent: 'emerald' };
+      function clone(o) { var r = {}; for (var x in o) r[x] = o[x]; return r; }
+      var p = clone(DEF);
+      try {
+        var raw = localStorage.getItem('inema.prefs');
+        if (raw) {
+          var parsed = JSON.parse(raw);
+          if (parsed && typeof parsed === 'object') { for (var k in DEF) if (parsed[k] != null) p[k] = parsed[k]; }
+        } else {
+          var legacy = localStorage.getItem('theme');
+          if (legacy === 'light') p.theme = 'claro';
+          else if (legacy === 'dark') p.theme = 'inema-dark';
+        }
+      } catch (e) { p = clone(DEF); }
+      var THEMES = {
+        'inema-dark': { dark: true,  attr: null,        cs: 'dark'  },
+        'claro':      { dark: false, attr: null,        cs: 'light' },
+        'sepia':      { dark: false, attr: 'sepia',     cs: 'light' },
+        'foco':       { dark: null,  attr: 'foco',      cs: null    },
+        'contraste':  { dark: true,  attr: 'contraste', cs: 'dark'  }
+      };
+      var t = THEMES[p.theme] || THEMES['inema-dark'];
+      if (t.dark === true) html.classList.add('dark');
+      else if (t.dark === false) html.classList.remove('dark');
+      if (t.attr) html.setAttribute('data-theme', t.attr); else html.removeAttribute('data-theme');
+      html.style.colorScheme = (t.cs ? t.cs : (html.classList.contains('dark') ? 'dark' : 'light'));
+      html.setAttribute('data-font', p.font || 'inter');
+      html.setAttribute('data-accent', p.accent || 'emerald');
+      var s = html.style, scale = (+p.fontScale || 100);
+      s.setProperty('--inema-font-scale', (scale / 100).toString());
+      s.setProperty('font-size', scale + '%');
+      s.setProperty('--measure', (+p.lineWidth || 68) + 'ch');
+      s.setProperty('--lh-body', (+p.leading || 1.7).toString());
+      var fam = p.font === 'system' ? 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif'
+        : (p.font === 'leitura' ? '"Atkinson Hyperlegible", "Inter", system-ui, sans-serif' : '"Inter", system-ui, sans-serif');
+      s.setProperty('--font-body', fam);
+      var ACC = { emerald:[152,76,45], blue:[217,91,60], purple:[258,90,66], amber:[38,92,50], teal:[174,72,41], rose:[350,89,60] };
+      var a = ACC[p.accent] || ACC.emerald;
+      s.setProperty('--accent-h', a[0] + ''); s.setProperty('--accent-s', a[1] + '%'); s.setProperty('--accent-l', a[2] + '%');
+      s.setProperty('--accent', 'hsl(' + a[0] + ' ' + a[1] + '% ' + a[2] + '%)');
+    } catch (err) {
+      try { document.documentElement.classList.add('dark'); document.documentElement.style.colorScheme = 'dark'; } catch (e) {}
+    }
+  })();
+  </script>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: { extend: { colors: {
+        primary: '#FACC15',
+        dark: { 900: '#111827', 800: '#1f2937', 700: '#374151', 600: '#4b5563' }
+      } } }
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .dark body { background-color: #111827; }
+    .topic-explanation { display: none; }
+    .topic-explanation.active { display: block; }
+    [id] { scroll-margin-top: 4.5rem; }
+    .skip { position:absolute; left:-999px; top:0; background:#FACC15; color:#111827; padding:.5rem 1rem; border-radius:.5rem; z-index:100; }
+    .skip:focus { left:1rem; top:.5rem; }
+    :focus-visible { outline: 3px solid #38bdf8; outline-offset: 2px; }
+
+    /* Light mode - base */
+    html:not(.dark) body { background-color: #f8fafc; }
+    html:not(.dark) .bg-dark-900 { background-color: #ffffff; }
+    html:not(.dark) .bg-dark-800 { background-color: #f9fafb; }
+    html:not(.dark) .bg-dark-700 { background-color: #f3f4f6; }
+    html:not(.dark) .bg-dark-600 { background-color: #e5e7eb; }
+    html:not(.dark) .text-neutral-100 { color: #111827; }
+    html:not(.dark) .text-neutral-300 { color: #4b5563; }
+    html:not(.dark) .text-neutral-400 { color: #6b7280; }
+    html:not(.dark) .text-neutral-500 { color: #9ca3af; }
+    html:not(.dark) .border-dark-600 { border-color: #d1d5db; }
+    html:not(.dark) .border-dark-700 { border-color: #e5e7eb; }
+
+    /* Light mode - cores de acento (todas as trilhas) */
+    html:not(.dark) .text-emerald-400 { color: #059669; }
+    html:not(.dark) .bg-emerald-500\/20 { background-color: rgba(5,150,105,0.12); }
+    html:not(.dark) .bg-emerald-500\/10 { background-color: rgba(5,150,105,0.08); }
+    html:not(.dark) .border-emerald-500\/30 { border-color: rgba(5,150,105,0.25); }
+    html:not(.dark) .hover\:bg-emerald-500\/30:hover { background-color: rgba(5,150,105,0.18); }
+    html:not(.dark) .hover\:text-emerald-400:hover { color: #059669; }
+    html:not(.dark) .hover\:bg-emerald-500\/10:hover { background-color: rgba(5,150,105,0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-emerald-400 { color: #059669; }
+    html:not(.dark) .text-blue-400 { color: #2563eb; }
+    html:not(.dark) .bg-blue-500\/20 { background-color: rgba(37,99,235,0.12); }
+    html:not(.dark) .bg-blue-500\/10 { background-color: rgba(37,99,235,0.08); }
+    html:not(.dark) .border-blue-500\/30 { border-color: rgba(37,99,235,0.25); }
+    html:not(.dark) .hover\:bg-blue-500\/30:hover { background-color: rgba(37,99,235,0.18); }
+    html:not(.dark) .hover\:text-blue-400:hover { color: #2563eb; }
+    html:not(.dark) .hover\:bg-blue-500\/10:hover { background-color: rgba(37,99,235,0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-blue-400 { color: #2563eb; }
+    html:not(.dark) .text-purple-400 { color: #7c3aed; }
+    html:not(.dark) .bg-purple-500\/20 { background-color: rgba(124,58,237,0.12); }
+    html:not(.dark) .bg-purple-500\/10 { background-color: rgba(124,58,237,0.08); }
+    html:not(.dark) .border-purple-500\/30 { border-color: rgba(124,58,237,0.25); }
+    html:not(.dark) .hover\:bg-purple-500\/30:hover { background-color: rgba(124,58,237,0.18); }
+    html:not(.dark) .hover\:text-purple-400:hover { color: #7c3aed; }
+    html:not(.dark) .hover\:bg-purple-500\/10:hover { background-color: rgba(124,58,237,0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-purple-400 { color: #7c3aed; }
+    html:not(.dark) .text-amber-400 { color: #92400e; }
+    html:not(.dark) .bg-amber-500\/20 { background-color: rgba(217,119,6,0.12); }
+    html:not(.dark) .bg-amber-500\/10 { background-color: rgba(217,119,6,0.08); }
+    html:not(.dark) .border-amber-500\/30 { border-color: rgba(217,119,6,0.25); }
+    html:not(.dark) .hover\:bg-amber-500\/30:hover { background-color: rgba(217,119,6,0.18); }
+    html:not(.dark) .hover\:text-amber-400:hover { color: #92400e; }
+    html:not(.dark) .hover\:bg-amber-500\/10:hover { background-color: rgba(217,119,6,0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-amber-400 { color: #92400e; }
+    html:not(.dark) .text-teal-400 { color: #0d9488; }
+    html:not(.dark) .bg-teal-500\/20 { background-color: rgba(13,148,136,0.12); }
+    html:not(.dark) .bg-teal-500\/10 { background-color: rgba(13,148,136,0.08); }
+    html:not(.dark) .border-teal-500\/30 { border-color: rgba(13,148,136,0.25); }
+    html:not(.dark) .hover\:bg-teal-500\/30:hover { background-color: rgba(13,148,136,0.18); }
+    html:not(.dark) .hover\:text-teal-400:hover { color: #0d9488; }
+    html:not(.dark) .hover\:bg-teal-500\/10:hover { background-color: rgba(13,148,136,0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-teal-400 { color: #0d9488; }
+
+    /* Light mode - remove gradientes + cores especiais */
+    html:not(.dark) [class*="bg-gradient-to"] { background-image: none !important; }
+    html:not(.dark) .text-primary { color: #a16207; }
+    html:not(.dark) .bg-primary\/10 { background-color: rgba(161,98,7,0.08); }
+    html:not(.dark) .border-primary\/30 { border-color: rgba(161,98,7,0.25); }
+    html:not(.dark) .border-primary\/40 { border-color: rgba(161,98,7,0.25); }
+    html:not(.dark) .text-sky-400 { color: #0369a1; }
+    html:not(.dark) .text-yellow-400 { color: #a16207; }
+    html:not(.dark) .hover\:text-sky-300:hover { color: #0284c7; }
+    html:not(.dark) .hover\:text-yellow-300:hover { color: #854d0e; }
+    html:not(.dark) .bg-dark-900\/95 { background-color: rgba(255,255,255,0.95); }
+
+    /* Dark mode - bordas suavizadas */
+    .dark .border-dark-600 { border-color: #374151; }
+    .dark .divide-dark-600 > :not([hidden]) ~ :not([hidden]) { border-color: #374151; }
+
+    /* SVG diagramas: suavizar no claro */
+    html:not(.dark) svg[role="img"] { filter: saturate(0.82) brightness(0.96); }
+
+    .inema-toc-link.is-active { color: #fbbf24; font-weight: 600; }
+  </style>
+  <link rel="stylesheet" href="../assets/learn.css">
+
+  <script type="application/json" data-inema-manifest>
+  {
+    "course": "antigravity",
+    "tracks": [
+      { "n": "1", "title": "Fundamentos", "modules": [
+        { "id": "1-1", "title": "AntiGravity & o bolo de 3 camadas", "topics": 7 },
+        { "id": "1-2", "title": "No-code vs. apps com IA", "topics": 6 },
+        { "id": "1-3", "title": "Setup completo do ambiente", "topics": 8 }
+      ]},
+      { "n": "2", "title": "Construir & Publicar", "modules": [
+        { "id": "2-1", "title": "Seu primeiro app", "topics": 8 },
+        { "id": "2-2", "title": "Publicar e manter", "topics": 8 }
+      ]},
+      { "n": "3", "title": "Escalar a Produção", "modules": [
+        { "id": "3-1", "title": "Sistema de clonagem", "topics": 7 },
+        { "id": "3-2", "title": "GoHighLevel/WordPress", "topics": 6 }
+      ]},
+      { "n": "4", "title": "Profissionalizar", "modules": [
+        { "id": "4-1", "title": "Fluxo de trabalho profissional", "topics": 6 },
+        { "id": "4-2", "title": "Entregar e aplicar", "topics": 7 }
+      ]},
+      { "n": "5", "title": "Maestria & Biblioteca", "modules": [
+        { "id": "5-1", "title": "CODA & Claude Code", "topics": 7 },
+        { "id": "5-2", "title": "Biblioteca de Skills & Prompts", "topics": 7 }
+      ]}
+    ]
+  }
+  </script>
+</head>
+<body class="bg-dark-900 text-neutral-100 min-h-screen">
+  <a class="skip" href="#conteudo">Pular para o conteúdo</a>
+
+  <!-- NAVIGATION -->
+  <nav class="sticky top-0 z-50 bg-dark-900/95 backdrop-blur-sm border-b border-dark-600">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-14">
+        <div class="flex items-center space-x-4">
+          <a href="../index.html" class="flex items-center space-x-2 text-yellow-400 hover:text-yellow-300">
+            <span class="text-2xl">🛰️</span>
+            <span class="font-bold text-lg hidden sm:inline">AntiGravity</span>
+          </a>
+          <span class="text-neutral-600">|</span>
+          <a href="https://inema.club" target="_blank" class="text-sky-400 hover:text-sky-300 text-sm font-medium">INEMA.CLUB</a>
+        </div>
+        <div class="flex items-center space-x-1 sm:space-x-2">
+          <a href="../trilha1/index.html" class="px-2.5 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-emerald-400 hover:bg-emerald-500/10 transition-colors"><span class="sm:hidden">T1</span><span class="hidden sm:inline">Fundamentos</span></a>
+          <a href="../trilha2/index.html" class="px-2.5 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-blue-400 hover:bg-blue-500/10 transition-colors"><span class="sm:hidden">T2</span><span class="hidden sm:inline">Construir</span></a>
+          <a href="../trilha3/index.html" class="px-2.5 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-purple-400 hover:bg-purple-500/10 transition-colors"><span class="sm:hidden">T3</span><span class="hidden sm:inline">Escalar</span></a>
+          <a href="index.html" class="px-2.5 py-1.5 rounded-lg text-sm font-semibold text-amber-400 bg-amber-500/10"><span class="sm:hidden">T4</span><span class="hidden sm:inline">Profissional</span></a>
+          <a href="../trilha5/index.html" class="px-2.5 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-teal-400 hover:bg-teal-500/10 transition-colors"><span class="sm:hidden">T5</span><span class="hidden sm:inline">Maestria</span></a>
+          <div class="relative">
+            <button type="button" data-inema-appearance-toggle="[data-inema-appearance]" aria-expanded="false" title="Aparência e leitura" class="p-2 rounded-lg bg-dark-700 hover:bg-dark-600 transition-colors"><span aria-hidden="true">◑</span></button>
+            <div data-inema-appearance class="inema-appearance-pop" style="right:0">
+              <div><p class="text-xs text-neutral-400 mb-1">Tema</p><div class="inema-segment flex flex-wrap gap-1">
+                <button data-inema-set-theme="inema-dark" class="px-2 py-1 text-xs rounded bg-dark-700">Escuro</button>
+                <button data-inema-set-theme="claro" class="px-2 py-1 text-xs rounded bg-dark-700">Claro</button>
+                <button data-inema-set-theme="sepia" class="px-2 py-1 text-xs rounded bg-dark-700">Sépia</button>
+                <button data-inema-set-theme="foco" class="px-2 py-1 text-xs rounded bg-dark-700">Foco</button>
+                <button data-inema-set-theme="contraste" class="px-2 py-1 text-xs rounded bg-dark-700">Alto contraste</button>
+              </div></div>
+              <div><p class="text-xs text-neutral-400 mb-1">Fonte</p><div class="inema-segment flex gap-1">
+                <button data-inema-set-font="inter" class="px-2 py-1 text-xs rounded bg-dark-700">Inter</button>
+                <button data-inema-set-font="system" class="px-2 py-1 text-xs rounded bg-dark-700">Sistema</button>
+                <button data-inema-set-font="leitura" class="px-2 py-1 text-xs rounded bg-dark-700">Leitura</button>
+              </div></div>
+              <div><p class="text-xs text-neutral-400 mb-1">Tamanho</p><div class="inema-segment flex gap-1">
+                <button data-inema-set-fontscale="100" class="px-2 py-1 text-xs rounded bg-dark-700">A</button>
+                <button data-inema-set-fontscale="112" class="px-2 py-1 text-xs rounded bg-dark-700">A+</button>
+                <button data-inema-set-fontscale="125" class="px-2 py-1 text-xs rounded bg-dark-700">A++</button>
+              </div></div>
+              <div><p class="text-xs text-neutral-400 mb-1">Entrelinha</p><div class="inema-segment flex gap-1">
+                <button data-inema-set-leading="1.45" class="px-2 py-1 text-xs rounded bg-dark-700">Compacto</button>
+                <button data-inema-set-leading="1.7" class="px-2 py-1 text-xs rounded bg-dark-700">Confortável</button>
+              </div></div>
+            </div>
+          </div>
+          <button type="button" data-inema-journey-open title="Minha jornada" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-sm text-neutral-300 hover:text-neutral-100 hover:bg-dark-700 transition-colors">
+            <span aria-hidden="true">◷</span><span class="hidden sm:inline">Jornada</span>
+            <span class="inema-journey-badge" data-inema-journey-badge data-count="0"></span>
+          </button>
+          <button id="theme-toggle" title="Alternar claro/escuro" class="p-2 rounded-lg bg-dark-700 hover:bg-dark-600 transition-colors">
+            <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5 text-neutral-300" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+            <svg id="theme-toggle-light-icon" class="hidden w-5 h-5 text-neutral-300" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- BREADCRUMB -->
+  <nav class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+    <div class="flex items-center space-x-2 text-sm text-neutral-400">
+      <a href="../index.html" class="hover:text-amber-400">Início</a><span>/</span>
+      <a href="index.html" class="hover:text-amber-400">Trilha 4</a><span>/</span>
+      <span class="text-amber-400">Módulo 4.2</span>
+    </div>
+  </nav>
+
+  <!-- HEADER -->
+  <header class="bg-gradient-to-br from-amber-900/30 via-dark-800 to-dark-800 py-12 border-b border-dark-600">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <span class="inline-block px-3 py-1 bg-amber-500/20 text-amber-400 text-xs font-semibold rounded-full mb-4">MÓDULO 4.2</span>
+      <h1 class="text-3xl sm:text-4xl font-bold mb-4">📦 Entregar e aplicar profissionalmente</h1>
+      <p class="text-lg text-neutral-400 max-w-3xl">A construção terminou; agora vem a parte que separa o amador do profissional: o que você entrega vira produto, com modelo de posse claro, um checklist de qualidade e segurança rodado com rigor, e monitoramento que prova que tudo funciona.</p>
+      <div class="grid grid-cols-4 gap-4 mt-8 max-w-2xl">
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600"><div class="text-xl font-bold text-amber-400">7</div><div class="text-xs text-neutral-400">Tópicos</div></div>
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600"><div class="text-xl font-bold text-amber-400">65</div><div class="text-xs text-neutral-400">Minutos</div></div>
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600"><div class="text-xl font-bold text-amber-400">Intermediário</div><div class="text-xs text-neutral-400">Nível</div></div>
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600"><div class="text-xl font-bold text-amber-400">Entrega</div><div class="text-xs text-neutral-400">Tipo</div></div>
+      </div>
+    </div>
+  </header>
+
+  <main id="conteudo" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="lg:grid lg:grid-cols-[230px_minmax(0,1fr)] lg:gap-10">
+
+      <!-- TOC -->
+      <nav data-inema-toc aria-label="Índice da página" class="hidden lg:block sticky top-20 self-start">
+        <p class="text-sm text-neutral-400 mb-2">Seção <span data-inema-section-counter>1 de 7</span></p>
+        <ol class="space-y-1 text-sm">
+          <li><a href="#topico-1" class="inema-toc-link text-neutral-400 hover:text-amber-400">1. De automação a software</a></li>
+          <li><a href="#topico-2" class="inema-toc-link text-neutral-400 hover:text-amber-400">2. Modelos de posse</a></li>
+          <li><a href="#topico-3" class="inema-toc-link text-neutral-400 hover:text-amber-400">3. Parceiro de transformação</a></li>
+          <li><a href="#topico-4" class="inema-toc-link text-neutral-400 hover:text-amber-400">4. O Pre-Flight Checklist</a></li>
+          <li><a href="#topico-5" class="inema-toc-link text-neutral-400 hover:text-amber-400">5. Segurança & compliance</a></li>
+          <li><a href="#topico-6" class="inema-toc-link text-neutral-400 hover:text-amber-400">6. Context rot</a></li>
+          <li><a href="#topico-7" class="inema-toc-link text-neutral-400 hover:text-amber-400">7. Monitoramento & entrega</a></li>
+        </ol>
+        <div class="mt-4 pt-4 border-t border-dark-600">
+          <div data-inema-meter="modulo:4-2" class="text-sm"><span class="text-neutral-400" data-inema-meter-frac>0 de 7</span> · <span class="text-amber-400 font-bold" data-inema-meter-pct>0%</span><div class="inema-bar h-1.5 mt-2 rounded-full bg-dark-600 overflow-hidden"><div class="inema-bar__fill h-full rounded-full bg-amber-500" data-inema-meter-fill style="width:0%"></div></div></div>
+        </div>
+      </nav>
+
+      <article data-inema-module="4-2" data-inema-track="4" class="min-w-0">
+
+        <!-- TÓPICO 1 -->
+        <section id="topico-1" data-inema-topic="modulo-4-2#topico-1" class="mb-16">
+          <div class="flex items-center justify-between mb-6 gap-3">
+            <div class="flex items-center space-x-4">
+              <span class="flex items-center justify-center w-12 h-12 rounded-full bg-amber-500/20 text-amber-400 font-bold text-xl flex-shrink-0">1</span>
+              <h2 class="text-2xl font-bold">🔁 De automação a software</h2>
+            </div>
+            <button type="button" data-inema-doubt-toggle aria-pressed="false" title="Marcar dúvida neste tópico" class="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm flex-shrink-0"><span aria-hidden="true">?</span><span>Dúvida</span></button>
+          </div>
+
+          <p data-inema-block="m42-t1-p1" class="text-neutral-300 mb-6 leading-relaxed">Existe um salto de valor enorme quando o que você entrega <strong class="text-amber-400">deixa de ser uma automação avulsa e vira um software de verdade</strong>. A automação resolve uma tarefa; o software <strong>É o produto</strong> — tem interface, lógica própria e vida independente.</p>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div class="bg-dark-800 rounded-xl border border-dark-600 p-6">
+              <h4 class="font-bold text-neutral-300 mb-4">🔧 Automação avulsa</h4>
+              <ul class="space-y-3 text-neutral-300 text-sm">
+                <li class="flex items-start space-x-2"><span class="text-neutral-500">•</span><span>Resolve uma tarefa específica</span></li>
+                <li class="flex items-start space-x-2"><span class="text-neutral-500">•</span><span>Vive dentro de outra ferramenta</span></li>
+                <li class="flex items-start space-x-2"><span class="text-neutral-500">•</span><span>Difícil de cobrar como produto</span></li>
+              </ul>
+            </div>
+            <div class="bg-gradient-to-br from-amber-900/30 to-dark-800 rounded-xl border border-amber-500/30 p-6">
+              <h4 class="font-bold text-amber-400 mb-4">📦 Software como produto</h4>
+              <ul class="space-y-3 text-neutral-300 text-sm">
+                <li class="flex items-start space-x-2"><span class="text-amber-400">✓</span><span>Tem interface e identidade próprias</span></li>
+                <li class="flex items-start space-x-2"><span class="text-amber-400">✓</span><span>Funciona sozinho, é um ativo</span></li>
+                <li class="flex items-start space-x-2"><span class="text-amber-400">✓</span><span>Pode ser licenciado, vendido, mantido</span></li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- SVG -->
+          <div class="rounded-2xl border border-amber-500/30 bg-dark-900/40 p-3 sm:p-4 mb-6 overflow-hidden">
+            <svg viewBox="0 0 1000 200" class="w-full h-auto" role="img" aria-label="A evolução: uma automação avulsa se transforma em um software que é o produto, com mais valor e independência">
+              <defs>
+                <linearGradient id="m42-grad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fbbf24"/><stop offset="1" stop-color="#f59e0b"/></linearGradient>
+                <filter id="m42-glow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="1.8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+                <pattern id="m42-grid" width="32" height="32" patternUnits="userSpaceOnUse"><circle cx="1.3" cy="1.3" r="1.3" fill="#f59e0b" opacity="0.12"/></pattern>
+                <marker id="m42-ah" markerWidth="9" markerHeight="9" refX="6.5" refY="4.5" orient="auto"><path d="M0,0 L8,4.5 L0,9 L2.4,4.5 Z" fill="#fbbf24"/></marker>
+              </defs>
+              <rect x="0" y="0" width="1000" height="200" fill="url(#m42-grid)"/>
+              <rect x="80" y="74" width="220" height="56" rx="12" fill="#1f1604" stroke="#fbbf24" stroke-width="1.8" opacity="0.85"/>
+              <text x="190" y="100" text-anchor="middle" fill="#fde68a" font-family="Inter,sans-serif" font-weight="600" font-size="15">Automação avulsa</text>
+              <text x="190" y="120" text-anchor="middle" fill="#fcd34d" font-family="Inter,sans-serif" font-size="12">resolve 1 tarefa</text>
+              <g filter="url(#m42-glow)"><rect x="700" y="66" width="220" height="72" rx="14" fill="#1f1604" stroke="url(#m42-grad)" stroke-width="2.5"/></g>
+              <text x="810" y="96" text-anchor="middle" fill="#fbbf24" font-family="Inter,sans-serif" font-weight="700" font-size="16">Software = produto</text>
+              <text x="810" y="118" text-anchor="middle" fill="#fde68a" font-family="Inter,sans-serif" font-size="12">interface · ativo · valor</text>
+              <g fill="none" stroke="#fbbf24" stroke-width="2.5" opacity="0.65"><path d="M300,102 L700,102" marker-end="url(#m42-ah)"/></g>
+              <text x="500" y="86" text-anchor="middle" fill="#fbbf24" font-family="Inter,sans-serif" font-size="13" font-weight="600">vira</text>
+              <text x="500" y="130" text-anchor="middle" fill="#9ca3af" font-family="Inter,sans-serif" font-size="12">mais valor + independência</text>
+            </svg>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-amber-400 font-bold mb-1">Tarefa</div><p class="text-xs text-neutral-400">automação</p></div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-amber-400 font-bold mb-1">Produto</div><p class="text-xs text-neutral-400">software</p></div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-amber-400 font-bold mb-1">Ativo</div><p class="text-xs text-neutral-400">vida própria</p></div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-amber-400 font-bold mb-1">Valor</div><p class="text-xs text-neutral-400">muda o jogo</p></div>
+          </div>
+
+          <div class="flex justify-start mt-6">
+            <button type="button" data-inema-read-toggle aria-pressed="false">
+              <span class="inema-ico-todo" aria-hidden="true">○</span><span class="inema-ico-done" aria-hidden="true">●</span><span class="inema-label-todo">Marcar como lido</span><span class="inema-label-done">Lido</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- TÓPICO 2 -->
+        <section id="topico-2" data-inema-topic="modulo-4-2#topico-2" class="mb-16">
+          <div class="flex items-center justify-between mb-6 gap-3">
+            <div class="flex items-center space-x-4">
+              <span class="flex items-center justify-center w-12 h-12 rounded-full bg-amber-500/20 text-amber-400 font-bold text-xl flex-shrink-0">2</span>
+              <h2 class="text-2xl font-bold">🤝 Modelos de posse</h2>
+            </div>
+            <button type="button" data-inema-doubt-toggle aria-pressed="false" title="Marcar dúvida neste tópico" class="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm flex-shrink-0"><span aria-hidden="true">?</span><span>Dúvida</span></button>
+          </div>
+
+          <p data-inema-block="m42-t2-p1" class="text-neutral-300 mb-6 leading-relaxed">Quando você entrega um software a alguém, precisa definir <strong class="text-amber-400">quem é o dono</strong> e <strong>quem cuida da manutenção</strong>. Existem três modelos clássicos — cada um com seu equilíbrio de receita, responsabilidade e expectativa.</p>
+
+          <div class="space-y-6 mb-6">
+            <div class="flex items-start space-x-4">
+              <div class="flex-shrink-0 w-12 h-12 rounded-full bg-amber-500/20 flex items-center justify-center"><span class="text-amber-400 font-bold">1</span></div>
+              <div class="flex-1 bg-dark-800 rounded-xl p-6 border border-dark-600">
+                <h4 class="font-semibold text-white mb-2">Você é dono, o cliente licencia</h4>
+                <p class="text-sm text-neutral-400 mb-2">Receita recorrente</p>
+                <p class="text-neutral-300 text-sm">O cliente paga para usar; você mantém tudo e segue como dono. Renda previsível, mas você carrega a operação.</p>
+              </div>
+            </div>
+            <div class="flex items-start space-x-4">
+              <div class="flex-shrink-0 w-12 h-12 rounded-full bg-amber-500/20 flex items-center justify-center"><span class="text-amber-400 font-bold">2</span></div>
+              <div class="flex-1 bg-dark-800 rounded-xl p-6 border border-dark-600">
+                <h4 class="font-semibold text-white mb-2">Cliente é dono, entrega total</h4>
+                <p class="text-sm text-neutral-400 mb-2">README detalhado, sem suporte</p>
+                <p class="text-neutral-300 text-sm">Você entrega o código completo com documentação e encerra. Simples e fechado, mas sem relação contínua.</p>
+              </div>
+            </div>
+            <div class="flex items-start space-x-4">
+              <div class="flex-shrink-0 w-12 h-12 rounded-full bg-amber-500/20 flex items-center justify-center"><span class="text-amber-400 font-bold">★</span></div>
+              <div class="flex-1 bg-gradient-to-br from-amber-900/30 to-dark-800 rounded-xl p-6 border border-amber-500/30">
+                <h4 class="font-semibold text-amber-400 mb-2">Cliente é dono + janela de suporte (preferido)</h4>
+                <p class="text-sm text-neutral-400 mb-2">Suporte de 30 a 90 dias</p>
+                <p class="text-neutral-300 text-sm">O cliente fica dono, mas você mantém e corrige por um período combinado. Equilíbrio entre confiança, responsabilidade limitada e uma boa relação.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto mb-6">
+            <table class="w-full text-sm border border-dark-600 rounded-lg overflow-hidden">
+              <thead class="bg-dark-700/50 text-neutral-300"><tr><th class="text-left p-3">Modelo</th><th class="text-left p-3">Dono</th><th class="text-left p-3">Suporte</th><th class="text-left p-3">Receita</th></tr></thead>
+              <tbody class="divide-y divide-dark-600 text-neutral-400">
+                <tr><td class="p-3 text-neutral-300">1. Você licencia</td><td class="p-3">você</td><td class="p-3">contínuo</td><td class="p-3 text-amber-400">recorrente</td></tr>
+                <tr><td class="p-3 text-neutral-300">2. Entrega total</td><td class="p-3">cliente</td><td class="p-3">nenhum</td><td class="p-3">único</td></tr>
+                <tr><td class="p-3 text-amber-400">3. Dono + janela ★</td><td class="p-3">cliente</td><td class="p-3 text-amber-400">30–90 dias</td><td class="p-3">projeto + extra</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-amber-400 font-bold mb-1">Licença</div><p class="text-xs text-neutral-400">você é dono</p></div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-amber-400 font-bold mb-1">Entrega total</div><p class="text-xs text-neutral-400">README, sem suporte</p></div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-amber-400 font-bold mb-1">30–90 dias</div><p class="text-xs text-neutral-400">o preferido</p></div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-amber-400 font-bold mb-1">Equilíbrio</div><p class="text-xs text-neutral-400">confiança + limite</p></div>
+          </div>
+
+          <div class="flex justify-start mt-6">
+            <button type="button" data-inema-read-toggle aria-pressed="false">
+              <span class="inema-ico-todo" aria-hidden="true">○</span><span class="inema-ico-done" aria-hidden="true">●</span><span class="inema-label-todo">Marcar como lido</span><span class="inema-label-done">Lido</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- TÓPICO 3 -->
+        <section id="topico-3" data-inema-topic="modulo-4-2#topico-3" class="mb-16">
+          <div class="flex items-center justify-between mb-6 gap-3">
+            <div class="flex items-center space-x-4">
+              <span class="flex items-center justify-center w-12 h-12 rounded-full bg-amber-500/20 text-amber-400 font-bold text-xl flex-shrink-0">3</span>
+              <h2 class="text-2xl font-bold">🧠 Parceiro de transformação</h2>
+            </div>
+            <button type="button" data-inema-doubt-toggle aria-pressed="false" title="Marcar dúvida neste tópico" class="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm flex-shrink-0"><span aria-hidden="true">?</span><span>Dúvida</span></button>
+          </div>
+
+          <p data-inema-block="m42-t3-p1" class="text-neutral-300 mb-6 leading-relaxed">A forma como você se posiciona muda tudo. Em vez de "freelancer de bico" que faz uma entrega e some, posicione-se como <strong class="text-amber-400">parceiro de transformação de longo prazo</strong> — algo como um "diretor de IA" fracionário que ajuda a organização a evoluir.</p>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div class="bg-red-900/20 rounded-xl border border-red-500/30 p-6">
+              <h4 class="font-bold text-red-400 mb-4">✗ Freelancer de bico</h4>
+              <ul class="space-y-3 text-neutral-300 text-sm">
+                <li class="flex items-start space-x-2"><span class="text-red-400">✗</span><span>Faz a entrega e desaparece</span></li>
+                <li class="flex items-start space-x-2"><span class="text-red-400">✗</span><span>Relação transacional, sempre recomeçando</span></li>
+                <li class="flex items-start space-x-2"><span class="text-red-400">✗</span><span>Receita imprevisível, projeto a projeto</span></li>
+              </ul>
+            </div>
+            <div class="bg-amber-900/20 rounded-xl border border-amber-500/30 p-6">
+              <h4 class="font-bold text-amber-400 mb-4">✓ Parceiro de transformação</h4>
+              <ul class="space-y-3 text-neutral-300 text-sm">
+                <li class="flex items-start space-x-2"><span class="text-amber-400">✓</span><span>Acompanha a evolução ao longo do tempo</span></li>
+                <li class="flex items-start space-x-2"><span class="text-amber-400">✓</span><span>Vira referência interna em IA</span></li>
+                <li class="flex items-start space-x-2"><span class="text-amber-400">✓</span><span>Relação e receita recorrentes</span></li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="bg-primary/10 rounded-xl border border-primary/30 p-6 mb-6">
+            <h3 class="text-lg font-semibold text-primary mb-3 flex items-center"><span class="mr-2">🎖️</span> O "diretor de IA" fracionário</h3>
+            <p class="text-neutral-300">É como ter um cargo de liderança em IA, mas em meio período e para várias organizações. Você não entrega só software: entrega <strong>direção, critério e continuidade</strong> — e isso vale muito mais do que um projeto isolado.</p>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-amber-400 font-bold mb-1">Longo prazo</div><p class="text-xs text-neutral-400">não bico</p></div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-amber-400 font-bold mb-1">Direção</div><p class="text-xs text-neutral-400">diretor de IA</p></div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-amber-400 font-bold mb-1">Recorrência</div><p class="text-xs text-neutral-400">relação que dura</p></div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-amber-400 font-bold mb-1">Posicionamento</div><p class="text-xs text-neutral-400">parceiro, não fornecedor</p></div>
+          </div>
+
+          <div class="flex justify-start mt-6">
+            <button type="button" data-inema-read-toggle aria-pressed="false">
+              <span class="inema-ico-todo" aria-hidden="true">○</span><span class="inema-ico-done" aria-hidden="true">●</span><span class="inema-label-todo">Marcar como lido</span><span class="inema-label-done">Lido</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- TÓPICO 4 -->
+        <section id="topico-4" data-inema-topic="modulo-4-2#topico-4" class="mb-16">
+          <div class="flex items-center justify-between mb-6 gap-3">
+            <div class="flex items-center space-x-4">
+              <span class="flex items-center justify-center w-12 h-12 rounded-full bg-amber-500/20 text-amber-400 font-bold text-xl flex-shrink-0">4</span>
+              <h2 class="text-2xl font-bold">✅ O Pre-Flight Checklist (QA & stress test)</h2>
+            </div>
+            <button type="button" data-inema-doubt-toggle aria-pressed="false" title="Marcar dúvida neste tópico" class="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm flex-shrink-0"><span aria-hidden="true">?</span><span>Dúvida</span></button>
+          </div>
+
+          <p data-inema-block="m42-t4-p1" class="text-neutral-300 mb-6 leading-relaxed">Antes de qualquer entrega, rode o <strong class="text-amber-400">Pre-Flight Checklist</strong>: você pede para a IA assumir o papel de <strong>engenheiro de QA sênior + auditor de segurança</strong> e percorrer o projeto por fases, classificando cada achado como <strong class="text-red-400">Crítico</strong>, <strong class="text-amber-400">Aviso</strong> ou <strong class="text-emerald-400">OK</strong>.</p>
+
+          <div class="bg-gradient-to-br from-amber-900/30 to-dark-800 rounded-xl border border-amber-500/30 p-6 mb-6">
+            <h3 class="text-lg font-semibold text-amber-400 mb-4 flex items-center"><span class="mr-2">🛫</span> As fases do checklist</h3>
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-sm text-neutral-300">
+              <div class="flex items-center space-x-2"><span class="text-amber-400">→</span><span>Descoberta</span></div>
+              <div class="flex items-center space-x-2"><span class="text-amber-400">→</span><span>Dependências</span></div>
+              <div class="flex items-center space-x-2"><span class="text-amber-400">→</span><span>Segurança</span></div>
+              <div class="flex items-center space-x-2"><span class="text-amber-400">→</span><span>Autenticação</span></div>
+              <div class="flex items-center space-x-2"><span class="text-amber-400">→</span><span>Validação de entrada</span></div>
+              <div class="flex items-center space-x-2"><span class="text-amber-400">→</span><span>Proteção de dados</span></div>
+              <div class="flex items-center space-x-2"><span class="text-amber-400">→</span><span>API</span></div>
+              <div class="flex items-center space-x-2"><span class="text-amber-400">→</span><span>Infraestrutura</span></div>
+              <div class="flex items-center space-x-2"><span class="text-amber-400">→</span><span>Testes</span></div>
+              <div class="flex items-center space-x-2"><span class="text-amber-400">→</span><span>Compliance</span></div>
+              <div class="flex items-center space-x-2"><span class="text-amber-400">→</span><span>Acessibilidade</span></div>
+              <div class="flex items-center space-x-2"><span class="text-amber-400">→</span><span>Deploy</span></div>
+              <div class="flex items-center space-x-2"><span class="text-amber-400">→</span><span>Monitoramento</span></div>
+              <div class="flex items-center space-x-2"><span class="text-amber-400">→</span><span>Backup</span></div>
+              <div class="flex items-center space-x-2"><span class="text-amber-400">→</span><span>Prontidão de entrega</span></div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+            <div class="bg-red-900/20 rounded-xl border border-red-500/30 p-5"><div class="text-red-400 font-bold mb-1">Crítico</div><p class="text-xs text-neutral-400">trava a entrega; corrija antes de tudo</p></div>
+            <div class="bg-amber-900/20 rounded-xl border border-amber-500/30 p-5"><div class="text-amber-400 font-bold mb-1">Aviso</div><p class="text-xs text-neutral-400">não bloqueia, mas precisa de atenção</p></div>
+            <div class="bg-emerald-900/20 rounded-xl border border-emerald-500/30 p-5"><div class="text-emerald-400 font-bold mb-1">OK</div><p class="text-xs text-neutral-400">passou; está pronto para essa fase</p></div>
+          </div>
+
+          <div class="bg-primary/10 rounded-xl border border-primary/30 p-6 mb-6">
+            <h3 class="text-lg font-semibold text-primary mb-3 flex items-center"><span class="mr-2">📚</span> Checklist completo</h3>
+            <p class="text-neutral-300">A versão completa do Pre-Flight Checklist, com todas as perguntas de cada fase, está na <strong>Biblioteca</strong> — na Trilha 5. Aqui o objetivo é entender a lógica: fases + classificação Crítico/Aviso/OK.</p>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-amber-400 font-bold mb-1">QA sênior</div><p class="text-xs text-neutral-400">papel da IA</p></div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-amber-400 font-bold mb-1">Por fases</div><p class="text-xs text-neutral-400">cobertura ampla</p></div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-amber-400 font-bold mb-1">Classifica</div><p class="text-xs text-neutral-400">Crítico/Aviso/OK</p></div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-amber-400 font-bold mb-1">Pré-entrega</div><p class="text-xs text-neutral-400">antes de entregar</p></div>
+          </div>
+
+          <div class="flex justify-start mt-6">
+            <button type="button" data-inema-read-toggle aria-pressed="false">
+              <span class="inema-ico-todo" aria-hidden="true">○</span><span class="inema-ico-done" aria-hidden="true">●</span><span class="inema-label-todo">Marcar como lido</span><span class="inema-label-done">Lido</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- TÓPICO 5 -->
+        <section id="topico-5" data-inema-topic="modulo-4-2#topico-5" class="mb-16">
+          <div class="flex items-center justify-between mb-6 gap-3">
+            <div class="flex items-center space-x-4">
+              <span class="flex items-center justify-center w-12 h-12 rounded-full bg-amber-500/20 text-amber-400 font-bold text-xl flex-shrink-0">5</span>
+              <h2 class="text-2xl font-bold">🔒 Segurança & compliance</h2>
+            </div>
+            <button type="button" data-inema-doubt-toggle aria-pressed="false" title="Marcar dúvida neste tópico" class="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm flex-shrink-0"><span aria-hidden="true">?</span><span>Dúvida</span></button>
+          </div>
+
+          <p data-inema-block="m42-t5-p1" class="text-neutral-300 mb-6 leading-relaxed">Três frentes de segurança não podem faltar em nenhuma entrega: <strong class="text-amber-400">proteger segredos</strong>, <strong class="text-amber-400">auditar dependências</strong> e <strong class="text-amber-400">respeitar a privacidade</strong>. Um deslize aqui derruba qualquer trabalho bem feito.</p>
+
+          <div class="space-y-6 mb-6">
+            <div class="flex items-start space-x-4">
+              <div class="flex-shrink-0 w-12 h-12 rounded-full bg-amber-500/20 flex items-center justify-center"><span class="text-amber-400 font-bold">🔑</span></div>
+              <div class="flex-1 bg-dark-800 rounded-xl p-6 border border-dark-600">
+                <h4 class="font-semibold text-white mb-2">Proteja os segredos</h4>
+                <p class="text-neutral-300 text-sm">Nunca deixe chaves de API ou senhas no código. Use variáveis de ambiente e mantenha-as fora do repositório.</p>
+              </div>
+            </div>
+            <div class="flex items-start space-x-4">
+              <div class="flex-shrink-0 w-12 h-12 rounded-full bg-amber-500/20 flex items-center justify-center"><span class="text-amber-400 font-bold">📦</span></div>
+              <div class="flex-1 bg-dark-800 rounded-xl p-6 border border-dark-600">
+                <h4 class="font-semibold text-white mb-2">Audite dependências</h4>
+                <p class="text-neutral-300 text-sm">Bibliotecas desatualizadas abrem brechas conhecidas. Verifique e atualize antes de entregar.</p>
+              </div>
+            </div>
+            <div class="flex items-start space-x-4">
+              <div class="flex-shrink-0 w-12 h-12 rounded-full bg-amber-500/20 flex items-center justify-center"><span class="text-amber-400 font-bold">⚖️</span></div>
+              <div class="flex-1 bg-gradient-to-br from-amber-900/30 to-dark-800 rounded-xl p-6 border border-amber-500/30">
+                <h4 class="font-semibold text-amber-400 mb-2">Considere privacidade (LGPD/GDPR)</h4>
+                <p class="text-neutral-300 text-sm">Se o app lida com dados de pessoas, pense em consentimento, retenção e acesso — regras como LGPD e GDPR existem por um motivo.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-red-900/20 rounded-xl border border-red-500/30 p-6 mb-6">
+            <h3 class="text-lg font-semibold text-red-400 mb-3 flex items-center"><span class="mr-2">⚠️</span> O custo de ignorar</h3>
+            <p class="text-neutral-300">Uma chave vazada vira conta gigante ou dado roubado. Uma dependência velha vira porta de entrada. Uma multa de compliance vira prejuízo. Segurança não é opcional na entrega profissional.</p>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-amber-400 font-bold mb-1">Segredos</div><p class="text-xs text-neutral-400">fora do código</p></div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-amber-400 font-bold mb-1">Dependências</div><p class="text-xs text-neutral-400">audite e atualize</p></div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-amber-400 font-bold mb-1">Privacidade</div><p class="text-xs text-neutral-400">LGPD/GDPR</p></div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-amber-400 font-bold mb-1">Não opcional</div><p class="text-xs text-neutral-400">parte da entrega</p></div>
+          </div>
+
+          <div class="flex justify-start mt-6">
+            <button type="button" data-inema-read-toggle aria-pressed="false">
+              <span class="inema-ico-todo" aria-hidden="true">○</span><span class="inema-ico-done" aria-hidden="true">●</span><span class="inema-label-todo">Marcar como lido</span><span class="inema-label-done">Lido</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- TÓPICO 6 -->
+        <section id="topico-6" data-inema-topic="modulo-4-2#topico-6" class="mb-16">
+          <div class="flex items-center justify-between mb-6 gap-3">
+            <div class="flex items-center space-x-4">
+              <span class="flex items-center justify-center w-12 h-12 rounded-full bg-amber-500/20 text-amber-400 font-bold text-xl flex-shrink-0">6</span>
+              <h2 class="text-2xl font-bold">🧪 Context rot</h2>
+            </div>
+            <button type="button" data-inema-doubt-toggle aria-pressed="false" title="Marcar dúvida neste tópico" class="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm flex-shrink-0"><span aria-hidden="true">?</span><span>Dúvida</span></button>
+          </div>
+
+          <p data-inema-block="m42-t6-p1" class="text-neutral-300 mb-6 leading-relaxed">Uma conversa longa e cheia faz o contexto da IA <strong class="text-amber-400">"apodrecer"</strong> — é o <strong>context rot</strong>. Por isso, rode o QA numa <strong class="text-amber-400">janela nova e limpa</strong>, sem o histórico da construção atrapalhando o julgamento.</p>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div class="bg-red-900/20 rounded-xl border border-red-500/30 p-6">
+              <h4 class="font-bold text-red-400 mb-4">✗ Janela poluída</h4>
+              <ul class="space-y-3 text-neutral-300 text-sm">
+                <li class="flex items-start space-x-2"><span class="text-red-400">✗</span><span>Mesma conversa onde você construiu tudo</span></li>
+                <li class="flex items-start space-x-2"><span class="text-red-400">✗</span><span>A IA já "torce" pelo próprio código</span></li>
+                <li class="flex items-start space-x-2"><span class="text-red-400">✗</span><span>Contexto cheio deixa passar problemas</span></li>
+              </ul>
+            </div>
+            <div class="bg-amber-900/20 rounded-xl border border-amber-500/30 p-6">
+              <h4 class="font-bold text-amber-400 mb-4">✓ Janela nova e limpa</h4>
+              <ul class="space-y-3 text-neutral-300 text-sm">
+                <li class="flex items-start space-x-2"><span class="text-amber-400">✓</span><span>Conversa zerada, olhar fresco e cético</span></li>
+                <li class="flex items-start space-x-2"><span class="text-amber-400">✓</span><span>Rode 2 vezes para cobrir mais</span></li>
+                <li class="flex items-start space-x-2"><span class="text-amber-400">✓</span><span>Idealmente com modelos diferentes</span></li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="bg-primary/10 rounded-xl border border-primary/30 p-6 mb-6">
+            <h3 class="text-lg font-semibold text-primary mb-3 flex items-center"><span class="mr-2">🔁</span> Dupla checagem</h3>
+            <p class="text-neutral-300">Dois modelos diferentes enxergam coisas diferentes. Rodar o checklist <strong>duas vezes, em janelas limpas e com modelos distintos</strong>, é como ter dois revisores independentes — muito mais difícil algo crítico escapar.</p>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-amber-400 font-bold mb-1">Context rot</div><p class="text-xs text-neutral-400">contexto apodrece</p></div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-amber-400 font-bold mb-1">Janela limpa</div><p class="text-xs text-neutral-400">olhar fresco</p></div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-amber-400 font-bold mb-1">2 vezes</div><p class="text-xs text-neutral-400">cobre mais</p></div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-amber-400 font-bold mb-1">Modelos diff.</div><p class="text-xs text-neutral-400">dois revisores</p></div>
+          </div>
+
+          <div class="flex justify-start mt-6">
+            <button type="button" data-inema-read-toggle aria-pressed="false">
+              <span class="inema-ico-todo" aria-hidden="true">○</span><span class="inema-ico-done" aria-hidden="true">●</span><span class="inema-label-todo">Marcar como lido</span><span class="inema-label-done">Lido</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- TÓPICO 7 -->
+        <section id="topico-7" data-inema-topic="modulo-4-2#topico-7" class="mb-16">
+          <div class="flex items-center justify-between mb-6 gap-3">
+            <div class="flex items-center space-x-4">
+              <span class="flex items-center justify-center w-12 h-12 rounded-full bg-amber-500/20 text-amber-400 font-bold text-xl flex-shrink-0">7</span>
+              <h2 class="text-2xl font-bold">📡 Monitoramento & entrega</h2>
+            </div>
+            <button type="button" data-inema-doubt-toggle aria-pressed="false" title="Marcar dúvida neste tópico" class="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm flex-shrink-0"><span aria-hidden="true">?</span><span>Dúvida</span></button>
+          </div>
+
+          <p data-inema-block="m42-t7-p1" class="text-neutral-300 mb-6 leading-relaxed">O lema da entrega profissional é <strong class="text-amber-400">"não confie, prove"</strong>. Entregar não é só fazer o deploy: é ter <strong>monitoramento e uptime</strong> que mostrem, com dados, que o sistema continua funcionando depois que saiu das suas mãos.</p>
+
+          <!-- SVG -->
+          <div class="rounded-2xl border border-amber-500/30 bg-dark-900/40 p-3 sm:p-4 mb-6 overflow-hidden">
+            <svg viewBox="0 0 1000 200" class="w-full h-auto" role="img" aria-label="Depois do deploy, o monitoramento observa o app continuamente e gera evidência de uptime, provando que tudo segue no ar">
+              <defs>
+                <linearGradient id="m42b-grad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fbbf24"/><stop offset="1" stop-color="#f59e0b"/></linearGradient>
+                <filter id="m42b-glow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="1.8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+                <pattern id="m42b-grid" width="32" height="32" patternUnits="userSpaceOnUse"><circle cx="1.3" cy="1.3" r="1.3" fill="#f59e0b" opacity="0.12"/></pattern>
+                <marker id="m42b-ah" markerWidth="9" markerHeight="9" refX="6.5" refY="4.5" orient="auto"><path d="M0,0 L8,4.5 L0,9 L2.4,4.5 Z" fill="#fbbf24"/></marker>
+              </defs>
+              <rect x="0" y="0" width="1000" height="200" fill="url(#m42b-grid)"/>
+              <rect x="60" y="78" width="170" height="48" rx="12" fill="#1f1604" stroke="#fbbf24" stroke-width="1.8"/>
+              <text x="145" y="107" text-anchor="middle" fill="#fde68a" font-family="Inter,sans-serif" font-weight="600" font-size="15">Deploy</text>
+              <g filter="url(#m42b-glow)"><rect x="320" y="72" width="200" height="60" rx="14" fill="#1f1604" stroke="url(#m42b-grad)" stroke-width="2.5"/></g>
+              <text x="420" y="98" text-anchor="middle" fill="#fbbf24" font-family="Inter,sans-serif" font-weight="600" font-size="15">Monitoramento</text>
+              <text x="420" y="118" text-anchor="middle" fill="#fde68a" font-family="Inter,sans-serif" font-size="12">observa sempre</text>
+              <rect x="610" y="78" width="150" height="48" rx="12" fill="#1f1604" stroke="#fbbf24" stroke-width="1.8"/>
+              <text x="685" y="100" text-anchor="middle" fill="#fde68a" font-family="Inter,sans-serif" font-weight="600" font-size="14">Uptime</text>
+              <text x="685" y="117" text-anchor="middle" fill="#fcd34d" font-family="Inter,sans-serif" font-size="11">99,9%</text>
+              <rect x="820" y="78" width="140" height="48" rx="12" fill="#0e2018" stroke="#34d399" stroke-width="1.8"/>
+              <text x="890" y="107" text-anchor="middle" fill="#34d399" font-family="Inter,sans-serif" font-weight="600" font-size="14">prova ✓</text>
+              <g fill="none" stroke="#fbbf24" stroke-width="2" opacity="0.6">
+                <path d="M230,102 L320,102" marker-end="url(#m42b-ah)"/>
+                <path d="M520,102 L610,102" marker-end="url(#m42b-ah)"/>
+                <path d="M760,102 L820,102" marker-end="url(#m42b-ah)"/>
+              </g>
+              <text x="500" y="160" text-anchor="middle" fill="#9ca3af" font-family="Inter,sans-serif" font-size="13" font-weight="600">"não confie, prove"</text>
+            </svg>
+          </div>
+
+          <div class="bg-primary/10 rounded-xl border border-primary/30 p-6 mb-6">
+            <h3 class="text-lg font-semibold text-primary mb-3 flex items-center"><span class="mr-2">📊</span> Evidência, não promessa</h3>
+            <p class="text-neutral-300">Dizer "está funcionando" é promessa. Mostrar um painel de <strong>uptime e alertas</strong> é evidência. O monitoramento transforma a confiança do cliente em algo verificável — e te protege se algo quebrar.</p>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-amber-400 font-bold mb-1">Prove</div><p class="text-xs text-neutral-400">não confie</p></div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-amber-400 font-bold mb-1">Uptime</div><p class="text-xs text-neutral-400">segue no ar</p></div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-amber-400 font-bold mb-1">Alertas</div><p class="text-xs text-neutral-400">avisa se cai</p></div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-amber-400 font-bold mb-1">Evidência</div><p class="text-xs text-neutral-400">dados, não fé</p></div>
+          </div>
+
+          <div class="flex justify-start mt-6">
+            <button type="button" data-inema-read-toggle aria-pressed="false">
+              <span class="inema-ico-todo" aria-hidden="true">○</span><span class="inema-ico-done" aria-hidden="true">●</span><span class="inema-label-todo">Marcar como lido</span><span class="inema-label-done">Lido</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- EXEMPLO PRÁTICO -->
+        <section id="exemplo" class="mb-12">
+          <h2 class="text-2xl font-bold mb-6 flex items-center"><span class="mr-3">🔬</span> Exemplo prático</h2>
+          <div class="bg-dark-800 rounded-xl border border-dark-600 p-6">
+            <p class="text-neutral-300 mb-4">Rode o <strong class="text-amber-400">Pre-Flight Checklist no seu app</strong> e gere um relatório com itens Crítico / Aviso / OK antes de "entregar".</p>
+            <ul class="space-y-2 text-neutral-300 mb-4">
+              <li class="flex items-start space-x-2"><span class="text-amber-400 mt-1">1.</span><span><strong>Janela limpa:</strong> abra uma conversa nova, sem o histórico da construção.</span></li>
+              <li class="flex items-start space-x-2"><span class="text-amber-400 mt-1">2.</span><span><strong>Papel + fases:</strong> peça à IA para ser QA sênior + auditor e percorrer as fases.</span></li>
+              <li class="flex items-start space-x-2"><span class="text-amber-400 mt-1">3.</span><span><strong>Relatório classificado:</strong> cada achado marcado como Crítico, Aviso ou OK.</span></li>
+            </ul>
+            <p class="text-neutral-400 text-sm">No fim, você tem um retrato honesto do estado do app — e uma lista clara do que corrigir antes de entregar.</p>
+          </div>
+        </section>
+
+        <!-- EXERCÍCIO -->
+        <section id="exercicio" class="mb-12">
+          <h2 class="text-2xl font-bold mb-6 flex items-center"><span class="mr-3">🏋️</span> Exercício</h2>
+          <div class="bg-gradient-to-br from-amber-900/30 to-dark-800 rounded-xl border border-amber-500/30 p-6">
+            <p class="text-neutral-300 mb-4">Rode o <strong class="text-amber-400">Pre-Flight Checklist no seu app</strong> e classifique os achados. Depois:</p>
+            <ol class="space-y-2 text-neutral-300 mb-4 list-decimal list-inside">
+              <li>Liste os achados em <strong>Crítico</strong>, <strong>Aviso</strong> e <strong>OK</strong>.</li>
+              <li>Corrija pelo menos <strong>um crítico</strong> do início ao fim.</li>
+              <li>Rode o checklist de novo, numa <strong>janela nova</strong>, para confirmar que o crítico sumiu.</li>
+            </ol>
+            <p class="text-neutral-400 text-sm">Esse ciclo — auditar, corrigir, reauditar — é o coração da entrega profissional.</p>
+          </div>
+        </section>
+
+        <!-- PROMPTS PRONTOS -->
+        <section id="prompts" class="mb-12">
+          <h2 class="text-2xl font-bold mb-6 flex items-center"><span class="mr-3">⚡</span> Prompts prontos</h2>
+          <p class="text-neutral-400 mb-4 text-sm">Copie, cole no seu assistente de IA e adapte ao seu caso.</p>
+
+          <div data-prompt class="bg-dark-900 border border-dark-600 rounded-xl overflow-hidden mb-4">
+            <div class="flex items-center justify-between px-4 py-2 bg-dark-700/50 border-b border-dark-600"><span class="text-xs text-neutral-400 font-mono">pre-flight checklist (QA + segurança)</span><button onclick="copyPrompt(this)" class="text-xs px-2 py-1 rounded bg-amber-600 hover:bg-amber-500 text-white">Copiar</button></div>
+            <pre class="p-4 text-sm text-neutral-200 whitespace-pre-wrap font-mono">Você é um engenheiro de QA sênior e auditor de segurança.
+Acabei de construir um projeto e preciso de um stress test antes da entrega.
+Conduza por fases (descoberta, dependências, segurança, autenticação,
+validação de entrada, proteção de dados, API, infraestrutura, testes,
+compliance, acessibilidade, deploy, monitoramento, backup, prontidão de entrega).
+Faça perguntas quando precisar, identifique riscos e dê recomendações acionáveis,
+marcando cada item como crítico, aviso ou ok.</pre>
+          </div>
+
+          <div data-prompt class="bg-dark-900 border border-dark-600 rounded-xl overflow-hidden mb-4">
+            <div class="flex items-center justify-between px-4 py-2 bg-dark-700/50 border-b border-dark-600"><span class="text-xs text-neutral-400 font-mono">revisão cética em janela nova</span><button onclick="copyPrompt(this)" class="text-xs px-2 py-1 rounded bg-amber-600 hover:bg-amber-500 text-white">Copiar</button></div>
+            <pre class="p-4 text-sm text-neutral-200 whitespace-pre-wrap font-mono">Numa janela nova e sem contexto anterior:
+revise este código como um desenvolvedor sênior altamente cético
+e liste tudo o que quebraria em produção, do mais grave ao menos grave.
+Para cada item, diga por que quebra e como corrigir.</pre>
+          </div>
+        </section>
+
+        <!-- RESUMO -->
+        <section class="mb-12">
+          <div class="bg-gradient-to-br from-amber-900/40 via-dark-800 to-dark-800 rounded-xl border border-amber-500/30 p-8">
+            <h2 class="text-2xl font-bold mb-6 flex items-center"><span class="mr-3">✅</span> Resumo do módulo</h2>
+            <div class="space-y-4 mb-8">
+              <div class="flex items-start space-x-3"><span class="text-amber-400 mt-1">✓</span><div><strong class="text-white">De automação a software</strong><span class="text-neutral-400"> — o software é o produto; muda o valor do que você entrega.</span></div></div>
+              <div class="flex items-start space-x-3"><span class="text-amber-400 mt-1">✓</span><div><strong class="text-white">Modelos de posse</strong><span class="text-neutral-400"> — licença, entrega total ou (preferido) cliente dono + suporte de 30–90 dias.</span></div></div>
+              <div class="flex items-start space-x-3"><span class="text-amber-400 mt-1">✓</span><div><strong class="text-white">Pre-Flight Checklist</strong><span class="text-neutral-400"> — QA sênior + auditor, por fases, classificando Crítico/Aviso/OK.</span></div></div>
+              <div class="flex items-start space-x-3"><span class="text-amber-400 mt-1">✓</span><div><strong class="text-white">Janela limpa + monitorar</strong><span class="text-neutral-400"> — fuja do context rot e prove o uptime: "não confie, prove".</span></div></div>
+            </div>
+            <div class="bg-dark-800/50 rounded-lg p-4 mb-8"><h3 class="font-semibold text-amber-400 mb-2">Próxima trilha:</h3><p class="text-neutral-300">Trilha 5 — Maestria & Biblioteca (incl. o Pre-Flight Checklist completo)</p></div>
+            <div class="flex flex-col sm:flex-row gap-4">
+              <a href="index.html" class="flex-1 text-center px-6 py-3 bg-dark-700 text-neutral-300 rounded-lg font-semibold hover:bg-dark-600 transition-colors">← Voltar para Trilha</a>
+              <a href="../trilha5/index.html" class="flex-1 text-center px-6 py-3 bg-amber-600 text-white rounded-lg font-semibold hover:bg-amber-500 transition-colors">Trilha 5: Maestria & Biblioteca →</a>
+            </div>
+          </div>
+        </section>
+
+      </article>
+    </div>
+  </main>
+
+  <footer class="border-t border-dark-600 py-8 mt-16">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-neutral-500 text-sm">
+      <p>AntiGravity — do Zero ao App Publicado com IA · <a href="https://inema.club" target="_blank" class="text-sky-400 hover:text-sky-300">INEMA.CLUB</a> · 2026</p>
+    </div>
+  </footer>
+
+  <script>
+    function toggleTopic(button) {
+      const topicItem = button.closest('.topic-item');
+      if (!topicItem) return;
+      const explanation = topicItem.querySelector('.topic-explanation');
+      const moduleCard = button.closest('.bg-dark-800') || document;
+      moduleCard.querySelectorAll('.topic-explanation.active').forEach(exp => { if (exp !== explanation) exp.classList.remove('active'); });
+      const willOpen = !explanation.classList.contains('active');
+      explanation.classList.toggle('active');
+      button.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+    }
+    (function () {
+      const themeToggle = document.getElementById('theme-toggle');
+      const di = document.getElementById('theme-toggle-dark-icon');
+      const li = document.getElementById('theme-toggle-light-icon');
+      const html = document.documentElement;
+      function paint() { const dark = html.classList.contains('dark'); di.classList.toggle('hidden', dark); li.classList.toggle('hidden', !dark); }
+      paint();
+      themeToggle && themeToggle.addEventListener('click', () => {
+        const nowDark = !html.classList.contains('dark');
+        if (window.INEMA && INEMA.setPref) { INEMA.setPref('theme', nowDark ? 'inema-dark' : 'claro'); }
+        else { html.classList.toggle('dark'); localStorage.setItem('theme', nowDark ? 'dark' : 'light'); }
+        paint();
+      });
+      document.addEventListener('inema:progress', paint);
+    })();
+    function openModal(modalId) { const m = document.getElementById(modalId); if (m) { m.classList.remove('hidden'); document.body.style.overflow = 'hidden'; } }
+    function closeModal() { document.querySelectorAll('.modal').forEach(m => m.classList.add('hidden')); document.body.style.overflow = 'auto'; }
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+    function copyPrompt(btn) {
+      const box = btn.closest('[data-prompt]'); const pre = box && box.querySelector('pre');
+      const txt = pre ? pre.innerText : '';
+      function done(){ const o = btn.textContent; btn.textContent = '✓ Copiado'; setTimeout(()=>{ btn.textContent = o; }, 1500); }
+      function fallback(){ const ta = document.createElement('textarea'); ta.value = txt; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch(e){} ta.remove(); done(); }
+      if (navigator.clipboard && window.isSecureContext) { navigator.clipboard.writeText(txt).then(done).catch(fallback); } else { fallback(); }
+    }
+  </script>
+  <script src="../assets/learn.js"></script>
+  <script>
+    if (window.INEMA && typeof window.INEMA.init === 'function') { window.INEMA.init(); }
+    // Liga controles da nav (fora do <main>, onde o learn.js delega cliques) à API do learn.js
+    (function () {
+      function wire() {
+        if (!window.INEMA) return;
+        document.querySelectorAll('[data-inema-journey-open]').forEach(function (b) { if (b.__w) return; b.__w = 1; b.addEventListener('click', function () { INEMA.openJourney && INEMA.openJourney(); }); });
+        document.querySelectorAll('[data-inema-appearance-toggle]').forEach(function (b) { if (b.__w) return; b.__w = 1; b.addEventListener('click', function (e) { e.stopPropagation(); var sel = b.getAttribute('data-inema-appearance-toggle'); var p = sel ? document.querySelector(sel) : document.querySelector('[data-inema-appearance]'); if (!p) return; var open = p.getAttribute('data-open') === 'true'; p.setAttribute('data-open', open ? 'false' : 'true'); b.setAttribute('aria-expanded', open ? 'false' : 'true'); }); });
+        [['data-inema-set-theme','theme'],['data-inema-set-font','font'],['data-inema-set-fontscale','fontScale'],['data-inema-set-leading','leading'],['data-inema-set-accent','accent'],['data-inema-set-linewidth','lineWidth']].forEach(function (m) { document.querySelectorAll('[' + m[0] + ']').forEach(function (b) { if (b.__w) return; b.__w = 1; b.addEventListener('click', function () { INEMA.setPref && INEMA.setPref(m[1], b.getAttribute(m[0])); }); }); });
+        document.addEventListener('click', function (e) { var p = document.querySelector('[data-inema-appearance][data-open="true"]'); if (!p) return; var t = document.querySelector('[data-inema-appearance-toggle]'); if (!p.contains(e.target) && (!t || !t.contains(e.target))) { p.setAttribute('data-open', 'false'); t && t.setAttribute('aria-expanded', 'false'); } });
+      }
+      if (document.readyState !== 'loading') setTimeout(wire, 0); else document.addEventListener('DOMContentLoaded', wire);
+    })();
+  </script>
+</body>
+</html>

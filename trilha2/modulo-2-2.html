@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="inema-course" content="antigravity">
+  <title>Módulo 2.2 · Publicar e manter | AntiGravity</title>
+
+  <!-- ANTI-FOUC: bloqueante, ANTES do Tailwind e de qualquer <style>/<link> -->
+  <script>
+  (function () {
+    try {
+      var html = document.documentElement;
+      var DEF = { theme: 'inema-dark', font: 'inter', fontScale: 100, lineWidth: 68, leading: 1.7, accent: 'emerald' };
+      function clone(o) { var r = {}; for (var x in o) r[x] = o[x]; return r; }
+      var p = clone(DEF);
+      try {
+        var raw = localStorage.getItem('inema.prefs');
+        if (raw) {
+          var parsed = JSON.parse(raw);
+          if (parsed && typeof parsed === 'object') { for (var k in DEF) if (parsed[k] != null) p[k] = parsed[k]; }
+        } else {
+          var legacy = localStorage.getItem('theme');
+          if (legacy === 'light') p.theme = 'claro';
+          else if (legacy === 'dark') p.theme = 'inema-dark';
+        }
+      } catch (e) { p = clone(DEF); }
+      var THEMES = {
+        'inema-dark': { dark: true,  attr: null,        cs: 'dark'  },
+        'claro':      { dark: false, attr: null,        cs: 'light' },
+        'sepia':      { dark: false, attr: 'sepia',     cs: 'light' },
+        'foco':       { dark: null,  attr: 'foco',      cs: null    },
+        'contraste':  { dark: true,  attr: 'contraste', cs: 'dark'  }
+      };
+      var t = THEMES[p.theme] || THEMES['inema-dark'];
+      if (t.dark === true) html.classList.add('dark');
+      else if (t.dark === false) html.classList.remove('dark');
+      if (t.attr) html.setAttribute('data-theme', t.attr); else html.removeAttribute('data-theme');
+      html.style.colorScheme = (t.cs ? t.cs : (html.classList.contains('dark') ? 'dark' : 'light'));
+      html.setAttribute('data-font', p.font || 'inter');
+      html.setAttribute('data-accent', p.accent || 'emerald');
+      var s = html.style, scale = (+p.fontScale || 100);
+      s.setProperty('--inema-font-scale', (scale / 100).toString());
+      s.setProperty('font-size', scale + '%');
+      s.setProperty('--measure', (+p.lineWidth || 68) + 'ch');
+      s.setProperty('--lh-body', (+p.leading || 1.7).toString());
+      var fam = p.font === 'system' ? 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif'
+        : (p.font === 'leitura' ? '"Atkinson Hyperlegible", "Inter", system-ui, sans-serif' : '"Inter", system-ui, sans-serif');
+      s.setProperty('--font-body', fam);
+      var ACC = { emerald:[152,76,45], blue:[217,91,60], purple:[258,90,66], amber:[38,92,50], teal:[174,72,41], rose:[350,89,60] };
+      var a = ACC[p.accent] || ACC.emerald;
+      s.setProperty('--accent-h', a[0] + ''); s.setProperty('--accent-s', a[1] + '%'); s.setProperty('--accent-l', a[2] + '%');
+      s.setProperty('--accent', 'hsl(' + a[0] + ' ' + a[1] + '% ' + a[2] + '%)');
+    } catch (err) {
+      try { document.documentElement.classList.add('dark'); document.documentElement.style.colorScheme = 'dark'; } catch (e) {}
+    }
+  })();
+  </script>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: { extend: { colors: {
+        primary: '#FACC15',
+        dark: { 900: '#111827', 800: '#1f2937', 700: '#374151', 600: '#4b5563' }
+      } } }
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .dark body { background-color: #111827; }
+    .topic-explanation { display: none; }
+    .topic-explanation.active { display: block; }
+    [id] { scroll-margin-top: 4.5rem; }
+    .skip { position:absolute; left:-999px; top:0; background:#FACC15; color:#111827; padding:.5rem 1rem; border-radius:.5rem; z-index:100; }
+    .skip:focus { left:1rem; top:.5rem; }
+    :focus-visible { outline: 3px solid #38bdf8; outline-offset: 2px; }
+
+    /* Light mode - base */
+    html:not(.dark) body { background-color: #f8fafc; }
+    html:not(.dark) .bg-dark-900 { background-color: #ffffff; }
+    html:not(.dark) .bg-dark-800 { background-color: #f9fafb; }
+    html:not(.dark) .bg-dark-700 { background-color: #f3f4f6; }
+    html:not(.dark) .bg-dark-600 { background-color: #e5e7eb; }
+    html:not(.dark) .text-neutral-100 { color: #111827; }
+    html:not(.dark) .text-neutral-300 { color: #4b5563; }
+    html:not(.dark) .text-neutral-400 { color: #6b7280; }
+    html:not(.dark) .text-neutral-500 { color: #9ca3af; }
+    html:not(.dark) .border-dark-600 { border-color: #d1d5db; }
+    html:not(.dark) .border-dark-700 { border-color: #e5e7eb; }
+
+    /* Light mode - cores de acento (todas as trilhas) */
+    html:not(.dark) .text-emerald-400 { color: #059669; }
+    html:not(.dark) .bg-emerald-500\/20 { background-color: rgba(5,150,105,0.12); }
+    html:not(.dark) .bg-emerald-500\/10 { background-color: rgba(5,150,105,0.08); }
+    html:not(.dark) .border-emerald-500\/30 { border-color: rgba(5,150,105,0.25); }
+    html:not(.dark) .hover\:bg-emerald-500\/30:hover { background-color: rgba(5,150,105,0.18); }
+    html:not(.dark) .hover\:text-emerald-400:hover { color: #059669; }
+    html:not(.dark) .hover\:bg-emerald-500\/10:hover { background-color: rgba(5,150,105,0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-emerald-400 { color: #059669; }
+    html:not(.dark) .text-blue-400 { color: #2563eb; }
+    html:not(.dark) .bg-blue-500\/20 { background-color: rgba(37,99,235,0.12); }
+    html:not(.dark) .bg-blue-500\/10 { background-color: rgba(37,99,235,0.08); }
+    html:not(.dark) .border-blue-500\/30 { border-color: rgba(37,99,235,0.25); }
+    html:not(.dark) .hover\:bg-blue-500\/30:hover { background-color: rgba(37,99,235,0.18); }
+    html:not(.dark) .hover\:text-blue-400:hover { color: #2563eb; }
+    html:not(.dark) .hover\:bg-blue-500\/10:hover { background-color: rgba(37,99,235,0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-blue-400 { color: #2563eb; }
+    html:not(.dark) .text-purple-400 { color: #7c3aed; }
+    html:not(.dark) .bg-purple-500\/20 { background-color: rgba(124,58,237,0.12); }
+    html:not(.dark) .bg-purple-500\/10 { background-color: rgba(124,58,237,0.08); }
+    html:not(.dark) .border-purple-500\/30 { border-color: rgba(124,58,237,0.25); }
+    html:not(.dark) .hover\:bg-purple-500\/30:hover { background-color: rgba(124,58,237,0.18); }
+    html:not(.dark) .hover\:text-purple-400:hover { color: #7c3aed; }
+    html:not(.dark) .hover\:bg-purple-500\/10:hover { background-color: rgba(124,58,237,0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-purple-400 { color: #7c3aed; }
+    html:not(.dark) .text-amber-400 { color: #92400e; }
+    html:not(.dark) .bg-amber-500\/20 { background-color: rgba(217,119,6,0.12); }
+    html:not(.dark) .bg-amber-500\/10 { background-color: rgba(217,119,6,0.08); }
+    html:not(.dark) .border-amber-500\/30 { border-color: rgba(217,119,6,0.25); }
+    html:not(.dark) .hover\:bg-amber-500\/30:hover { background-color: rgba(217,119,6,0.18); }
+    html:not(.dark) .hover\:text-amber-400:hover { color: #92400e; }
+    html:not(.dark) .hover\:bg-amber-500\/10:hover { background-color: rgba(217,119,6,0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-amber-400 { color: #92400e; }
+    html:not(.dark) .text-teal-400 { color: #0d9488; }
+    html:not(.dark) .bg-teal-500\/20 { background-color: rgba(13,148,136,0.12); }
+    html:not(.dark) .bg-teal-500\/10 { background-color: rgba(13,148,136,0.08); }
+    html:not(.dark) .border-teal-500\/30 { border-color: rgba(13,148,136,0.25); }
+    html:not(.dark) .hover\:bg-teal-500\/30:hover { background-color: rgba(13,148,136,0.18); }
+    html:not(.dark) .hover\:text-teal-400:hover { color: #0d9488; }
+    html:not(.dark) .hover\:bg-teal-500\/10:hover { background-color: rgba(13,148,136,0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-teal-400 { color: #0d9488; }
+
+    /* Light mode - remove gradientes + cores especiais */
+    html:not(.dark) [class*="bg-gradient-to"] { background-image: none !important; }
+    html:not(.dark) .text-primary { color: #a16207; }
+    html:not(.dark) .bg-primary\/10 { background-color: rgba(161,98,7,0.08); }
+    html:not(.dark) .border-primary\/30 { border-color: rgba(161,98,7,0.25); }
+    html:not(.dark) .border-primary\/40 { border-color: rgba(161,98,7,0.25); }
+    html:not(.dark) .text-sky-400 { color: #0369a1; }
+    html:not(.dark) .text-yellow-400 { color: #a16207; }
+    html:not(.dark) .hover\:text-sky-300:hover { color: #0284c7; }
+    html:not(.dark) .hover\:text-yellow-300:hover { color: #854d0e; }
+    html:not(.dark) .bg-dark-900\/95 { background-color: rgba(255,255,255,0.95); }
+
+    /* Dark mode - bordas suavizadas */
+    .dark .border-dark-600 { border-color: #374151; }
+    .dark .divide-dark-600 > :not([hidden]) ~ :not([hidden]) { border-color: #374151; }
+
+    /* SVG diagramas: suavizar no claro */
+    html:not(.dark) svg[role="img"] { filter: saturate(0.82) brightness(0.96); }
+
+    .inema-toc-link.is-active { color: #60a5fa; font-weight: 600; }
+  </style>
+  <link rel="stylesheet" href="../assets/learn.css">
+
+  <script type="application/json" data-inema-manifest>
+  {
+    "course": "antigravity",
+    "tracks": [
+      { "n": "1", "title": "Fundamentos", "modules": [
+        { "id": "1-1", "title": "AntiGravity & o bolo de 3 camadas", "topics": 7 },
+        { "id": "1-2", "title": "No-code vs. apps com IA", "topics": 6 },
+        { "id": "1-3", "title": "Setup completo do ambiente", "topics": 8 }
+      ]},
+      { "n": "2", "title": "Construir & Publicar", "modules": [
+        { "id": "2-1", "title": "Seu primeiro app", "topics": 8 },
+        { "id": "2-2", "title": "Publicar e manter", "topics": 8 }
+      ]},
+      { "n": "3", "title": "Escalar a Produção", "modules": [
+        { "id": "3-1", "title": "Sistema de clonagem", "topics": 7 },
+        { "id": "3-2", "title": "GoHighLevel/WordPress", "topics": 6 }
+      ]},
+      { "n": "4", "title": "Profissionalizar", "modules": [
+        { "id": "4-1", "title": "Fluxo de trabalho profissional", "topics": 6 },
+        { "id": "4-2", "title": "Entregar e aplicar", "topics": 7 }
+      ]},
+      { "n": "5", "title": "Maestria & Biblioteca", "modules": [
+        { "id": "5-1", "title": "CODA & Claude Code", "topics": 7 },
+        { "id": "5-2", "title": "Biblioteca de Skills & Prompts", "topics": 7 }
+      ]}
+    ]
+  }
+  </script>
+</head>
+<body class="bg-dark-900 text-neutral-100 min-h-screen">
+  <a class="skip" href="#conteudo">Pular para o conteúdo</a>
+
+  <!-- NAVIGATION -->
+  <nav class="sticky top-0 z-50 bg-dark-900/95 backdrop-blur-sm border-b border-dark-600">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-14">
+        <div class="flex items-center space-x-4">
+          <a href="../index.html" class="flex items-center space-x-2 text-yellow-400 hover:text-yellow-300">
+            <span class="text-2xl">🛰️</span>
+            <span class="font-bold text-lg hidden sm:inline">AntiGravity</span>
+          </a>
+          <span class="text-neutral-600">|</span>
+          <a href="https://inema.club" target="_blank" class="text-sky-400 hover:text-sky-300 text-sm font-medium">INEMA.CLUB</a>
+        </div>
+        <div class="flex items-center space-x-1 sm:space-x-2">
+          <a href="../trilha1/index.html" class="px-2.5 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-emerald-400 hover:bg-emerald-500/10 transition-colors"><span class="sm:hidden">T1</span><span class="hidden sm:inline">Fundamentos</span></a>
+          <a href="index.html" class="px-2.5 py-1.5 rounded-lg text-sm font-semibold text-blue-400 bg-blue-500/10"><span class="sm:hidden">T2</span><span class="hidden sm:inline">Construir</span></a>
+          <a href="../trilha3/index.html" class="px-2.5 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-purple-400 hover:bg-purple-500/10 transition-colors"><span class="sm:hidden">T3</span><span class="hidden sm:inline">Escalar</span></a>
+          <a href="../trilha4/index.html" class="px-2.5 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-amber-400 hover:bg-amber-500/10 transition-colors"><span class="sm:hidden">T4</span><span class="hidden sm:inline">Profissional</span></a>
+          <a href="../trilha5/index.html" class="px-2.5 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-teal-400 hover:bg-teal-500/10 transition-colors"><span class="sm:hidden">T5</span><span class="hidden sm:inline">Maestria</span></a>
+          <div class="relative">
+            <button type="button" data-inema-appearance-toggle="[data-inema-appearance]" aria-expanded="false" title="Aparência e leitura" class="p-2 rounded-lg bg-dark-700 hover:bg-dark-600 transition-colors"><span aria-hidden="true">◑</span></button>
+            <div data-inema-appearance class="inema-appearance-pop" style="right:0">
+              <div><p class="text-xs text-neutral-400 mb-1">Tema</p><div class="inema-segment flex flex-wrap gap-1">
+                <button data-inema-set-theme="inema-dark" class="px-2 py-1 text-xs rounded bg-dark-700">Escuro</button>
+                <button data-inema-set-theme="claro" class="px-2 py-1 text-xs rounded bg-dark-700">Claro</button>
+                <button data-inema-set-theme="sepia" class="px-2 py-1 text-xs rounded bg-dark-700">Sépia</button>
+                <button data-inema-set-theme="foco" class="px-2 py-1 text-xs rounded bg-dark-700">Foco</button>
+                <button data-inema-set-theme="contraste" class="px-2 py-1 text-xs rounded bg-dark-700">Alto contraste</button>
+              </div></div>
+              <div><p class="text-xs text-neutral-400 mb-1">Fonte</p><div class="inema-segment flex gap-1">
+                <button data-inema-set-font="inter" class="px-2 py-1 text-xs rounded bg-dark-700">Inter</button>
+                <button data-inema-set-font="system" class="px-2 py-1 text-xs rounded bg-dark-700">Sistema</button>
+                <button data-inema-set-font="leitura" class="px-2 py-1 text-xs rounded bg-dark-700">Leitura</button>
+              </div></div>
+              <div><p class="text-xs text-neutral-400 mb-1">Tamanho</p><div class="inema-segment flex gap-1">
+                <button data-inema-set-fontscale="100" class="px-2 py-1 text-xs rounded bg-dark-700">A</button>
+                <button data-inema-set-fontscale="112" class="px-2 py-1 text-xs rounded bg-dark-700">A+</button>
+                <button data-inema-set-fontscale="125" class="px-2 py-1 text-xs rounded bg-dark-700">A++</button>
+              </div></div>
+              <div><p class="text-xs text-neutral-400 mb-1">Entrelinha</p><div class="inema-segment flex gap-1">
+                <button data-inema-set-leading="1.45" class="px-2 py-1 text-xs rounded bg-dark-700">Compacto</button>
+                <button data-inema-set-leading="1.7" class="px-2 py-1 text-xs rounded bg-dark-700">Confortável</button>
+              </div></div>
+            </div>
+          </div>
+          <button type="button" data-inema-journey-open title="Minha jornada" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-sm text-neutral-300 hover:text-neutral-100 hover:bg-dark-700 transition-colors">
+            <span aria-hidden="true">◷</span><span class="hidden sm:inline">Jornada</span>
+            <span class="inema-journey-badge" data-inema-journey-badge data-count="0"></span>
+          </button>
+          <button id="theme-toggle" title="Alternar claro/escuro" class="p-2 rounded-lg bg-dark-700 hover:bg-dark-600 transition-colors">
+            <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5 text-neutral-300" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+            <svg id="theme-toggle-light-icon" class="hidden w-5 h-5 text-neutral-300" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- BREADCRUMB -->
+  <nav class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+    <div class="flex items-center space-x-2 text-sm text-neutral-400">
+      <a href="../index.html" class="hover:text-blue-400">Início</a><span>/</span>
+      <a href="index.html" class="hover:text-blue-400">Trilha 2</a><span>/</span>
+      <span class="text-blue-400">Módulo 2.2</span>
+    </div>
+  </nav>
+
+  <!-- HEADER -->
+  <header class="bg-gradient-to-br from-blue-900/30 via-dark-800 to-dark-800 py-12 border-b border-dark-600">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <span class="inline-block px-3 py-1 bg-blue-500/20 text-blue-400 text-xs font-semibold rounded-full mb-4">MÓDULO 2.2</span>
+      <h1 class="text-3xl sm:text-4xl font-bold mb-4">🚀 Publicar e manter seu app</h1>
+      <p class="text-lg text-neutral-400 max-w-3xl">Seu app sai do localhost e vai para o mundo. Conecte o GitHub, faça deploy na Vercel, proteja chaves, ligue analytics, depure por screenshot e mantenha o app vivo com commits, rollback e controle de gasto.</p>
+      <div class="grid grid-cols-4 gap-4 mt-8 max-w-2xl">
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600"><div class="text-xl font-bold text-blue-400">8</div><div class="text-xs text-neutral-400">Tópicos</div></div>
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600"><div class="text-xl font-bold text-blue-400">75</div><div class="text-xs text-neutral-400">Minutos</div></div>
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600"><div class="text-xl font-bold text-blue-400">Intermediário</div><div class="text-xs text-neutral-400">Nível</div></div>
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600"><div class="text-xl font-bold text-blue-400">Prática</div><div class="text-xs text-neutral-400">Tipo</div></div>
+      </div>
+    </div>
+  </header>
+
+  <main id="conteudo" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="lg:grid lg:grid-cols-[230px_minmax(0,1fr)] lg:gap-10">
+
+      <!-- TOC -->
+      <nav data-inema-toc aria-label="Índice da página" class="hidden lg:block sticky top-20 self-start">
+        <p class="text-sm text-neutral-400 mb-2">Seção <span data-inema-section-counter>1 de 8</span></p>
+        <ol class="space-y-1 text-sm">
+          <li><a href="#topico-1" class="inema-toc-link text-neutral-400 hover:text-blue-400">1. GitHub MCP + Docker</a></li>
+          <li><a href="#topico-2" class="inema-toc-link text-neutral-400 hover:text-blue-400">2. Deploy na Vercel</a></li>
+          <li><a href="#topico-3" class="inema-toc-link text-neutral-400 hover:text-blue-400">3. Environment variables</a></li>
+          <li><a href="#topico-4" class="inema-toc-link text-neutral-400 hover:text-blue-400">4. Analytics &amp; Speed Insights</a></li>
+          <li><a href="#topico-5" class="inema-toc-link text-neutral-400 hover:text-blue-400">5. Troubleshooting por screenshot</a></li>
+          <li><a href="#topico-6" class="inema-toc-link text-neutral-400 hover:text-blue-400">6. Commit often</a></li>
+          <li><a href="#topico-7" class="inema-toc-link text-neutral-400 hover:text-blue-400">7. Rollback</a></li>
+          <li><a href="#topico-8" class="inema-toc-link text-neutral-400 hover:text-blue-400">8. Budget de API + repo privado</a></li>
+        </ol>
+        <div class="mt-4 pt-4 border-t border-dark-600">
+          <div data-inema-meter="modulo:2-2" class="text-sm"><span class="text-neutral-400" data-inema-meter-frac>0 de 8</span> · <span class="text-blue-400 font-bold" data-inema-meter-pct>0%</span><div class="inema-bar h-1.5 mt-2 rounded-full bg-dark-600 overflow-hidden"><div class="inema-bar__fill h-full rounded-full bg-blue-500" data-inema-meter-fill style="width:0%"></div></div></div>
+        </div>
+      </nav>
+
+      <article data-inema-module="2-2" data-inema-track="2" class="min-w-0">
+
+        <!-- TÓPICO 1 -->
+        <section id="topico-1" data-inema-topic="modulo-2-2#topico-1" class="mb-16">
+          <div class="flex items-center justify-between mb-6 gap-3">
+            <div class="flex items-center space-x-4">
+              <span class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xl flex-shrink-0">1</span>
+              <h2 class="text-2xl font-bold">🐙 GitHub MCP + token + Docker</h2>
+            </div>
+            <button type="button" data-inema-doubt-toggle aria-pressed="false" title="Marcar dúvida neste tópico" class="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm flex-shrink-0"><span aria-hidden="true">?</span><span>Dúvida</span></button>
+          </div>
+
+          <p data-inema-block="m22-t1-p1" class="text-neutral-300 mb-6 leading-relaxed">Para publicar sem sair do editor, conecte o <strong class="text-blue-400">AntiGravity ao GitHub via MCP</strong>: assim você gerencia e publica repositórios direto dali. A integração exige duas coisas: um <strong class="text-blue-400">Personal Access Token</strong> (fine-grained, com validade) e o <strong class="text-blue-400">Docker</strong> instalado.</p>
+
+          <!-- SVG -->
+          <div class="rounded-2xl border border-blue-500/30 bg-dark-900/40 p-3 sm:p-4 mb-6 overflow-hidden">
+            <svg viewBox="0 0 1000 200" class="w-full h-auto" role="img" aria-label="O AntiGravity conecta ao GitHub pelo GitHub MCP, que depende de um Personal Access Token e do Docker instalado para a integração funcionar">
+              <defs>
+                <linearGradient id="m22-grad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#60a5fa"/><stop offset="1" stop-color="#3b82f6"/></linearGradient>
+                <filter id="m22-glow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="1.8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+                <pattern id="m22-grid" width="32" height="32" patternUnits="userSpaceOnUse"><circle cx="1.3" cy="1.3" r="1.3" fill="#3b82f6" opacity="0.12"/></pattern>
+                <marker id="m22-ah" markerWidth="9" markerHeight="9" refX="6.5" refY="4.5" orient="auto"><path d="M0,0 L8,4.5 L0,9 L2.4,4.5 Z" fill="#60a5fa"/></marker>
+              </defs>
+              <rect x="0" y="0" width="1000" height="200" fill="url(#m22-grid)"/>
+              <g filter="url(#m22-glow)"><rect x="40" y="70" width="200" height="60" rx="14" fill="#0e2018" stroke="url(#m22-grad)" stroke-width="2.5"/></g>
+              <text x="140" y="96" text-anchor="middle" fill="#60a5fa" font-family="Inter,sans-serif" font-weight="600" font-size="16">AntiGravity</text>
+              <text x="140" y="116" text-anchor="middle" fill="#dbeafe" font-family="Inter,sans-serif" font-size="12">o editor</text>
+              <rect x="400" y="70" width="200" height="60" rx="14" fill="#0e1622" stroke="#60a5fa" stroke-width="2"/>
+              <text x="500" y="96" text-anchor="middle" fill="#bfdbfe" font-family="Inter,sans-serif" font-weight="600" font-size="16">GitHub MCP</text>
+              <text x="500" y="116" text-anchor="middle" fill="#dbeafe" font-family="Inter,sans-serif" font-size="12">token + Docker</text>
+              <g filter="url(#m22-glow)"><rect x="760" y="70" width="200" height="60" rx="14" fill="#0e2018" stroke="url(#m22-grad)" stroke-width="2.5"/></g>
+              <text x="860" y="96" text-anchor="middle" fill="#60a5fa" font-family="Inter,sans-serif" font-weight="600" font-size="16">GitHub</text>
+              <text x="860" y="116" text-anchor="middle" fill="#dbeafe" font-family="Inter,sans-serif" font-size="12">seus repos</text>
+              <g fill="none" stroke="#60a5fa" stroke-width="2" opacity="0.6">
+                <path d="M240,100 L396,100" marker-end="url(#m22-ah)"/>
+                <path d="M600,100 L756,100" marker-end="url(#m22-ah)"/>
+              </g>
+            </svg>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div class="bg-blue-900/20 rounded-xl border border-blue-500/30 p-6">
+              <h4 class="font-bold text-blue-400 mb-4">✓ Pré-requisitos</h4>
+              <ul class="space-y-3 text-neutral-300 text-sm">
+                <li class="flex items-start space-x-2"><span class="text-blue-400">✓</span><span>Personal Access Token <strong>fine-grained</strong></span></li>
+                <li class="flex items-start space-x-2"><span class="text-blue-400">✓</span><span>Definir uma <strong>validade</strong> para o token</span></li>
+                <li class="flex items-start space-x-2"><span class="text-blue-400">✓</span><span>Docker <strong>instalado</strong> e rodando</span></li>
+              </ul>
+            </div>
+            <div class="bg-red-900/20 rounded-xl border border-red-500/30 p-6">
+              <h4 class="font-bold text-red-400 mb-4">✗ Erros comuns</h4>
+              <ul class="space-y-3 text-neutral-300 text-sm">
+                <li class="flex items-start space-x-2"><span class="text-red-400">✗</span><span>Token sem validade ou com escopo amplo demais</span></li>
+                <li class="flex items-start space-x-2"><span class="text-red-400">✗</span><span>Esquecer de abrir o Docker antes</span></li>
+                <li class="flex items-start space-x-2"><span class="text-red-400">✗</span><span>Colar o token no código (use o lugar certo)</span></li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-blue-400 font-bold mb-1">GitHub MCP</div><p class="text-xs text-neutral-400">do editor</p></div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-blue-400 font-bold mb-1">Token</div><p class="text-xs text-neutral-400">fine-grained</p></div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-blue-400 font-bold mb-1">Validade</div><p class="text-xs text-neutral-400">com expiração</p></div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-blue-400 font-bold mb-1">Docker</div><p class="text-xs text-neutral-400">instalado</p></div>
+          </div>
+
+          <div class="flex justify-start mt-6">
+            <button type="button" data-inema-read-toggle aria-pressed="false">
+              <span class="inema-ico-todo" aria-hidden="true">○</span><span class="inema-ico-done" aria-hidden="true">●</span><span class="inema-label-todo">Marcar como lido</span><span class="inema-label-done">Lido</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- TÓPICO 2 -->
+        <section id="topico-2" data-inema-topic="modulo-2-2#topico-2" class="mb-16">
+          <div class="flex items-center justify-between mb-6 gap-3">
+            <div class="flex items-center space-x-4">
+              <span class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xl flex-shrink-0">2</span>
+              <h2 class="text-2xl font-bold">▲ Deploy na Vercel</h2>
+            </div>
+            <button type="button" data-inema-doubt-toggle aria-pressed="false" title="Marcar dúvida neste tópico" class="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm flex-shrink-0"><span aria-hidden="true">?</span><span>Dúvida</span></button>
+          </div>
+
+          <p data-inema-block="m22-t2-p1" class="text-neutral-300 mb-6 leading-relaxed">A <strong class="text-blue-400">Vercel</strong> é a "ponte" do GitHub para o mundo: ela hospeda seu app em <strong>produção</strong>. O fluxo é curto e visual: <strong>Add New → Project → importar o repo → publicar</strong>. Em poucos cliques, o app fica no ar com um link público.</p>
+
+          <div class="space-y-6 mb-6">
+            <div class="flex items-start space-x-4">
+              <div class="flex-shrink-0 w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center"><span class="text-blue-400 font-bold">1</span></div>
+              <div class="flex-1 bg-dark-800 rounded-xl p-6 border border-dark-600">
+                <h4 class="font-semibold text-white mb-2">Add New → Project</h4>
+                <p class="text-neutral-300 text-sm">No painel da Vercel, comece um novo projeto.</p>
+              </div>
+            </div>
+            <div class="flex items-start space-x-4">
+              <div class="flex-shrink-0 w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center"><span class="text-blue-400 font-bold">2</span></div>
+              <div class="flex-1 bg-dark-800 rounded-xl p-6 border border-dark-600">
+                <h4 class="font-semibold text-white mb-2">Importar o repo</h4>
+                <p class="text-neutral-300 text-sm">Conecte sua conta do GitHub e selecione o repositório do app.</p>
+              </div>
+            </div>
+            <div class="flex items-start space-x-4">
+              <div class="flex-shrink-0 w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center"><span class="text-blue-400 font-bold">3</span></div>
+              <div class="flex-1 bg-gradient-to-br from-blue-900/30 to-dark-800 rounded-xl p-6 border border-blue-500/30">
+                <h4 class="font-semibold text-blue-400 mb-2">Publicar</h4>
+                <p class="text-neutral-300 text-sm">A Vercel faz o build e sobe o app. Pronto: ele está no ar para o mundo.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-primary/10 rounded-xl border border-primary/30 p-6 mb-6">
+            <h3 class="text-lg font-semibold text-primary mb-3 flex items-center"><span class="mr-2">💡</span> Localhost × produção</h3>
+            <p class="text-neutral-300">No <strong>localhost</strong>, só você vê. Em <strong>produção</strong> (Vercel), qualquer pessoa com o link acessa. É o salto de "funciona na minha máquina" para "está no ar".</p>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-blue-400 font-bold mb-1">Ponte</div><p class="text-xs text-neutral-400">GitHub → mundo</p></div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-blue-400 font-bold mb-1">Importar</div><p class="text-xs text-neutral-400">o repo</p></div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-blue-400 font-bold mb-1">Produção</div><p class="text-xs text-neutral-400">link público</p></div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-blue-400 font-bold mb-1">No ar</div><p class="text-xs text-neutral-400">poucos cliques</p></div>
+          </div>
+
+          <div class="flex justify-start mt-6">
+            <button type="button" data-inema-read-toggle aria-pressed="false">
+              <span class="inema-ico-todo" aria-hidden="true">○</span><span class="inema-ico-done" aria-hidden="true">●</span><span class="inema-label-todo">Marcar como lido</span><span class="inema-label-done">Lido</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- TÓPICO 3 -->
+        <section id="topico-3" data-inema-topic="modulo-2-2#topico-3" class="mb-16">
+          <div class="flex items-center justify-between mb-6 gap-3">
+            <div class="flex items-center space-x-4">
+              <span class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xl flex-shrink-0">3</span>
+              <h2 class="text-2xl font-bold">🔐 Environment variables</h2>
+            </div>
+            <button type="button" data-inema-doubt-toggle aria-pressed="false" title="Marcar dúvida neste tópico" class="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm flex-shrink-0"><span aria-hidden="true">?</span><span>Dúvida</span></button>
+          </div>
+
+          <p data-inema-block="m22-t3-p1" class="text-neutral-300 mb-6 leading-relaxed">Chaves de API <strong class="text-blue-400">nunca</strong> devem aparecer no código. A regra de ouro: o agente apenas <strong>nomeia</strong> a variável; <strong>você cola a chave</strong> dentro da Vercel (<strong class="text-blue-400">Settings → Environment Variables</strong>) e dá <strong class="text-blue-400">Redeploy</strong>.</p>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div class="bg-blue-900/20 rounded-xl border border-blue-500/30 p-6">
+              <h4 class="font-bold text-blue-400 mb-4">✓ Jeito seguro</h4>
+              <ul class="space-y-3 text-neutral-300 text-sm">
+                <li class="flex items-start space-x-2"><span class="text-blue-400">✓</span><span>O agente só nomeia: <code>API_KEY</code></span></li>
+                <li class="flex items-start space-x-2"><span class="text-blue-400">✓</span><span>Você cola o valor na Vercel</span></li>
+                <li class="flex items-start space-x-2"><span class="text-blue-400">✓</span><span>Redeploy para a chave entrar em vigor</span></li>
+              </ul>
+            </div>
+            <div class="bg-red-900/20 rounded-xl border border-red-500/30 p-6">
+              <h4 class="font-bold text-red-400 mb-4">✗ Nunca faça</h4>
+              <ul class="space-y-3 text-neutral-300 text-sm">
+                <li class="flex items-start space-x-2"><span class="text-red-400">✗</span><span>Colar a chave dentro do código</span></li>
+                <li class="flex items-start space-x-2"><span class="text-red-400">✗</span><span>Subir a chave para um repo público</span></li>
+                <li class="flex items-start space-x-2"><span class="text-red-400">✗</span><span>Mandar a chave em prints ou chats</span></li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto mb-6">
+            <table class="w-full text-sm border border-dark-600 rounded-lg overflow-hidden">
+              <thead class="bg-dark-700/50 text-neutral-300"><tr><th class="text-left p-3">Parte</th><th class="text-left p-3">Quem cuida</th><th class="text-left p-3">Onde vive</th></tr></thead>
+              <tbody class="divide-y divide-dark-600 text-neutral-400">
+                <tr><td class="p-3 text-neutral-300">Nome da variável</td><td class="p-3 text-blue-400">o agente</td><td class="p-3 font-mono">no código (só o nome)</td></tr>
+                <tr><td class="p-3 text-neutral-300">Valor da chave</td><td class="p-3 text-blue-400">você</td><td class="p-3">Vercel → Settings → Env Vars</td></tr>
+                <tr><td class="p-3 text-neutral-300">Ativar mudança</td><td class="p-3 text-blue-400">você</td><td class="p-3">Redeploy</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-blue-400 font-bold mb-1">Nomeia</div><p class="text-xs text-neutral-400">o agente</p></div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-blue-400 font-bold mb-1">Cola</div><p class="text-xs text-neutral-400">você, na Vercel</p></div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-blue-400 font-bold mb-1">Redeploy</div><p class="text-xs text-neutral-400">ativa a chave</p></div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-blue-400 font-bold mb-1">Nunca</div><p class="text-xs text-neutral-400">no código</p></div>
+          </div>
+
+          <div class="flex justify-start mt-6">
+            <button type="button" data-inema-read-toggle aria-pressed="false">
+              <span class="inema-ico-todo" aria-hidden="true">○</span><span class="inema-ico-done" aria-hidden="true">●</span><span class="inema-label-todo">Marcar como lido</span><span class="inema-label-done">Lido</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- TÓPICO 4 -->
+        <section id="topico-4" data-inema-topic="modulo-2-2#topico-4" class="mb-16">
+          <div class="flex items-center justify-between mb-6 gap-3">
+            <div class="flex items-center space-x-4">
+              <span class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xl flex-shrink-0">4</span>
+              <h2 class="text-2xl font-bold">📊 Analytics &amp; Speed Insights</h2>
+            </div>
+            <button type="button" data-inema-doubt-toggle aria-pressed="false" title="Marcar dúvida neste tópico" class="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm flex-shrink-0"><span aria-hidden="true">?</span><span>Dúvida</span></button>
+          </div>
+
+          <p data-inema-block="m22-t4-p1" class="text-neutral-300 mb-6 leading-relaxed">Depois de no ar, você quer saber se as pessoas usam — e se o app é rápido. A Vercel oferece <strong class="text-blue-400">Analytics</strong> (acessos) e <strong class="text-blue-400">Speed Insights</strong> (performance). Habilite no painel e instale o pacote pelo terminal (<strong>npm</strong>). O plano grátis é generoso.</p>
+
+          <div class="bg-dark-900 border border-dark-600 rounded-xl overflow-hidden mb-6">
+            <div class="px-4 py-2 bg-dark-700/50 border-b border-dark-600"><span class="text-xs text-neutral-400 font-mono">terminal</span></div>
+            <pre class="p-4 text-sm text-neutral-200 whitespace-pre-wrap font-mono">npm i @vercel/analytics @vercel/speed-insights</pre>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div class="bg-dark-800 rounded-xl border border-dark-600 p-6">
+              <h4 class="font-semibold text-blue-400 mb-2">📈 Analytics</h4>
+              <p class="text-neutral-300 text-sm">Quantos acessos, de onde vêm, quais páginas. Mostra se o app está sendo usado de verdade.</p>
+            </div>
+            <div class="bg-dark-800 rounded-xl border border-dark-600 p-6">
+              <h4 class="font-semibold text-blue-400 mb-2">⚡ Speed Insights</h4>
+              <p class="text-neutral-300 text-sm">Mede a performance real sentida pelos usuários. App lento espanta gente — aqui você vê onde melhorar.</p>
+            </div>
+          </div>
+
+          <div class="bg-primary/10 rounded-xl border border-primary/30 p-6 mb-6">
+            <h3 class="text-lg font-semibold text-primary mb-3 flex items-center"><span class="mr-2">💡</span> Decisão por dados</h3>
+            <p class="text-neutral-300">Sem dados, você adivinha o que melhorar. Com Analytics e Speed Insights, você foca no que realmente afeta seus usuários.</p>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-blue-400 font-bold mb-1">Habilitar</div><p class="text-xs text-neutral-400">no painel</p></div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-blue-400 font-bold mb-1">npm</div><p class="text-xs text-neutral-400">instala o pacote</p></div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-blue-400 font-bold mb-1">Acessos</div><p class="text-xs text-neutral-400">+ performance</p></div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-blue-400 font-bold mb-1">Grátis</div><p class="text-xs text-neutral-400">plano generoso</p></div>
+          </div>
+
+          <div class="flex justify-start mt-6">
+            <button type="button" data-inema-read-toggle aria-pressed="false">
+              <span class="inema-ico-todo" aria-hidden="true">○</span><span class="inema-ico-done" aria-hidden="true">●</span><span class="inema-label-todo">Marcar como lido</span><span class="inema-label-done">Lido</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- TÓPICO 5 -->
+        <section id="topico-5" data-inema-topic="modulo-2-2#topico-5" class="mb-16">
+          <div class="flex items-center justify-between mb-6 gap-3">
+            <div class="flex items-center space-x-4">
+              <span class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xl flex-shrink-0">5</span>
+              <h2 class="text-2xl font-bold">🩺 Troubleshooting por screenshot</h2>
+            </div>
+            <button type="button" data-inema-doubt-toggle aria-pressed="false" title="Marcar dúvida neste tópico" class="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm flex-shrink-0"><span aria-hidden="true">?</span><span>Dúvida</span></button>
+          </div>
+
+          <p data-inema-block="m22-t5-p1" class="text-neutral-300 mb-6 leading-relaxed">Quando um <strong class="text-blue-400">build falha</strong>, não entre em pânico nem tente decifrar o erro sozinho. Tire um <strong class="text-blue-400">screenshot dos logs de erro</strong> e mande pro agente: <em>"houve um erro no deploy, corrija"</em>. Para erros na tela, use o <strong class="text-blue-400">DevTools</strong> (Console/Network) e mande o print.</p>
+
+          <div class="space-y-6 mb-6">
+            <div class="flex items-start space-x-4">
+              <div class="flex-shrink-0 w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center"><span class="text-blue-400 font-bold">1</span></div>
+              <div class="flex-1 bg-dark-800 rounded-xl p-6 border border-dark-600">
+                <h4 class="font-semibold text-white mb-2">Capture o erro</h4>
+                <p class="text-neutral-300 text-sm">Screenshot dos logs de build na Vercel, ou do Console/Network no DevTools.</p>
+              </div>
+            </div>
+            <div class="flex items-start space-x-4">
+              <div class="flex-shrink-0 w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center"><span class="text-blue-400 font-bold">2</span></div>
+              <div class="flex-1 bg-dark-800 rounded-xl p-6 border border-dark-600">
+                <h4 class="font-semibold text-white mb-2">Mande pro agente</h4>
+                <p class="text-neutral-300 text-sm">"Houve um erro no deploy (veja o print). Corrija." A imagem dá o contexto exato.</p>
+              </div>
+            </div>
+            <div class="flex items-start space-x-4">
+              <div class="flex-shrink-0 w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center"><span class="text-blue-400 font-bold">3</span></div>
+              <div class="flex-1 bg-gradient-to-br from-blue-900/30 to-dark-800 rounded-xl p-6 border border-blue-500/30">
+                <h4 class="font-semibold text-blue-400 mb-2">Ele corrige e você re-publica</h4>
+                <p class="text-neutral-300 text-sm">Com o erro à vista, o agente acerta a correção muito mais rápido.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-primary/10 rounded-xl border border-primary/30 p-6 mb-6">
+            <h3 class="text-lg font-semibold text-primary mb-3 flex items-center"><span class="mr-2">🔎</span> DevTools é seu amigo</h3>
+            <p class="text-neutral-300">O <strong>Console</strong> mostra erros de código; a aba <strong>Network</strong> mostra requisições que falharam. Um print dessas telas vale mais que mil descrições.</p>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-blue-400 font-bold mb-1">Screenshot</div><p class="text-xs text-neutral-400">dos logs</p></div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-blue-400 font-bold mb-1">"Corrija"</div><p class="text-xs text-neutral-400">com o print</p></div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-blue-400 font-bold mb-1">DevTools</div><p class="text-xs text-neutral-400">Console/Network</p></div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-blue-400 font-bold mb-1">Contexto</div><p class="text-xs text-neutral-400">a imagem ajuda</p></div>
+          </div>
+
+          <div class="flex justify-start mt-6">
+            <button type="button" data-inema-read-toggle aria-pressed="false">
+              <span class="inema-ico-todo" aria-hidden="true">○</span><span class="inema-ico-done" aria-hidden="true">●</span><span class="inema-label-todo">Marcar como lido</span><span class="inema-label-done">Lido</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- TÓPICO 6 -->
+        <section id="topico-6" data-inema-topic="modulo-2-2#topico-6" class="mb-16">
+          <div class="flex items-center justify-between mb-6 gap-3">
+            <div class="flex items-center space-x-4">
+              <span class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xl flex-shrink-0">6</span>
+              <h2 class="text-2xl font-bold">💾 Commit often</h2>
+            </div>
+            <button type="button" data-inema-doubt-toggle aria-pressed="false" title="Marcar dúvida neste tópico" class="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm flex-shrink-0"><span aria-hidden="true">?</span><span>Dúvida</span></button>
+          </div>
+
+          <p data-inema-block="m22-t6-p1" class="text-neutral-300 mb-6 leading-relaxed">Uma lição que dói aprender na prática: <strong class="text-blue-400">comite com frequência</strong>. História real — codar <strong>6 horas sem commitar</strong> e perder justamente a melhor versão num passo em falso. O controle de versão é a sua <strong class="text-blue-400">rede de segurança</strong>.</p>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div class="bg-blue-900/20 rounded-xl border border-blue-500/30 p-6">
+              <h4 class="font-bold text-blue-400 mb-4">✓ Comite sempre</h4>
+              <ul class="space-y-3 text-neutral-300 text-sm">
+                <li class="flex items-start space-x-2"><span class="text-blue-400">✓</span><span>A cada pequeno avanço que funciona</span></li>
+                <li class="flex items-start space-x-2"><span class="text-blue-400">✓</span><span>Mensagens curtas e claras</span></li>
+                <li class="flex items-start space-x-2"><span class="text-blue-400">✓</span><span>Cada commit = um ponto de retorno seguro</span></li>
+              </ul>
+            </div>
+            <div class="bg-red-900/20 rounded-xl border border-red-500/30 p-6">
+              <h4 class="font-bold text-red-400 mb-4">✗ O risco de não commitar</h4>
+              <ul class="space-y-3 text-neutral-300 text-sm">
+                <li class="flex items-start space-x-2"><span class="text-red-400">✗</span><span>Horas de trabalho num único bloco frágil</span></li>
+                <li class="flex items-start space-x-2"><span class="text-red-400">✗</span><span>Um erro apaga a melhor versão</span></li>
+                <li class="flex items-start space-x-2"><span class="text-red-400">✗</span><span>Sem ponto de retorno, você recomeça</span></li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="bg-primary/10 rounded-xl border border-primary/30 p-6 mb-6">
+            <h3 class="text-lg font-semibold text-primary mb-3 flex items-center"><span class="mr-2">⚓</span> Pontos de retorno</h3>
+            <p class="text-neutral-300">Pense em cada commit como um "save" do jogo. Se algo der errado, você volta ao último save — e nunca perde mais do que o último pedaço.</p>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-blue-400 font-bold mb-1">Frequente</div><p class="text-xs text-neutral-400">cada avanço</p></div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-blue-400 font-bold mb-1">Histórico</div><p class="text-xs text-neutral-400">linha do tempo</p></div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-blue-400 font-bold mb-1">Save</div><p class="text-xs text-neutral-400">ponto de retorno</p></div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-blue-400 font-bold mb-1">Rede</div><p class="text-xs text-neutral-400">de segurança</p></div>
+          </div>
+
+          <div class="flex justify-start mt-6">
+            <button type="button" data-inema-read-toggle aria-pressed="false">
+              <span class="inema-ico-todo" aria-hidden="true">○</span><span class="inema-ico-done" aria-hidden="true">●</span><span class="inema-label-todo">Marcar como lido</span><span class="inema-label-done">Lido</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- TÓPICO 7 -->
+        <section id="topico-7" data-inema-topic="modulo-2-2#topico-7" class="mb-16">
+          <div class="flex items-center justify-between mb-6 gap-3">
+            <div class="flex items-center space-x-4">
+              <span class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xl flex-shrink-0">7</span>
+              <h2 class="text-2xl font-bold">⏪ Rollback</h2>
+            </div>
+            <button type="button" data-inema-doubt-toggle aria-pressed="false" title="Marcar dúvida neste tópico" class="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm flex-shrink-0"><span aria-hidden="true">?</span><span>Dúvida</span></button>
+          </div>
+
+          <p data-inema-block="m22-t7-p1" class="text-neutral-300 mb-6 leading-relaxed">Um deploy ruim não é o fim do mundo — é só um <strong class="text-blue-400">rollback</strong>. Na Vercel: <strong>Deployments → escolha a versão anterior estável → Redeploy</strong>. É literalmente "voltar no tempo". Também dá para reverter pelo <strong class="text-blue-400">GitHub</strong>.</p>
+
+          <!-- SVG -->
+          <div class="rounded-2xl border border-blue-500/30 bg-dark-900/40 p-3 sm:p-4 mb-6 overflow-hidden">
+            <svg viewBox="0 0 1000 200" class="w-full h-auto" role="img" aria-label="Uma linha de deploys: a versão estável, depois um deploy ruim; o rollback volta para a versão estável anterior via Redeploy">
+              <defs>
+                <linearGradient id="m22b-grad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#60a5fa"/><stop offset="1" stop-color="#3b82f6"/></linearGradient>
+                <filter id="m22b-glow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="1.8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+                <pattern id="m22b-grid" width="32" height="32" patternUnits="userSpaceOnUse"><circle cx="1.3" cy="1.3" r="1.3" fill="#3b82f6" opacity="0.12"/></pattern>
+                <marker id="m22b-ah" markerWidth="9" markerHeight="9" refX="6.5" refY="4.5" orient="auto"><path d="M0,0 L8,4.5 L0,9 L2.4,4.5 Z" fill="#60a5fa"/></marker>
+              </defs>
+              <rect x="0" y="0" width="1000" height="200" fill="url(#m22b-grid)"/>
+              <g font-family="Inter,sans-serif">
+                <g filter="url(#m22b-glow)"><rect x="60" y="80" width="200" height="60" rx="14" fill="#0e2018" stroke="url(#m22b-grad)" stroke-width="2.5"/></g>
+                <text x="160" y="106" text-anchor="middle" fill="#60a5fa" font-weight="600" font-size="16">v1 estável</text>
+                <text x="160" y="126" text-anchor="middle" fill="#dbeafe" font-size="12">funcionava bem</text>
+
+                <rect x="400" y="80" width="200" height="60" rx="14" fill="#1f1212" stroke="#f87171" stroke-width="2"/>
+                <text x="500" y="106" text-anchor="middle" fill="#fca5a5" font-weight="600" font-size="16">v2 quebrada</text>
+                <text x="500" y="126" text-anchor="middle" fill="#fecaca" font-size="12">deploy ruim</text>
+
+                <g filter="url(#m22b-glow)"><rect x="740" y="80" width="200" height="60" rx="14" fill="#0e2018" stroke="url(#m22b-grad)" stroke-width="2.5"/></g>
+                <text x="840" y="106" text-anchor="middle" fill="#60a5fa" font-weight="600" font-size="16">Rollback → v1</text>
+                <text x="840" y="126" text-anchor="middle" fill="#dbeafe" font-size="12">Redeploy</text>
+
+                <g fill="none" stroke="#60a5fa" stroke-width="2" opacity="0.6"><path d="M260,110 L396,110" marker-end="url(#m22b-ah)"/></g>
+                <g fill="none" stroke="#60a5fa" stroke-width="2.5" opacity="0.85"><path d="M740,150 C560,185 360,185 200,150" marker-end="url(#m22b-ah)"/></g>
+                <text x="470" y="182" text-anchor="middle" fill="#93c5fd" font-size="12" font-weight="600">voltar no tempo</text>
+              </g>
+            </svg>
+          </div>
+
+          <div class="overflow-x-auto mb-6">
+            <table class="w-full text-sm border border-dark-600 rounded-lg overflow-hidden">
+              <thead class="bg-dark-700/50 text-neutral-300"><tr><th class="text-left p-3">Por onde</th><th class="text-left p-3">Passo</th><th class="text-left p-3">Resultado</th></tr></thead>
+              <tbody class="divide-y divide-dark-600 text-neutral-400">
+                <tr><td class="p-3 text-neutral-300">Vercel</td><td class="p-3">Deployments → versão estável → Redeploy</td><td class="p-3 text-blue-400">volta no tempo</td></tr>
+                <tr><td class="p-3 text-neutral-300">GitHub</td><td class="p-3">reverter para o commit bom</td><td class="p-3 text-blue-400">desfaz a mudança</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-blue-400 font-bold mb-1">Deployments</div><p class="text-xs text-neutral-400">o histórico</p></div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-blue-400 font-bold mb-1">Estável</div><p class="text-xs text-neutral-400">a versão boa</p></div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-blue-400 font-bold mb-1">Redeploy</div><p class="text-xs text-neutral-400">volta no tempo</p></div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-blue-400 font-bold mb-1">GitHub</div><p class="text-xs text-neutral-400">também reverte</p></div>
+          </div>
+
+          <div class="flex justify-start mt-6">
+            <button type="button" data-inema-read-toggle aria-pressed="false">
+              <span class="inema-ico-todo" aria-hidden="true">○</span><span class="inema-ico-done" aria-hidden="true">●</span><span class="inema-label-todo">Marcar como lido</span><span class="inema-label-done">Lido</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- TÓPICO 8 -->
+        <section id="topico-8" data-inema-topic="modulo-2-2#topico-8" class="mb-16">
+          <div class="flex items-center justify-between mb-6 gap-3">
+            <div class="flex items-center space-x-4">
+              <span class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xl flex-shrink-0">8</span>
+              <h2 class="text-2xl font-bold">💰 Budget de API + repo privado</h2>
+            </div>
+            <button type="button" data-inema-doubt-toggle aria-pressed="false" title="Marcar dúvida neste tópico" class="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm flex-shrink-0"><span aria-hidden="true">?</span><span>Dúvida</span></button>
+          </div>
+
+          <p data-inema-block="m22-t8-p1" class="text-neutral-300 mb-6 leading-relaxed">Dois cuidados finais para dormir tranquilo. Primeiro: defina um <strong class="text-blue-400">budget</strong> de gasto na API para não tomar uma conta gigante. Segundo: torne o <strong class="text-blue-400">repositório privado</strong> depois de publicado, protegendo seu código.</p>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div class="bg-gradient-to-br from-blue-900/30 to-dark-800 rounded-xl border border-blue-500/30 p-6">
+              <h4 class="font-semibold text-blue-400 mb-2">💰 Budget de API</h4>
+              <p class="text-neutral-300 text-sm mb-2">Defina um teto de gasto no painel do provedor da API.</p>
+              <ul class="space-y-1 text-neutral-300 text-sm">
+                <li class="flex items-start space-x-2"><span class="text-blue-400">•</span><span>Evita sustos na fatura</span></li>
+                <li class="flex items-start space-x-2"><span class="text-blue-400">•</span><span>Protege contra loops ou abuso</span></li>
+              </ul>
+            </div>
+            <div class="bg-gradient-to-br from-blue-900/30 to-dark-800 rounded-xl border border-blue-500/30 p-6">
+              <h4 class="font-semibold text-blue-400 mb-2">🔒 Repo privado</h4>
+              <p class="text-neutral-300 text-sm mb-2">Depois de publicar, mude a visibilidade do repositório para privado.</p>
+              <ul class="space-y-1 text-neutral-300 text-sm">
+                <li class="flex items-start space-x-2"><span class="text-blue-400">•</span><span>Protege seu código</span></li>
+                <li class="flex items-start space-x-2"><span class="text-blue-400">•</span><span>Reduz risco de chaves vazadas</span></li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="bg-primary/10 rounded-xl border border-primary/30 p-6 mb-6">
+            <h3 class="text-lg font-semibold text-primary mb-3 flex items-center"><span class="mr-2">🛡️</span> Higiene de produção</h3>
+            <p class="text-neutral-300">Budget de API + repo privado + env vars formam a base da segurança do seu app no ar. São hábitos simples que evitam dores de cabeça caras.</p>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-blue-400 font-bold mb-1">Budget</div><p class="text-xs text-neutral-400">teto de gasto</p></div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-blue-400 font-bold mb-1">Sem susto</div><p class="text-xs text-neutral-400">na fatura</p></div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-blue-400 font-bold mb-1">Privado</div><p class="text-xs text-neutral-400">após publicar</p></div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-blue-400 font-bold mb-1">Seguro</div><p class="text-xs text-neutral-400">código + chaves</p></div>
+          </div>
+
+          <div class="flex justify-start mt-6">
+            <button type="button" data-inema-read-toggle aria-pressed="false">
+              <span class="inema-ico-todo" aria-hidden="true">○</span><span class="inema-ico-done" aria-hidden="true">●</span><span class="inema-label-todo">Marcar como lido</span><span class="inema-label-done">Lido</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- EXEMPLO PRÁTICO -->
+        <section id="exemplo" class="mb-12">
+          <h2 class="text-2xl font-bold mb-6 flex items-center"><span class="mr-3">🔬</span> Exemplo prático</h2>
+          <div class="bg-dark-800 rounded-xl border border-dark-600 p-6">
+            <p class="text-neutral-300 mb-4">Vamos publicar o <strong class="text-blue-400">rastreador de preços</strong> da Trilha 2.1 e mantê-lo vivo:</p>
+            <ol class="space-y-2 text-neutral-300 mb-4 list-decimal list-inside">
+              <li><strong>Publique na Vercel</strong> — Add New → Project → importar o repo → publicar.</li>
+              <li><strong>Proteja a chave</strong> — o agente nomeia <code>API_KEY</code>; você cola o valor em Settings → Environment Variables e dá Redeploy.</li>
+              <li><strong>Simule um deploy ruim</strong> — depois faça um <strong>rollback</strong>: Deployments → versão estável → Redeploy.</li>
+            </ol>
+            <p class="text-neutral-400 text-sm">Resultado: app no ar, chave segura, e a tranquilidade de saber que dá pra voltar no tempo.</p>
+          </div>
+        </section>
+
+        <!-- EXERCÍCIO -->
+        <section id="exercicio" class="mb-12">
+          <h2 class="text-2xl font-bold mb-6 flex items-center"><span class="mr-3">🏋️</span> Exercício</h2>
+          <div class="bg-gradient-to-br from-blue-900/30 to-dark-800 rounded-xl border border-blue-500/30 p-6">
+            <p class="text-neutral-300 mb-4">Leve o app que você construiu na 2.1 até o mundo:</p>
+            <ol class="space-y-2 text-neutral-300 mb-4 list-decimal list-inside">
+              <li><strong>Publique seu app na Vercel</strong> e confirme que o link funciona.</li>
+              <li><strong>Proteja uma chave por env var</strong> — nomeie no código, cole o valor na Vercel, Redeploy.</li>
+              <li><strong>Faça um rollback</strong> para a versão anterior e veja o app "voltar no tempo".</li>
+            </ol>
+            <p class="text-neutral-400 text-sm">Bônus: ligue Analytics e defina um budget de API. Na Trilha 3, você vai escalar a produção.</p>
+          </div>
+        </section>
+
+        <!-- PROMPTS PRONTOS -->
+        <section id="prompts" class="mb-12">
+          <h2 class="text-2xl font-bold mb-6 flex items-center"><span class="mr-3">⚡</span> Prompts prontos</h2>
+          <p class="text-neutral-400 mb-4 text-sm">Copie, cole no seu assistente de IA e adapte ao seu caso.</p>
+
+          <div data-prompt class="bg-dark-900 border border-dark-600 rounded-xl overflow-hidden mb-4">
+            <div class="flex items-center justify-between px-4 py-2 bg-dark-700/50 border-b border-dark-600"><span class="text-xs text-neutral-400 font-mono">criar repo e publicar</span><button onclick="copyPrompt(this)" class="text-xs px-2 py-1 rounded bg-blue-600 hover:bg-blue-500 text-white">Copiar</button></div>
+            <pre class="p-4 text-sm text-neutral-200 whitespace-pre-wrap font-mono">Crie um repositório no GitHub chamado [nome] e publique o projeto atual.
+Use o GitHub MCP. Não inclua chaves de API no código.</pre>
+          </div>
+
+          <div data-prompt class="bg-dark-900 border border-dark-600 rounded-xl overflow-hidden mb-4">
+            <div class="flex items-center justify-between px-4 py-2 bg-dark-700/50 border-b border-dark-600"><span class="text-xs text-neutral-400 font-mono">nomear env var</span><button onclick="copyPrompt(this)" class="text-xs px-2 py-1 rounded bg-blue-600 hover:bg-blue-500 text-white">Copiar</button></div>
+            <pre class="p-4 text-sm text-neutral-200 whitespace-pre-wrap font-mono">Especifique como a variável de ambiente deve se chamar (ex.: API_KEY);
+eu forneço a chave dentro da Vercel. Não coloque o valor no código.</pre>
+          </div>
+
+          <div data-prompt class="bg-dark-900 border border-dark-600 rounded-xl overflow-hidden mb-4">
+            <div class="flex items-center justify-between px-4 py-2 bg-dark-700/50 border-b border-dark-600"><span class="text-xs text-neutral-400 font-mono">corrigir erro de deploy</span><button onclick="copyPrompt(this)" class="text-xs px-2 py-1 rounded bg-blue-600 hover:bg-blue-500 text-white">Copiar</button></div>
+            <pre class="p-4 text-sm text-neutral-200 whitespace-pre-wrap font-mono">Houve um erro no deploy (veja o print). Corrija.
+Explique em uma frase o que causou e o que você mudou.</pre>
+          </div>
+        </section>
+
+        <!-- RESUMO -->
+        <section class="mb-12">
+          <div class="bg-gradient-to-br from-blue-900/40 via-dark-800 to-dark-800 rounded-xl border border-blue-500/30 p-8">
+            <h2 class="text-2xl font-bold mb-6 flex items-center"><span class="mr-3">✅</span> Resumo do módulo</h2>
+            <div class="space-y-4 mb-8">
+              <div class="flex items-start space-x-3"><span class="text-blue-400 mt-1">✓</span><div><strong class="text-white">GitHub MCP + Vercel</strong><span class="text-neutral-400"> — conecte (token + Docker) e publique em produção em poucos cliques.</span></div></div>
+              <div class="flex items-start space-x-3"><span class="text-blue-400 mt-1">✓</span><div><strong class="text-white">Env vars</strong><span class="text-neutral-400"> — o agente nomeia, você cola na Vercel e dá Redeploy; nunca no código.</span></div></div>
+              <div class="flex items-start space-x-3"><span class="text-blue-400 mt-1">✓</span><div><strong class="text-white">Manter vivo</strong><span class="text-neutral-400"> — analytics, troubleshooting por print, commit often e rollback.</span></div></div>
+              <div class="flex items-start space-x-3"><span class="text-blue-400 mt-1">✓</span><div><strong class="text-white">Higiene final</strong><span class="text-neutral-400"> — budget de API e repositório privado depois de publicado.</span></div></div>
+            </div>
+            <div class="bg-dark-800/50 rounded-lg p-4 mb-8"><h3 class="font-semibold text-blue-400 mb-2">Próxima trilha:</h3><p class="text-neutral-300">Trilha 3 — Escalar a Produção</p></div>
+            <div class="flex flex-col sm:flex-row gap-4">
+              <a href="index.html" class="flex-1 text-center px-6 py-3 bg-dark-700 text-neutral-300 rounded-lg font-semibold hover:bg-dark-600 transition-colors">← Voltar para Trilha</a>
+              <a href="../trilha3/index.html" class="flex-1 text-center px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-500 transition-colors">Trilha 3: Escalar a Produção →</a>
+            </div>
+          </div>
+        </section>
+
+      </article>
+    </div>
+  </main>
+
+  <footer class="border-t border-dark-600 py-8 mt-16">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-neutral-500 text-sm">
+      <p>AntiGravity — do Zero ao App Publicado com IA · <a href="https://inema.club" target="_blank" class="text-sky-400 hover:text-sky-300">INEMA.CLUB</a> · 2026</p>
+    </div>
+  </footer>
+
+  <script>
+    function toggleTopic(button) {
+      const topicItem = button.closest('.topic-item');
+      if (!topicItem) return;
+      const explanation = topicItem.querySelector('.topic-explanation');
+      const moduleCard = button.closest('.bg-dark-800') || document;
+      moduleCard.querySelectorAll('.topic-explanation.active').forEach(exp => { if (exp !== explanation) exp.classList.remove('active'); });
+      const willOpen = !explanation.classList.contains('active');
+      explanation.classList.toggle('active');
+      button.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+    }
+    (function () {
+      const themeToggle = document.getElementById('theme-toggle');
+      const di = document.getElementById('theme-toggle-dark-icon');
+      const li = document.getElementById('theme-toggle-light-icon');
+      const html = document.documentElement;
+      function paint() { const dark = html.classList.contains('dark'); di.classList.toggle('hidden', dark); li.classList.toggle('hidden', !dark); }
+      paint();
+      themeToggle && themeToggle.addEventListener('click', () => {
+        const nowDark = !html.classList.contains('dark');
+        if (window.INEMA && INEMA.setPref) { INEMA.setPref('theme', nowDark ? 'inema-dark' : 'claro'); }
+        else { html.classList.toggle('dark'); localStorage.setItem('theme', nowDark ? 'dark' : 'light'); }
+        paint();
+      });
+      document.addEventListener('inema:progress', paint);
+    })();
+    function openModal(modalId) { const m = document.getElementById(modalId); if (m) { m.classList.remove('hidden'); document.body.style.overflow = 'hidden'; } }
+    function closeModal() { document.querySelectorAll('.modal').forEach(m => m.classList.add('hidden')); document.body.style.overflow = 'auto'; }
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+    function copyPrompt(btn) {
+      const box = btn.closest('[data-prompt]'); const pre = box && box.querySelector('pre');
+      const txt = pre ? pre.innerText : '';
+      function done(){ const o = btn.textContent; btn.textContent = '✓ Copiado'; setTimeout(()=>{ btn.textContent = o; }, 1500); }
+      function fallback(){ const ta = document.createElement('textarea'); ta.value = txt; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch(e){} ta.remove(); done(); }
+      if (navigator.clipboard && window.isSecureContext) { navigator.clipboard.writeText(txt).then(done).catch(fallback); } else { fallback(); }
+    }
+  </script>
+  <script src="../assets/learn.js"></script>
+  <script>
+    if (window.INEMA && typeof window.INEMA.init === 'function') { window.INEMA.init(); }
+    // Liga controles da nav (fora do <main>, onde o learn.js delega cliques) à API do learn.js
+    (function () {
+      function wire() {
+        if (!window.INEMA) return;
+        document.querySelectorAll('[data-inema-journey-open]').forEach(function (b) { if (b.__w) return; b.__w = 1; b.addEventListener('click', function () { INEMA.openJourney && INEMA.openJourney(); }); });
+        document.querySelectorAll('[data-inema-appearance-toggle]').forEach(function (b) { if (b.__w) return; b.__w = 1; b.addEventListener('click', function (e) { e.stopPropagation(); var sel = b.getAttribute('data-inema-appearance-toggle'); var p = sel ? document.querySelector(sel) : document.querySelector('[data-inema-appearance]'); if (!p) return; var open = p.getAttribute('data-open') === 'true'; p.setAttribute('data-open', open ? 'false' : 'true'); b.setAttribute('aria-expanded', open ? 'false' : 'true'); }); });
+        [['data-inema-set-theme','theme'],['data-inema-set-font','font'],['data-inema-set-fontscale','fontScale'],['data-inema-set-leading','leading'],['data-inema-set-accent','accent'],['data-inema-set-linewidth','lineWidth']].forEach(function (m) { document.querySelectorAll('[' + m[0] + ']').forEach(function (b) { if (b.__w) return; b.__w = 1; b.addEventListener('click', function () { INEMA.setPref && INEMA.setPref(m[1], b.getAttribute(m[0])); }); }); });
+        document.addEventListener('click', function (e) { var p = document.querySelector('[data-inema-appearance][data-open="true"]'); if (!p) return; var t = document.querySelector('[data-inema-appearance-toggle]'); if (!p.contains(e.target) && (!t || !t.contains(e.target))) { p.setAttribute('data-open', 'false'); t && t.setAttribute('aria-expanded', 'false'); } });
+      }
+      if (document.readyState !== 'loading') setTimeout(wire, 0); else document.addEventListener('DOMContentLoaded', wire);
+    })();
+  </script>
+</body>
+</html>

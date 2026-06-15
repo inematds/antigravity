@@ -1,0 +1,91 @@
+{
+  "mcpServers": {
+    "n8n-mcp": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "supergateway",
+        "--streamableHttp",
+        "INSERT_APIKEY",
+        "--header",
+        "authorization:Bearer SEU_TOKEN_AQUI"
+      ]
+    },
+    "notion-mcp-server": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@notionhq/notion-mcp-server"
+      ],
+      "env": {
+        "OPENAPI_MCP_HEADERS": "{\"Authorization\": \"Bearer SEU_TOKEN_AQUI\", \"Notion-Version\": \"2022-06-28\"}"
+      },
+      "disabled": false
+    },
+    "pinecone-mcp-server": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@pinecone-database/mcp"
+      ],
+      "env": {
+        "PINECONE_API_KEY": "INSERT_APIKEY"
+      }
+    },
+    "supabase-mcp-server": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@supabase/mcp-server-supabase@latest",
+        "--access-token",
+        "SEU_TOKEN_AQUI"
+      ],
+      "env": {},
+      "disabled": true,
+      "disabledTools": [
+        "get_advisors",
+        "get_project_url"
+      ]
+    },
+    "vercel": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@robinson_ai_systems/vercel-mcp"
+      ],
+      "env": {
+        "VERCEL_TOKEN": "SEU_TOKEN_AQUI"
+      },
+      "disabled": false,
+      "disabledTools": [
+        "vercel_get_project",
+        "vercel_create_project",
+        "vercel_update_project",
+        "vercel_delete_project",
+        "vercel_create_deployment",
+        "vercel_cancel_deployment",
+        "vercel_delete_deployment",
+        "vercel_add_domain",
+        "vercel_remove_domain",
+        "vercel_create_dns_record",
+        "vercel_delete_dns_record",
+        "vercel_block_ip",
+        "vercel_unblock_ip",
+        "vercel_create_cron_job",
+        "vercel_update_cron_job",
+        "vercel_delete_cron_job",
+        "vercel_trigger_cron_job"
+      ]
+    },
+    "fireflies": {
+      "command": "npx",
+      "args": [
+        "mcp-remote",
+        "INSERT_APIKEY",
+        "--header",
+        "Authorization: Bearer SEU_TOKEN_AQUI"
+      ]
+    }
+  },
+  "disabledTools": []
+}
