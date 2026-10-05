@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="antigravity" name="inema-course"/>
+<title>Module 5.1 · CODA &amp; Claude Code | AntiGravity</title>
+<!-- ANTI-FOUC: bloqueante, ANTES do Tailwind e de qualquer <style>/<link> -->
+<script>
+  (function () {
+    try {
+      var html = document.documentElement;
+      var DEF = { theme: 'inema-dark', font: 'inter', fontScale: 100, lineWidth: 68, leading: 1.7, accent: 'emerald' };
+      function clone(o) { var r = {}; for (var x in o) r[x] = o[x]; return r; }
+      var p = clone(DEF);
+      try {
+        var raw = localStorage.getItem('inema.prefs');
+        if (raw) {
+          var parsed = JSON.parse(raw);
+          if (parsed && typeof parsed === 'object') { for (var k in DEF) if (parsed[k] != null) p[k] = parsed[k]; }
+        } else {
+          var legacy = localStorage.getItem('theme');
+          if (legacy === 'light') p.theme = 'claro';
+          else if (legacy === 'dark') p.theme = 'inema-dark';
+        }
+      } catch (e) { p = clone(DEF); }
+      var THEMES = {
+        'inema-dark': { dark: true,  attr: null,        cs: 'dark'  },
+        'claro':      { dark: false, attr: null,        cs: 'light' },
+        'sepia':      { dark: false, attr: 'sepia',     cs: 'light' },
+        'foco':       { dark: null,  attr: 'foco',      cs: null    },
+        'contraste':  { dark: true,  attr: 'contraste', cs: 'dark'  }
+      };
+      var t = THEMES[p.theme] || THEMES['inema-dark'];
+      if (t.dark === true) html.classList.add('dark');
+      else if (t.dark === false) html.classList.remove('dark');
+      if (t.attr) html.setAttribute('data-theme', t.attr); else html.removeAttribute('data-theme');
+      html.style.colorScheme = (t.cs ? t.cs : (html.classList.contains('dark') ? 'dark' : 'light'));
+      html.setAttribute('data-font', p.font || 'inter');
+      html.setAttribute('data-accent', p.accent || 'emerald');
+      var s = html.style, scale = (+p.fontScale || 100);
+      s.setProperty('--inema-font-scale', (scale / 100).toString());
+      s.setProperty('font-size', scale + '%');
+      s.setProperty('--measure', (+p.lineWidth || 68) + 'ch');
+      s.setProperty('--lh-body', (+p.leading || 1.7).toString());
+      var fam = p.font === 'system' ? 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif'
+        : (p.font === 'leitura' ? '"Atkinson Hyperlegible", "Inter", system-ui, sans-serif' : '"Inter", system-ui, sans-serif');
+      s.setProperty('--font-body', fam);
+      var ACC = { emerald:[152,76,45], blue:[217,91,60], purple:[258,90,66], amber:[38,92,50], teal:[174,72,41], rose:[350,89,60] };
+      var a = ACC[p.accent] || ACC.emerald;
+      s.setProperty('--accent-h', a[0] + ''); s.setProperty('--accent-s', a[1] + '%'); s.setProperty('--accent-l', a[2] + '%');
+      s.setProperty('--accent', 'hsl(' + a[0] + ' ' + a[1] + '% ' + a[2] + '%)');
+    } catch (err) {
+      try { document.documentElement.classList.add('dark'); document.documentElement.style.colorScheme = 'dark'; } catch (e) {}
+    }
+  })();
+  </script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: { extend: { colors: {
+        primary: '#FACC15',
+        dark: { 900: '#111827', 800: '#1f2937', 700: '#374151', 600: '#4b5563' }
+      } } }
+    }
+  </script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<style>
+    body { font-family: 'Inter', sans-serif; }
+    .dark body { background-color: #111827; }
+    .topic-explanation { display: none; }
+    .topic-explanation.active { display: block; }
+    [id] { scroll-margin-top: 4.5rem; }
+    .skip { position:absolute; left:-999px; top:0; background:#FACC15; color:#111827; padding:.5rem 1rem; border-radius:.5rem; z-index:100; }
+    .skip:focus { left:1rem; top:.5rem; }
+    :focus-visible { outline: 3px solid #38bdf8; outline-offset: 2px; }
+
+    /* Light mode - base */
+    html:not(.dark) body { background-color: #f8fafc; }
+    html:not(.dark) .bg-dark-900 { background-color: #ffffff; }
+    html:not(.dark) .bg-dark-800 { background-color: #f9fafb; }
+    html:not(.dark) .bg-dark-700 { background-color: #f3f4f6; }
+    html:not(.dark) .bg-dark-600 { background-color: #e5e7eb; }
+    html:not(.dark) .text-neutral-100 { color: #111827; }
+    html:not(.dark) .text-neutral-300 { color: #4b5563; }
+    html:not(.dark) .text-neutral-400 { color: #6b7280; }
+    html:not(.dark) .text-neutral-500 { color: #9ca3af; }
+    html:not(.dark) .border-dark-600 { border-color: #d1d5db; }
+    html:not(.dark) .border-dark-700 { border-color: #e5e7eb; }
+
+    /* Light mode - cores de acento (todas as trilhas) */
+    html:not(.dark) .text-emerald-400 { color: #059669; }
+    html:not(.dark) .bg-emerald-500\/20 { background-color: rgba(5,150,105,0.12); }
+    html:not(.dark) .bg-emerald-500\/10 { background-color: rgba(5,150,105,0.08); }
+    html:not(.dark) .border-emerald-500\/30 { border-color: rgba(5,150,105,0.25); }
+    html:not(.dark) .hover\:bg-emerald-500\/30:hover { background-color: rgba(5,150,105,0.18); }
+    html:not(.dark) .hover\:text-emerald-400:hover { color: #059669; }
+    html:not(.dark) .hover\:bg-emerald-500\/10:hover { background-color: rgba(5,150,105,0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-emerald-400 { color: #059669; }
+    html:not(.dark) .text-blue-400 { color: #2563eb; }
+    html:not(.dark) .bg-blue-500\/20 { background-color: rgba(37,99,235,0.12); }
+    html:not(.dark) .bg-blue-500\/10 { background-color: rgba(37,99,235,0.08); }
+    html:not(.dark) .border-blue-500\/30 { border-color: rgba(37,99,235,0.25); }
+    html:not(.dark) .hover\:bg-blue-500\/30:hover { background-color: rgba(37,99,235,0.18); }
+    html:not(.dark) .hover\:text-blue-400:hover { color: #2563eb; }
+    html:not(.dark) .hover\:bg-blue-500\/10:hover { background-color: rgba(37,99,235,0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-blue-400 { color: #2563eb; }
+    html:not(.dark) .text-purple-400 { color: #7c3aed; }
+    html:not(.dark) .bg-purple-500\/20 { background-color: rgba(124,58,237,0.12); }
+    html:not(.dark) .bg-purple-500\/10 { background-color: rgba(124,58,237,0.08); }
+    html:not(.dark) .border-purple-500\/30 { border-color: rgba(124,58,237,0.25); }
+    html:not(.dark) .hover\:bg-purple-500\/30:hover { background-color: rgba(124,58,237,0.18); }
+    html:not(.dark) .hover\:text-purple-400:hover { color: #7c3aed; }
+    html:not(.dark) .hover\:bg-purple-500\/10:hover { background-color: rgba(124,58,237,0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-purple-400 { color: #7c3aed; }
+    html:not(.dark) .text-amber-400 { color: #92400e; }
+    html:not(.dark) .bg-amber-500\/20 { background-color: rgba(217,119,6,0.12); }
+    html:not(.dark) .bg-amber-500\/10 { background-color: rgba(217,119,6,0.08); }
+    html:not(.dark) .border-amber-500\/30 { border-color: rgba(217,119,6,0.25); }
+    html:not(.dark) .hover\:bg-amber-500\/30:hover { background-color: rgba(217,119,6,0.18); }
+    html:not(.dark) .hover\:text-amber-400:hover { color: #92400e; }
+    html:not(.dark) .hover\:bg-amber-500\/10:hover { background-color: rgba(217,119,6,0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-amber-400 { color: #92400e; }
+    html:not(.dark) .text-teal-400 { color: #0d9488; }
+    html:not(.dark) .bg-teal-500\/20 { background-color: rgba(13,148,136,0.12); }
+    html:not(.dark) .bg-teal-500\/10 { background-color: rgba(13,148,136,0.08); }
+    html:not(.dark) .border-teal-500\/30 { border-color: rgba(13,148,136,0.25); }
+    html:not(.dark) .hover\:bg-teal-500\/30:hover { background-color: rgba(13,148,136,0.18); }
+    html:not(.dark) .hover\:text-teal-400:hover { color: #0d9488; }
+    html:not(.dark) .hover\:bg-teal-500\/10:hover { background-color: rgba(13,148,136,0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-teal-400 { color: #0d9488; }
+
+    /* Light mode - remove gradientes + cores especiais */
+    html:not(.dark) [class*="bg-gradient-to"] { background-image: none !important; }
+    html:not(.dark) .text-primary { color: #a16207; }
+    html:not(.dark) .bg-primary\/10 { background-color: rgba(161,98,7,0.08); }
+    html:not(.dark) .border-primary\/30 { border-color: rgba(161,98,7,0.25); }
+    html:not(.dark) .border-primary\/40 { border-color: rgba(161,98,7,0.25); }
+    html:not(.dark) .text-sky-400 { color: #0369a1; }
+    html:not(.dark) .text-yellow-400 { color: #a16207; }
+    html:not(.dark) .hover\:text-sky-300:hover { color: #0284c7; }
+    html:not(.dark) .hover\:text-yellow-300:hover { color: #854d0e; }
+    html:not(.dark) .bg-dark-900\/95 { background-color: rgba(255,255,255,0.95); }
+
+    /* Dark mode - bordas suavizadas */
+    .dark .border-dark-600 { border-color: #374151; }
+    .dark .divide-dark-600 > :not([hidden]) ~ :not([hidden]) { border-color: #374151; }
+
+    /* SVG diagramas: suavizar no claro */
+    html:not(.dark) svg[role="img"] { filter: saturate(0.82) brightness(0.96); }
+
+    .inema-toc-link.is-active { color: #2dd4bf; font-weight: 600; }
+  </style>
+<link href="../../assets/learn.css" rel="stylesheet"/>
+<script data-inema-manifest="" type="application/json">
+  {
+    "course": "antigravity",
+    "tracks": [
+      { "n": "1", "title": "Fundamentos", "modules": [
+        { "id": "1-1", "title": "AntiGravity & o bolo de 3 camadas", "topics": 7 },
+        { "id": "1-2", "title": "No-code vs. apps com IA", "topics": 6 },
+        { "id": "1-3", "title": "Setup completo do ambiente", "topics": 8 }
+      ]},
+      { "n": "2", "title": "Construir & Publicar", "modules": [
+        { "id": "2-1", "title": "Seu primeiro app", "topics": 8 },
+        { "id": "2-2", "title": "Publicar e manter", "topics": 8 }
+      ]},
+      { "n": "3", "title": "Escalar a Produção", "modules": [
+        { "id": "3-1", "title": "Sistema de clonagem", "topics": 7 },
+        { "id": "3-2", "title": "GoHighLevel/WordPress", "topics": 6 }
+      ]},
+      { "n": "4", "title": "Profissionalizar", "modules": [
+        { "id": "4-1", "title": "Fluxo de trabalho profissional", "topics": 6 },
+        { "id": "4-2", "title": "Entregar e aplicar", "topics": 7 }
+      ]},
+      { "n": "5", "title": "Maestria & Biblioteca", "modules": [
+        { "id": "5-1", "title": "CODA & Claude Code", "topics": 7 },
+        { "id": "5-2", "title": "Biblioteca de Skills & Prompts", "topics": 7 }
+      ]}
+    ]
+  }
+  </script>
+<link href="https://inematds.github.io/antigravity/trilha5/modulo-5-1.html" hreflang="pt-BR" rel="alternate"/><link href="https://inematds.github.io/antigravity/en/trilha5/modulo-5-1.html" hreflang="en" rel="alternate"/><link href="https://inematds.github.io/antigravity/es/trilha5/modulo-5-1.html" hreflang="es" rel="alternate"/></head>
+<body class="bg-dark-900 text-neutral-100 min-h-screen"><div class="inema-lang" style="position:fixed;right:14px;bottom:14px;z-index:9999;display:flex;gap:2px;padding:4px;border-radius:10px;background:rgba(12,12,16,.82);border:1px solid rgba(226,162,59,.45);font:600 12px/1 Sora,Inter,system-ui,sans-serif;backdrop-filter:blur(8px)" translate="no"><a href="../../trilha5/modulo-5-1.html" hreflang="pt-BR" style="padding:6px 8px;border-radius:7px;text-decoration:none;color:#e9e9ee">PT</a><a href="modulo-5-1.html" hreflang="en" style="padding:6px 8px;border-radius:7px;text-decoration:none;color:#1a1206;background:#E2A23B">EN</a><a href="../../es/trilha5/modulo-5-1.html" hreflang="es" style="padding:6px 8px;border-radius:7px;text-decoration:none;color:#e9e9ee">ES</a></div>
+<a class="skip" href="#conteudo">Skip to content</a>
+<!-- NAVIGATION -->
+<nav class="sticky top-0 z-50 bg-dark-900/95 backdrop-blur-sm border-b border-dark-600">
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="flex justify-between items-center h-14">
+<div class="flex items-center space-x-4">
+<a class="flex items-center space-x-2 text-yellow-400 hover:text-yellow-300" href="../index.html">
+<span class="text-2xl">🛰️</span>
+<span class="font-bold text-lg hidden sm:inline">AntiGravity</span>
+</a>
+<span class="text-neutral-600">|</span>
+<a class="text-sky-400 hover:text-sky-300 text-sm font-medium" href="https://inema.club" target="_blank">INEMA.CLUB</a>
+</div>
+<div class="flex items-center space-x-1 sm:space-x-2">
+<a class="px-2.5 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-emerald-400 hover:bg-emerald-500/10 transition-colors" href="../trilha1/index.html"><span class="sm:hidden">T1</span><span class="hidden sm:inline">Fundamentals</span></a>
+<a class="px-2.5 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-blue-400 hover:bg-blue-500/10 transition-colors" href="../trilha2/index.html"><span class="sm:hidden">T2</span><span class="hidden sm:inline">Build</span></a>
+<a class="px-2.5 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-purple-400 hover:bg-purple-500/10 transition-colors" href="../trilha3/index.html"><span class="sm:hidden">T3</span><span class="hidden sm:inline">Scale</span></a>
+<a class="px-2.5 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-amber-400 hover:bg-amber-500/10 transition-colors" href="../trilha4/index.html"><span class="sm:hidden">T4</span><span class="hidden sm:inline">Professional</span></a>
+<a class="px-2.5 py-1.5 rounded-lg text-sm font-semibold text-teal-400 bg-teal-500/10" href="index.html"><span class="sm:hidden">T5</span><span class="hidden sm:inline">Mastery</span></a>
+<div class="relative">
+<button aria-expanded="false" class="p-2 rounded-lg bg-dark-700 hover:bg-dark-600 transition-colors" data-inema-appearance-toggle="[data-inema-appearance]" title="Appearance and readability" type="button"><span aria-hidden="true">◑</span></button>
+<div class="inema-appearance-pop" data-inema-appearance="" style="right:0">
+<div><p class="text-xs text-neutral-400 mb-1">Theme</p><div class="inema-segment flex flex-wrap gap-1">
+<button class="px-2 py-1 text-xs rounded bg-dark-700" data-inema-set-theme="inema-dark">Dark</button>
+<button class="px-2 py-1 text-xs rounded bg-dark-700" data-inema-set-theme="claro">Clear</button>
+<button class="px-2 py-1 text-xs rounded bg-dark-700" data-inema-set-theme="sepia">Sepia</button>
+<button class="px-2 py-1 text-xs rounded bg-dark-700" data-inema-set-theme="foco">Focus</button>
+<button class="px-2 py-1 text-xs rounded bg-dark-700" data-inema-set-theme="contraste">High contrast</button>
+</div></div>
+<div><p class="text-xs text-neutral-400 mb-1">Source</p><div class="inema-segment flex gap-1">
+<button class="px-2 py-1 text-xs rounded bg-dark-700" data-inema-set-font="inter">Inter</button>
+<button class="px-2 py-1 text-xs rounded bg-dark-700" data-inema-set-font="system">System</button>
+<button class="px-2 py-1 text-xs rounded bg-dark-700" data-inema-set-font="leitura">Reading</button>
+</div></div>
+<div><p class="text-xs text-neutral-400 mb-1">Size</p><div class="inema-segment flex gap-1">
+<button class="px-2 py-1 text-xs rounded bg-dark-700" data-inema-set-fontscale="100">A</button>
+<button class="px-2 py-1 text-xs rounded bg-dark-700" data-inema-set-fontscale="112">A+</button>
+<button class="px-2 py-1 text-xs rounded bg-dark-700" data-inema-set-fontscale="125">A++</button>
+</div></div>
+<div><p class="text-xs text-neutral-400 mb-1">Line spacing</p><div class="inema-segment flex gap-1">
+<button class="px-2 py-1 text-xs rounded bg-dark-700" data-inema-set-leading="1.45">Compact</button>
+<button class="px-2 py-1 text-xs rounded bg-dark-700" data-inema-set-leading="1.7">Comfortable</button>
+</div></div>
+</div>
+</div>
+<button class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-sm text-neutral-300 hover:text-neutral-100 hover:bg-dark-700 transition-colors" data-inema-journey-open="" title="My journey" type="button">
+<span aria-hidden="true">◷</span><span class="hidden sm:inline">Journey</span>
+<span class="inema-journey-badge" data-count="0" data-inema-journey-badge=""></span>
+</button>
+<button class="p-2 rounded-lg bg-dark-700 hover:bg-dark-600 transition-colors" id="theme-toggle" title="Toggle light/dark">
+<svg class="hidden w-5 h-5 text-neutral-300" fill="currentColor" id="theme-toggle-dark-icon" viewbox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+<svg class="hidden w-5 h-5 text-neutral-300" fill="currentColor" id="theme-toggle-light-icon" viewbox="0 0 20 20"><path clip-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd"></path></svg>
+</button>
+</div>
+</div>
+</div>
+</nav>
+<!-- BREADCRUMB -->
+<nav class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+<div class="flex items-center space-x-2 text-sm text-neutral-400">
+<a class="hover:text-teal-400" href="../index.html">Start</a><span>/</span>
+<a class="hover:text-teal-400" href="index.html">Track 5</a><span>/</span>
+<span class="text-teal-400">Module 5.1</span>
+</div>
+</nav>
+<!-- HEADER -->
+<header class="bg-gradient-to-br from-teal-900/30 via-dark-800 to-dark-800 py-12 border-b border-dark-600">
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+<span class="inline-block px-3 py-1 bg-teal-500/20 text-teal-400 text-xs font-semibold rounded-full mb-4">MODULE 5.1</span>
+<h1 class="text-3xl sm:text-4xl font-bold mb-4">✈️ CODA &amp; Claude Code</h1>
+<p class="text-lg text-neutral-400 max-w-3xl">The professional method for coding with AI. Separate the IDE (the fighter jet) from the model (the pilot) and work through the five stages: Configure, Outline, Deploy, Automation, and Review.</p>
+<div class="grid grid-cols-4 gap-4 mt-8 max-w-2xl">
+<div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600"><div class="text-xl font-bold text-teal-400">7</div><div class="text-xs text-neutral-400">Topics</div></div>
+<div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600"><div class="text-xl font-bold text-teal-400">60</div><div class="text-xs text-neutral-400">Minutes</div></div>
+<div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600"><div class="text-xl font-bold text-teal-400">Advanced</div><div class="text-xs text-neutral-400">Level</div></div>
+<div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600"><div class="text-xl font-bold text-teal-400">Method</div><div class="text-xs text-neutral-400">Type</div></div>
+</div>
+</div>
+</header>
+<main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10" id="conteudo">
+<div class="lg:grid lg:grid-cols-[230px_minmax(0,1fr)] lg:gap-10">
+<!-- TOC -->
+<nav aria-label="Page index" class="hidden lg:block sticky top-20 self-start" data-inema-toc="">
+<p class="text-sm text-neutral-400 mb-2">Section <span data-inema-section-counter="">1 of 7</span></p>
+<ol class="space-y-1 text-sm">
+<li><a class="inema-toc-link text-neutral-400 hover:text-teal-400" href="#topico-1">1. Hunt and pilot</a></li>
+<li><a class="inema-toc-link text-neutral-400 hover:text-teal-400" href="#topico-2">2. C — Configure</a></li>
+<li><a class="inema-toc-link text-neutral-400 hover:text-teal-400" href="#topico-3">3. O — Outline</a></li>
+<li><a class="inema-toc-link text-neutral-400 hover:text-teal-400" href="#topico-4">4. D — Deploy</a></li>
+<li><a class="inema-toc-link text-neutral-400 hover:text-teal-400" href="#topico-5">5. A — Automation</a></li>
+<li><a class="inema-toc-link text-neutral-400 hover:text-teal-400" href="#topico-6">6. R — Review</a></li>
+<li><a class="inema-toc-link text-neutral-400 hover:text-teal-400" href="#topico-7">7. Less is more</a></li>
+</ol>
+<div class="mt-4 pt-4 border-t border-dark-600">
+<div class="text-sm" data-inema-meter="modulo:5-1"><span class="text-neutral-400" data-inema-meter-frac="">0 of 7</span> · <span class="text-teal-400 font-bold" data-inema-meter-pct="">0%</span><div class="inema-bar h-1.5 mt-2 rounded-full bg-dark-600 overflow-hidden"><div class="inema-bar__fill h-full rounded-full bg-teal-500" data-inema-meter-fill="" style="width:0%"></div></div></div>
+</div>
+</nav>
+<article class="min-w-0" data-inema-module="5-1" data-inema-track="5">
+<!-- TÓPICO 1 -->
+<section class="mb-16" data-inema-topic="modulo-5-1#topico-1" id="topico-1">
+<div class="flex items-center justify-between mb-6 gap-3">
+<div class="flex items-center space-x-4">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-teal-500/20 text-teal-400 font-bold text-xl flex-shrink-0">1</span>
+<h2 class="text-2xl font-bold">✈️ The IDE is the fighter jet, the model is the pilot</h2>
+</div>
+<button aria-pressed="false" class="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm flex-shrink-0" data-inema-doubt-toggle="" title="Flag a question on this topic" type="button"><span aria-hidden="true">?</span><span>Question</span></button>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed" data-inema-block="m5-1-t1-p1">First, an analogy that brings it all together: the <strong class="text-teal-400">IDE</strong> (AntiGravity, Cursor) is the <strong class="text-neutral-100">hunt</strong> — the machine where you take flight. The <strong class="text-teal-400">model</strong> (Claude Code, Gemini) is the <strong class="text-neutral-100">pilot</strong> — the brain that makes the decisions. And the key point: <strong class="text-teal-400">you switch the pilot based on the mission's goal</strong>.</p>
+<div class="bg-gradient-to-br from-teal-900/30 to-dark-800 rounded-xl border border-teal-500/30 p-6 mb-6">
+<h3 class="text-lg font-semibold text-teal-400 mb-4 flex items-center"><span class="mr-2">🧭</span> The core idea</h3>
+<p class="text-neutral-300 mb-4">Separate the <strong>tool</strong> (the hunter) of the <strong>brain</strong> (the pilot) is liberating: your skill isn’t tied to one product. If one model is better at design and another at reasoning, you choose the right pilot for the flight.</p>
+<ul class="space-y-2 text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-teal-400 mt-1">•</span><span>O <strong>hunt</strong> doesn’t decide anything on its own—it gives you the tools and the cockpit.</span></li>
+<li class="flex items-start space-x-2"><span class="text-teal-400 mt-1">•</span><span>O <strong>pilot</strong> reasons, writes, and fixes—and can be swapped out at any time.</span></li>
+<li class="flex items-start space-x-2"><span class="text-teal-400 mt-1">•</span><span><strong>No pilot takes off without a checklist</strong> — that’s exactly what the CODA framework is.</span></li>
+</ul>
+</div>
+<!-- SVG -->
+<div class="rounded-2xl border border-teal-500/30 bg-dark-900/40 p-3 sm:p-4 mb-6 overflow-hidden">
+<svg aria-label="The IDE is the fighter jet that can carry different pilots: you connect the Claude Code model or the Gemini model depending on the mission’s objective" class="w-full h-auto" role="img" viewbox="0 0 1000 220">
+<defs>
+<lineargradient id="m51-grad" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#2dd4bf"></stop><stop offset="1" stop-color="#14b8a6"></stop></lineargradient>
+<filter height="180%" id="m51-glow" width="180%" x="-40%" y="-40%"><fegaussianblur result="b" stddeviation="1.8"></fegaussianblur><femerge><femergenode in="b"></femergenode><femergenode in="SourceGraphic"></femergenode></femerge></filter>
+<pattern height="32" id="m51-grid" patternunits="userSpaceOnUse" width="32"><circle cx="1.3" cy="1.3" fill="#14b8a6" opacity="0.12" r="1.3"></circle></pattern>
+<marker id="m51-ah" markerheight="9" markerwidth="9" orient="auto" refx="6.5" refy="4.5"><path d="M0,0 L8,4.5 L0,9 L2.4,4.5 Z" fill="#2dd4bf"></path></marker>
+</defs>
+<rect fill="url(#m51-grid)" height="220" width="1000" x="0" y="0"></rect>
+<g fill="none" opacity="0.55" stroke="#2dd4bf" stroke-width="2">
+<path d="M548,80 C640,80 660,60 740,60" marker-end="url(#m51-ah)"></path>
+<path d="M548,140 C640,140 660,160 740,160" marker-end="url(#m51-ah)"></path>
+</g>
+<g filter="url(#m51-glow)"><rect fill="#0c1f1c" height="60" rx="14" stroke="url(#m51-grad)" stroke-width="2.5" width="248" x="300" y="80"></rect></g>
+<text fill="#2dd4bf" font-family="Inter,sans-serif" font-size="17" font-weight="700" text-anchor="middle" x="424" y="106">🛩️ IDE (the fighter jet)</text>
+<text fill="#99f6e4" font-family="Inter,sans-serif" font-size="12" text-anchor="middle" x="424" y="126">AntiGravity · Cursor</text>
+<g font-family="Inter,sans-serif" font-size="14" font-weight="600">
+<g><rect fill="#0c1f1c" height="44" rx="12" stroke="#14b8a6" stroke-width="2" width="230" x="740" y="40"></rect><text fill="#2dd4bf" text-anchor="middle" x="855" y="61">👨‍✈️ Claude Code</text><text fill="#99f6e4" font-size="11" text-anchor="middle" x="855" y="77">reasoning / code</text></g>
+<g><rect fill="#0c1f1c" height="44" rx="12" stroke="#14b8a6" stroke-width="2" width="230" x="740" y="140"></rect><text fill="#2dd4bf" text-anchor="middle" x="855" y="161">👩‍✈️ Gemini</text><text fill="#99f6e4" font-size="11" text-anchor="middle" x="855" y="177">design / multimodal</text></g>
+</g>
+<text fill="#2dd4bf" font-family="Inter,sans-serif" font-size="14" font-weight="600" text-anchor="middle" x="160" y="106">you choose</text>
+<text fill="#9ca3af" font-family="Inter,sans-serif" font-size="12" text-anchor="middle" x="160" y="126">the mission pilot →</text>
+</svg>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-teal-400 font-bold mb-1">Hunt</div><p class="text-xs text-neutral-400">the IDE</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-teal-400 font-bold mb-1">Pilot</div><p class="text-xs text-neutral-400">the model</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-teal-400 font-bold mb-1">Exchange</div><p class="text-xs text-neutral-400">by objective</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-teal-400 font-bold mb-1">Checklist</div><p class="text-xs text-neutral-400">= CODA</p></div>
+</div>
+<div class="flex justify-start mt-6">
+<button aria-pressed="false" data-inema-read-toggle="" type="button">
+<span aria-hidden="true" class="inema-ico-todo">○</span><span aria-hidden="true" class="inema-ico-done">●</span><span class="inema-label-todo">Mark as read</span><span class="inema-label-done">Read</span>
+</button>
+</div>
+</section>
+<!-- TÓPICO 2 -->
+<section class="mb-16" data-inema-topic="modulo-5-1#topico-2" id="topico-2">
+<div class="flex items-center justify-between mb-6 gap-3">
+<div class="flex items-center space-x-4">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-teal-500/20 text-teal-400 font-bold text-xl flex-shrink-0">2</span>
+<h2 class="text-2xl font-bold">📝 C — Configure (claude.md)</h2>
+</div>
+<button aria-pressed="false" class="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm flex-shrink-0" data-inema-doubt-toggle="" title="Flag a question on this topic" type="button"><span aria-hidden="true">?</span><span>Question</span></button>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed" data-inema-block="m5-1-t2-p1">The first step of CODA is <strong class="text-teal-400">Configure</strong>: create a context file — <strong>claude.md</strong> (or <strong>Gemini.md</strong>)—in EVERY project. It’s the <strong class="text-teal-400">backbone</strong> that the pilot reads before touching anything.</p>
+<div class="space-y-6 mb-6">
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-teal-500/20 flex items-center justify-center"><span class="text-teal-400 font-bold">1</span></div>
+<div class="flex-1 bg-dark-800 rounded-xl p-6 border border-dark-600">
+<h4 class="font-semibold text-white mb-2">Tech stack &amp; directories</h4>
+<p class="text-neutral-300 text-sm">Which technologies the project uses and where the key folders are. This way, the AI won't have to guess the structure.</p>
+</div>
+</div>
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-teal-500/20 flex items-center justify-center"><span class="text-teal-400 font-bold">2</span></div>
+<div class="flex-1 bg-dark-800 rounded-xl p-6 border border-dark-600">
+<h4 class="font-semibold text-white mb-2">Commands</h4>
+<p class="text-neutral-300 text-sm">How to run, build, and test the project. The pilot needs to know the commands to run and verify it.</p>
+</div>
+</div>
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-teal-500/20 flex items-center justify-center"><span class="text-teal-400 font-bold">3</span></div>
+<div class="flex-1 bg-gradient-to-br from-teal-900/30 to-dark-800 rounded-xl p-6 border border-teal-500/30">
+<h4 class="font-semibold text-teal-400 mb-2">Success criteria + how to test</h4>
+<p class="text-neutral-300 text-sm">The heart of the file: what “done” means and how to prove it. Without this, everything else loses direction.</p>
+</div>
+</div>
+</div>
+<div class="bg-primary/10 rounded-xl border border-primary/30 p-6 mb-6">
+<h3 class="text-lg font-semibold text-primary mb-3 flex items-center"><span class="mr-2">💡</span> Living document</h3>
+<p class="text-neutral-300">claude.md isn’t written once and forgotten. Whenever the project changes direction, update the file. It’s the shared memory between you and the copilot.</p>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-teal-400 font-bold mb-1">Stack</div><p class="text-xs text-neutral-400">technologies</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-teal-400 font-bold mb-1">Commands</div><p class="text-xs text-neutral-400">run and test</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-teal-400 font-bold mb-1">Success</div><p class="text-xs text-neutral-400">what “done” means</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-teal-400 font-bold mb-1">Live</div><p class="text-xs text-neutral-400">always up to date</p></div>
+</div>
+<div class="flex justify-start mt-6">
+<button aria-pressed="false" data-inema-read-toggle="" type="button">
+<span aria-hidden="true" class="inema-ico-todo">○</span><span aria-hidden="true" class="inema-ico-done">●</span><span class="inema-label-todo">Mark as read</span><span class="inema-label-done">Read</span>
+</button>
+</div>
+</section>
+<!-- TÓPICO 3 -->
+<section class="mb-16" data-inema-topic="modulo-5-1#topico-3" id="topico-3">
+<div class="flex items-center justify-between mb-6 gap-3">
+<div class="flex items-center space-x-4">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-teal-500/20 text-teal-400 font-bold text-xl flex-shrink-0">3</span>
+<h2 class="text-2xl font-bold">🗺️ O — Outline (Plan Mode)</h2>
+</div>
+<button aria-pressed="false" class="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm flex-shrink-0" data-inema-doubt-toggle="" title="Flag a question on this topic" type="button"><span aria-hidden="true">?</span><span>Question</span></button>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed" data-inema-block="m5-1-t3-p1">The second step is <strong class="text-teal-400">Outline</strong>: plan before coding. This is where the professionals’ secret lies — spending <strong class="text-teal-400">~95% of the time defining the problem and success BEFOREHAND</strong> writing a single line of code.</p>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+<div class="bg-teal-900/20 rounded-xl border border-teal-500/30 p-6">
+<h4 class="font-bold text-teal-400 mb-4">✓ Do it in Plan Mode</h4>
+<ul class="space-y-3 text-neutral-300 text-sm">
+<li class="flex items-start space-x-2"><span class="text-teal-400">✓</span><span>Define the problem in detail</span></li>
+<li class="flex items-start space-x-2"><span class="text-teal-400">✓</span><span>Go back and forth with the model</span></li>
+<li class="flex items-start space-x-2"><span class="text-teal-400">✓</span><span>Ask clarifying questions</span></li>
+<li class="flex items-start space-x-2"><span class="text-teal-400">✓</span><span>Use “ultrathink” for deep reasoning</span></li>
+</ul>
+</div>
+<div class="bg-red-900/20 rounded-xl border border-red-500/30 p-6">
+<h4 class="font-bold text-red-400 mb-4">✗ Avoid</h4>
+<ul class="space-y-3 text-neutral-300 text-sm">
+<li class="flex items-start space-x-2"><span class="text-red-400">✗</span><span>Say "build X" and start coding</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400">✗</span><span>Skip defining success</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400">✗</span><span>Accepting the AI's first interpretation</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400">✗</span><span>Discover the requirement only at the end</span></li>
+</ul>
+</div>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">In <strong class="text-teal-400">Plan Mode</strong>, the model doesn’t write code: it talks things through, raises questions, and helps draft the specification. When the plan is solid, implementation becomes almost a detail—because the problem has already been solved on paper.</p>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-teal-400 font-bold mb-1">95%</div><p class="text-xs text-neutral-400">in the plan</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-teal-400 font-bold mb-1">Dialogue</div><p class="text-xs text-neutral-400">round trip</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-teal-400 font-bold mb-1">Questions</div><p class="text-xs text-neutral-400">clarifying</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-teal-400 font-bold mb-1">Ultrathink</div><p class="text-xs text-neutral-400">deep reasoning</p></div>
+</div>
+<div class="flex justify-start mt-6">
+<button aria-pressed="false" data-inema-read-toggle="" type="button">
+<span aria-hidden="true" class="inema-ico-todo">○</span><span aria-hidden="true" class="inema-ico-done">●</span><span class="inema-label-todo">Mark as read</span><span class="inema-label-done">Read</span>
+</button>
+</div>
+</section>
+<!-- TÓPICO 4 -->
+<section class="mb-16" data-inema-topic="modulo-5-1#topico-4" id="topico-4">
+<div class="flex items-center justify-between mb-6 gap-3">
+<div class="flex items-center space-x-4">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-teal-500/20 text-teal-400 font-bold text-xl flex-shrink-0">4</span>
+<h2 class="text-2xl font-bold">⚡ D — Deploy (parallel agents)</h2>
+</div>
+<button aria-pressed="false" class="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm flex-shrink-0" data-inema-doubt-toggle="" title="Flag a question on this topic" type="button"><span aria-hidden="true">?</span><span>Question</span></button>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed" data-inema-block="m5-1-t4-p1">The third step is <strong class="text-teal-400">Deploy</strong>: get the agents flying. The productivity boost comes from running <strong class="text-teal-400">multiple agents at the same time (5 to 7)</strong> — through the terminal or the IDE itself.</p>
+<div class="bg-gradient-to-br from-teal-900/30 to-dark-800 rounded-xl border border-teal-500/30 p-6 mb-6">
+<h3 class="text-lg font-semibold text-teal-400 mb-3 flex items-center"><span class="mr-2">🛫</span> Agent squad</h3>
+<p class="text-neutral-300 mb-3">Instead of waiting for one agent to finish before starting the next, you launch a squad. While one works on the front end, another adjusts the back end, and another writes tests — all in parallel.</p>
+<p class="text-neutral-300">You can even use <strong>agents on the web</strong> connected to a repository, still running even with the <strong>laptop closed</strong>. The work continues without you.</p>
+</div>
+<div class="overflow-x-auto mb-6">
+<table class="w-full text-sm border border-dark-600 rounded-lg overflow-hidden">
+<thead class="bg-dark-700/50 text-neutral-300"><tr><th class="text-left p-3">Where to run</th><th class="text-left p-3">How</th><th class="text-left p-3">Advantage</th></tr></thead>
+<tbody class="divide-y divide-dark-600 text-neutral-400">
+<tr><td class="p-3 text-neutral-300">Terminal</td><td class="p-3 text-teal-400">multiple sessions</td><td class="p-3">direct control</td></tr>
+<tr><td class="p-3 text-neutral-300">IDE</td><td class="p-3 text-teal-400">parallel panels</td><td class="p-3">everything in one place</td></tr>
+<tr><td class="p-3 text-neutral-300">Web + repo</td><td class="p-3 text-teal-400">in the cloud</td><td class="p-3">runs with the laptop closed</td></tr>
+</tbody>
+</table>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-teal-400 font-bold mb-1">5–7</div><p class="text-xs text-neutral-400">agents working together</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-teal-400 font-bold mb-1">Terminal</div><p class="text-xs text-neutral-400">or IDE</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-teal-400 font-bold mb-1">Web</div><p class="text-xs text-neutral-400">connected to the repo</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-teal-400 font-bold mb-1">Throughput</div><p class="text-xs text-neutral-400">multiplies</p></div>
+</div>
+<div class="flex justify-start mt-6">
+<button aria-pressed="false" data-inema-read-toggle="" type="button">
+<span aria-hidden="true" class="inema-ico-todo">○</span><span aria-hidden="true" class="inema-ico-done">●</span><span class="inema-label-todo">Mark as read</span><span class="inema-label-done">Read</span>
+</button>
+</div>
+</section>
+<!-- TÓPICO 5 -->
+<section class="mb-16" data-inema-topic="modulo-5-1#topico-5" id="topico-5">
+<div class="flex items-center justify-between mb-6 gap-3">
+<div class="flex items-center space-x-4">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-teal-500/20 text-teal-400 font-bold text-xl flex-shrink-0">5</span>
+<h2 class="text-2xl font-bold">🧩 A — Automation (subagents)</h2>
+</div>
+<button aria-pressed="false" class="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm flex-shrink-0" data-inema-doubt-toggle="" title="Flag a question on this topic" type="button"><span aria-hidden="true">?</span><span>Question</span></button>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed" data-inema-block="m5-1-t5-p1">The fourth step is <strong class="text-teal-400">Automation</strong>: create <strong class="text-teal-400">specialized subagents</strong>, one per subtask. Each subagent has the <strong>your own context window</strong>, so everything doesn’t spill into a single conversation.</p>
+<!-- SVG -->
+<div class="rounded-2xl border border-teal-500/30 bg-dark-900/40 p-3 sm:p-4 mb-6 overflow-hidden">
+<svg aria-label="An orchestrator agent delegates to three specialized subagents — one for the title, one for the introduction, and one for the script — each with its own context window" class="w-full h-auto" role="img" viewbox="0 0 1000 220">
+<defs>
+<lineargradient id="m51b-grad" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#2dd4bf"></stop><stop offset="1" stop-color="#14b8a6"></stop></lineargradient>
+<filter height="180%" id="m51b-glow" width="180%" x="-40%" y="-40%"><fegaussianblur result="b" stddeviation="1.8"></fegaussianblur><femerge><femergenode in="b"></femergenode><femergenode in="SourceGraphic"></femergenode></femerge></filter>
+<pattern height="32" id="m51b-grid" patternunits="userSpaceOnUse" width="32"><circle cx="1.3" cy="1.3" fill="#14b8a6" opacity="0.12" r="1.3"></circle></pattern>
+<marker id="m51b-ah" markerheight="9" markerwidth="9" orient="auto" refx="6.5" refy="4.5"><path d="M0,0 L8,4.5 L0,9 L2.4,4.5 Z" fill="#2dd4bf"></path></marker>
+</defs>
+<rect fill="url(#m51b-grid)" height="220" width="1000" x="0" y="0"></rect>
+<g fill="none" opacity="0.55" stroke="#2dd4bf" stroke-width="2">
+<path d="M300,110 C420,110 460,46 620,46" marker-end="url(#m51b-ah)"></path>
+<path d="M300,110 L620,110" marker-end="url(#m51b-ah)"></path>
+<path d="M300,110 C420,110 460,174 620,174" marker-end="url(#m51b-ah)"></path>
+</g>
+<g filter="url(#m51b-glow)"><rect fill="#0c1f1c" height="60" rx="14" stroke="url(#m51b-grad)" stroke-width="2.5" width="220" x="40" y="80"></rect></g>
+<text fill="#2dd4bf" font-family="Inter,sans-serif" font-size="16" font-weight="700" text-anchor="middle" x="150" y="106">Orchestrator</text>
+<text fill="#99f6e4" font-family="Inter,sans-serif" font-size="12" text-anchor="middle" x="150" y="126">divides the work</text>
+<g font-family="Inter,sans-serif" font-size="13" font-weight="600">
+<g><rect fill="#0c1f1c" height="40" rx="11" stroke="#14b8a6" stroke-width="2" width="340" x="620" y="26"></rect><text fill="#2dd4bf" text-anchor="middle" x="790" y="46">subagent · title</text><text fill="#99f6e4" font-size="10.5" text-anchor="middle" x="790" y="60">own context</text></g>
+<g><rect fill="#0c1f1c" height="40" rx="11" stroke="#14b8a6" stroke-width="2" width="340" x="620" y="90"></rect><text fill="#2dd4bf" text-anchor="middle" x="790" y="110">subagent · intro</text><text fill="#99f6e4" font-size="10.5" text-anchor="middle" x="790" y="124">own context</text></g>
+<g><rect fill="#0c1f1c" height="40" rx="11" stroke="#14b8a6" stroke-width="2" width="340" x="620" y="154"></rect><text fill="#2dd4bf" text-anchor="middle" x="790" y="174">subagent · script</text><text fill="#99f6e4" font-size="10.5" text-anchor="middle" x="790" y="188">own context</text></g>
+</g>
+</svg>
+</div>
+<div class="bg-primary/10 rounded-xl border border-primary/30 p-6 mb-6">
+<h3 class="text-lg font-semibold text-primary mb-3 flex items-center"><span class="mr-2">🧠</span> Why divide</h3>
+<p class="text-neutral-300">Each model has a limit to how much it can “remember” at once (the context window). By assigning a subtask to a subagent, you keep each conversation concise and focused — and nothing important gets pushed out of memory.</p>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-teal-400 font-bold mb-1">1 task</div><p class="text-xs text-neutral-400">1 subagent</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-teal-400 font-bold mb-1">Context</div><p class="text-xs text-neutral-400">unique to each person</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-teal-400 font-bold mb-1">Focus</div><p class="text-xs text-neutral-400">without noise</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-teal-400 font-bold mb-1">No overflow</div><p class="text-xs text-neutral-400">memory under control</p></div>
+</div>
+<div class="flex justify-start mt-6">
+<button aria-pressed="false" data-inema-read-toggle="" type="button">
+<span aria-hidden="true" class="inema-ico-todo">○</span><span aria-hidden="true" class="inema-ico-done">●</span><span class="inema-label-todo">Mark as read</span><span class="inema-label-done">Read</span>
+</button>
+</div>
+</section>
+<!-- TÓPICO 6 -->
+<section class="mb-16" data-inema-topic="modulo-5-1#topico-6" id="topico-6">
+<div class="flex items-center justify-between mb-6 gap-3">
+<div class="flex items-center space-x-4">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-teal-500/20 text-teal-400 font-bold text-xl flex-shrink-0">6</span>
+<h2 class="text-2xl font-bold">🔎 R — Review &amp; Verify</h2>
+</div>
+<button aria-pressed="false" class="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm flex-shrink-0" data-inema-doubt-toggle="" title="Flag a question on this topic" type="button"><span aria-hidden="true">?</span><span>Question</span></button>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed" data-inema-block="m5-1-t6-p1">The last step is <strong class="text-teal-400">Review &amp; verify</strong>: the landing. You provide <strong class="text-teal-400">explicit success criteria</strong> (written in claude.md) so that "done" stops being a matter of opinion and becomes an objective test.</p>
+<div class="bg-dark-800 rounded-xl border border-dark-600 p-6 mb-6">
+<h3 class="text-lg font-semibold text-teal-400 mb-4 flex items-center"><span class="mr-2">✅</span> Success checklist</h3>
+<ul class="space-y-3 text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-teal-400 mt-1">✓</span><span>Runs <strong>no errors</strong></span></li>
+<li class="flex items-start space-x-2"><span class="text-teal-400 mt-1">✓</span><span>The <strong>tests pass</strong></span></li>
+<li class="flex items-start space-x-2"><span class="text-teal-400 mt-1">✓</span><span>Without <strong>lint warnings</strong></span></li>
+<li class="flex items-start space-x-2"><span class="text-teal-400 mt-1">✓</span><span>Does <strong>what was requested</strong></span></li>
+<li class="flex items-start space-x-2"><span class="text-teal-400 mt-1">✓</span><span>The changes are <strong>explainable</strong></span></li>
+</ul>
+</div>
+<div class="bg-gradient-to-br from-teal-900/30 to-dark-800 rounded-xl border border-teal-500/30 p-6 mb-6">
+<h3 class="text-lg font-semibold text-teal-400 mb-3 flex items-center"><span class="mr-2">🕵️</span> Skeptical review</h3>
+<p class="text-neutral-300">Ask the AI to review its own work as a <strong>"highly skeptical senior developer"</strong>. This framing forces the model to look for gaps instead of praising—and reveals what would break before the user finds out.</p>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-teal-400 font-bold mb-1">No errors</div><p class="text-xs text-neutral-400">runs cleanly</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-teal-400 font-bold mb-1">Tests</div><p class="text-xs text-neutral-400">pass</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-teal-400 font-bold mb-1">Explainable</div><p class="text-xs text-neutral-400">you understand</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-teal-400 font-bold mb-1">Skeptical</div><p class="text-xs text-neutral-400">hunts for gaps</p></div>
+</div>
+<div class="flex justify-start mt-6">
+<button aria-pressed="false" data-inema-read-toggle="" type="button">
+<span aria-hidden="true" class="inema-ico-todo">○</span><span aria-hidden="true" class="inema-ico-done">●</span><span class="inema-label-todo">Mark as read</span><span class="inema-label-done">Read</span>
+</button>
+</div>
+</section>
+<!-- TÓPICO 7 -->
+<section class="mb-16" data-inema-topic="modulo-5-1#topico-7" id="topico-7">
+<div class="flex items-center justify-between mb-6 gap-3">
+<div class="flex items-center space-x-4">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-teal-500/20 text-teal-400 font-bold text-xl flex-shrink-0">7</span>
+<h2 class="text-2xl font-bold">🪶 Less is more</h2>
+</div>
+<button aria-pressed="false" class="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm flex-shrink-0" data-inema-doubt-toggle="" title="Flag a question on this topic" type="button"><span aria-hidden="true">?</span><span>Question</span></button>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed" data-inema-block="m5-1-t7-p1">An important counterpoint to CODA as a whole: <strong class="text-teal-400">sometimes a short prompt works better than a super-detailed one</strong>. Modern models are good at inferring—and too many instructions can confuse them.</p>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+<div class="bg-teal-900/20 rounded-xl border border-teal-500/30 p-6">
+<h4 class="font-bold text-teal-400 mb-4">✓ Try it first</h4>
+<ul class="space-y-3 text-neutral-300 text-sm">
+<li class="flex items-start space-x-2"><span class="text-teal-400">✓</span><span>The short, direct prompt</span></li>
+<li class="flex items-start space-x-2"><span class="text-teal-400">✓</span><span>Let AI infer the details</span></li>
+<li class="flex items-start space-x-2"><span class="text-teal-400">✓</span><span>Only add details if it gets it wrong</span></li>
+</ul>
+</div>
+<div class="bg-red-900/20 rounded-xl border border-red-500/30 p-6">
+<h4 class="font-bold text-red-400 mb-4">✗ Be careful with</h4>
+<ul class="space-y-3 text-neutral-300 text-sm">
+<li class="flex items-start space-x-2"><span class="text-red-400">✗</span><span>Filling the prompt “just in case”</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400">✗</span><span>Contradictory instructions</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400">✗</span><span>Micromanage every step</span></li>
+</ul>
+</div>
+</div>
+<div class="bg-primary/10 rounded-xl border border-primary/30 p-6 mb-6">
+<h3 class="text-lg font-semibold text-primary mb-3 flex items-center"><span class="mr-2">⚖️</span> The balance</h3>
+<p class="text-neutral-300">CODA provides structure where it matters (context, plan, verification). “Less is more” reminds you that simplicity is a strength in everyday prompts. Start simple; add detail only when the AI asks or makes a mistake.</p>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-teal-400 font-bold mb-1">Short</div><p class="text-xs text-neutral-400">first</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-teal-400 font-bold mb-1">Infer</div><p class="text-xs text-neutral-400">let the AI</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-teal-400 font-bold mb-1">Expand</div><p class="text-xs text-neutral-400">only if you make a mistake</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-teal-400 font-bold mb-1">Tokens</div><p class="text-xs text-neutral-400">saves</p></div>
+</div>
+<div class="flex justify-start mt-6">
+<button aria-pressed="false" data-inema-read-toggle="" type="button">
+<span aria-hidden="true" class="inema-ico-todo">○</span><span aria-hidden="true" class="inema-ico-done">●</span><span class="inema-label-todo">Mark as read</span><span class="inema-label-done">Read</span>
+</button>
+</div>
+</section>
+<!-- EXEMPLO PRÁTICO -->
+<section class="mb-12" id="exemplo">
+<h2 class="text-2xl font-bold mb-6 flex items-center"><span class="mr-3">🔬</span> Practical example</h2>
+<div class="bg-dark-800 rounded-xl border border-dark-600 p-6">
+<p class="text-neutral-300 mb-4">Let’s put together a <strong class="text-teal-400">claude.md</strong> for a simple project—a site that shows the weather in 3 cities—with success criteria and tests already defined. This is the “C” in CODA in practice.</p>
+<div class="bg-dark-900 border border-dark-600 rounded-xl overflow-hidden mb-4">
+<div class="flex items-center justify-between px-4 py-2 bg-dark-700/50 border-b border-dark-600"><span class="text-xs text-neutral-400 font-mono">claude.md</span></div>
+<pre class="p-4 text-sm text-neutral-200 whitespace-pre-wrap font-mono"># Clima de 3 cidades
+
+## Stack
+- HTML + CSS + JS puro (sem build)
+- API: open-meteo (sem chave)
+
+## Diretórios
+- index.html  → página única
+- /assets     → css e js
+
+## Comandos
+- abrir: é só abrir index.html no navegador
+- testar: rodar manualmente as 3 cidades
+
+## Critério de sucesso
+- Mostra temperatura atual de São Paulo, Rio e Salvador
+- Carrega em &lt; 2s, sem erros no console
+- Funciona offline depois do 1º carregamento (cache)
+
+## Como testar
+1. Abrir index.html
+2. Conferir as 3 temperaturas aparecendo
+3. Abrir o console: não pode ter erro vermelho</pre>
+</div>
+<p class="text-neutral-400 text-sm">Notice: the pilot (model) now knows what to build, how to run it, and — most importantly — how to know when it’s done.</p>
+</div>
+</section>
+<!-- EXERCÍCIO -->
+<section class="mb-12" id="exercicio">
+<h2 class="text-2xl font-bold mb-6 flex items-center"><span class="mr-3">🏋️</span> Exercise</h2>
+<div class="bg-gradient-to-br from-teal-900/30 to-dark-800 rounded-xl border border-teal-500/30 p-6">
+<p class="text-neutral-300 mb-4">Time to take the helm. Complete the two steps below in one of your own projects (it can be small):</p>
+<ol class="space-y-2 text-neutral-300 mb-4 list-decimal list-inside">
+<li>Write a <strong>claude.md</strong> with <strong>success criteria</strong> clear and the “how to test” section.</li>
+<li>Run <strong>3 agents in parallel</strong> into different subtasks (e.g., one for the interface, one for the logic, one for testing).</li>
+</ol>
+<p class="text-neutral-400 text-sm">At the end, ask one of them to review it as a “skeptical senior developer” and note what they found.</p>
+</div>
+</section>
+<!-- PROMPTS PRONTOS -->
+<section class="mb-12" id="prompts">
+<h2 class="text-2xl font-bold mb-6 flex items-center"><span class="mr-3">⚡</span> Ready-made prompts</h2>
+<p class="text-neutral-400 mb-4 text-sm">Copy, paste into your AI assistant, and adapt to your use case.</p>
+<div class="bg-dark-900 border border-dark-600 rounded-xl overflow-hidden mb-4" data-prompt="">
+<div class="flex items-center justify-between px-4 py-2 bg-dark-700/50 border-b border-dark-600"><span class="text-xs text-neutral-400 font-mono">C — Configure</span><button class="text-xs px-2 py-1 rounded bg-teal-600 hover:bg-teal-500 text-white" onclick="copyPrompt(this)">Copy</button></div>
+<pre class="p-4 text-sm text-neutral-200 whitespace-pre-wrap font-mono">Atualize o claude.md com o escopo abaixo do projeto e me faça perguntas
+para preencher os detalhes que faltam (stack, diretórios, comandos,
+critério de sucesso e como testar).
+
+Escopo: [descreva o projeto em 2-3 frases]</pre>
+</div>
+<div class="bg-dark-900 border border-dark-600 rounded-xl overflow-hidden mb-4" data-prompt="">
+<div class="flex items-center justify-between px-4 py-2 bg-dark-700/50 border-b border-dark-600"><span class="text-xs text-neutral-400 font-mono">The — Outline (Plan Mode)</span><button class="text-xs px-2 py-1 rounded bg-teal-600 hover:bg-teal-500 text-white" onclick="copyPrompt(this)">Copy</button></div>
+<pre class="p-4 text-sm text-neutral-200 whitespace-pre-wrap font-mono">(Plan Mode) Quero construir [X]. Me ajude a definir o problema em detalhe
+e criar as especificações. Faça perguntas clarificadoras antes de escrever
+qualquer código. Não comece a implementar até o plano estar fechado.</pre>
+</div>
+<div class="bg-dark-900 border border-dark-600 rounded-xl overflow-hidden mb-4" data-prompt="">
+<div class="flex items-center justify-between px-4 py-2 bg-dark-700/50 border-b border-dark-600"><span class="text-xs text-neutral-400 font-mono">R — Review (skeptical)</span><button class="text-xs px-2 py-1 rounded bg-teal-600 hover:bg-teal-500 text-white" onclick="copyPrompt(this)">Copy</button></div>
+<pre class="p-4 text-sm text-neutral-200 whitespace-pre-wrap font-mono">Review this code as a highly skeptical senior developer:
+- Does it run without errors?
+- Do the tests pass? Are there uncovered cases?
+- What would break in production?
+List the problems by severity and propose a fix for each one.</pre>
+</div>
+</section>
+<!-- RESUMO -->
+<section class="mb-12">
+<div class="bg-gradient-to-br from-teal-900/40 via-dark-800 to-dark-800 rounded-xl border border-teal-500/30 p-8">
+<h2 class="text-2xl font-bold mb-6 flex items-center"><span class="mr-3">✅</span> Module summary</h2>
+<div class="space-y-4 mb-8">
+<div class="flex items-start space-x-3"><span class="text-teal-400 mt-1">✓</span><div><strong class="text-white">Hunt and pilot</strong><span class="text-neutral-400"> — the IDE is the tool, the model is the brain; switch copilots based on the goal.</span></div></div>
+<div class="flex items-start space-x-3"><span class="text-teal-400 mt-1">✓</span><div><strong class="text-white">CODA</strong><span class="text-neutral-400"> — Configure, Outline, Deploy, Automation, Review: the checklist for people who code seriously with AI.</span></div></div>
+<div class="flex items-start space-x-3"><span class="text-teal-400 mt-1">✓</span><div><strong class="text-white">Plan + verification</strong><span class="text-neutral-400"> — ~95% in Outline; explicit success and skeptical review in Review.</span></div></div>
+<div class="flex items-start space-x-3"><span class="text-teal-400 mt-1">✓</span><div><strong class="text-white">Less is more</strong><span class="text-neutral-400"> — start with the short prompt; add detail only when you need it.</span></div></div>
+</div>
+<div class="bg-dark-800/50 rounded-lg p-4 mb-8"><h3 class="font-semibold text-teal-400 mb-2">Next module:</h3><p class="text-neutral-300">5.2 — Skills &amp; Prompts Library</p></div>
+<div class="flex flex-col sm:flex-row gap-4">
+<a class="flex-1 text-center px-6 py-3 bg-dark-700 text-neutral-300 rounded-lg font-semibold hover:bg-dark-600 transition-colors" href="index.html">← Back to Track</a>
+<a class="flex-1 text-center px-6 py-3 bg-teal-600 text-white rounded-lg font-semibold hover:bg-teal-500 transition-colors" href="modulo-5-2.html">Next Module →</a>
+</div>
+</div>
+</section>
+</article>
+</div>
+</main>
+<footer class="border-t border-dark-600 py-8 mt-16">
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-neutral-500 text-sm">
+<p>AntiGravity — From Zero to a Published App with AI · <a class="text-sky-400 hover:text-sky-300" href="https://inema.club" target="_blank">INEMA.CLUB</a> · 2026</p>
+</div>
+</footer>
+<script>
+    function toggleTopic(button) {
+      const topicItem = button.closest('.topic-item');
+      if (!topicItem) return;
+      const explanation = topicItem.querySelector('.topic-explanation');
+      const moduleCard = button.closest('.bg-dark-800') || document;
+      moduleCard.querySelectorAll('.topic-explanation.active').forEach(exp => { if (exp !== explanation) exp.classList.remove('active'); });
+      const willOpen = !explanation.classList.contains('active');
+      explanation.classList.toggle('active');
+      button.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+    }
+    (function () {
+      const themeToggle = document.getElementById('theme-toggle');
+      const di = document.getElementById('theme-toggle-dark-icon');
+      const li = document.getElementById('theme-toggle-light-icon');
+      const html = document.documentElement;
+      function paint() { const dark = html.classList.contains('dark'); di.classList.toggle('hidden', dark); li.classList.toggle('hidden', !dark); }
+      paint();
+      themeToggle && themeToggle.addEventListener('click', () => {
+        const nowDark = !html.classList.contains('dark');
+        if (window.INEMA && INEMA.setPref) { INEMA.setPref('theme', nowDark ? 'inema-dark' : 'claro'); }
+        else { html.classList.toggle('dark'); localStorage.setItem('theme', nowDark ? 'dark' : 'light'); }
+        paint();
+      });
+      document.addEventListener('inema:progress', paint);
+    })();
+    function openModal(modalId) { const m = document.getElementById(modalId); if (m) { m.classList.remove('hidden'); document.body.style.overflow = 'hidden'; } }
+    function closeModal() { document.querySelectorAll('.modal').forEach(m => m.classList.add('hidden')); document.body.style.overflow = 'auto'; }
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+    function copyPrompt(btn) {
+      const box = btn.closest('[data-prompt]'); const pre = box && box.querySelector('pre');
+      const txt = pre ? pre.innerText : '';
+      function done(){ const o = btn.textContent; btn.textContent = '✓ Copiado'; setTimeout(()=>{ btn.textContent = o; }, 1500); }
+      function fallback(){ const ta = document.createElement('textarea'); ta.value = txt; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch(e){} ta.remove(); done(); }
+      if (navigator.clipboard && window.isSecureContext) { navigator.clipboard.writeText(txt).then(done).catch(fallback); } else { fallback(); }
+    }
+  </script>
+<script src="../../assets/learn.js"></script>
+<script>
+    if (window.INEMA && typeof window.INEMA.init === 'function') { window.INEMA.init(); }
+    // Liga controles da nav (fora do <main>, onde o learn.js delega cliques) à API do learn.js
+    (function () {
+      function wire() {
+        if (!window.INEMA) return;
+        document.querySelectorAll('[data-inema-journey-open]').forEach(function (b) { if (b.__w) return; b.__w = 1; b.addEventListener('click', function () { INEMA.openJourney && INEMA.openJourney(); }); });
+        document.querySelectorAll('[data-inema-appearance-toggle]').forEach(function (b) { if (b.__w) return; b.__w = 1; b.addEventListener('click', function (e) { e.stopPropagation(); var sel = b.getAttribute('data-inema-appearance-toggle'); var p = sel ? document.querySelector(sel) : document.querySelector('[data-inema-appearance]'); if (!p) return; var open = p.getAttribute('data-open') === 'true'; p.setAttribute('data-open', open ? 'false' : 'true'); b.setAttribute('aria-expanded', open ? 'false' : 'true'); }); });
+        [['data-inema-set-theme','theme'],['data-inema-set-font','font'],['data-inema-set-fontscale','fontScale'],['data-inema-set-leading','leading'],['data-inema-set-accent','accent'],['data-inema-set-linewidth','lineWidth']].forEach(function (m) { document.querySelectorAll('[' + m[0] + ']').forEach(function (b) { if (b.__w) return; b.__w = 1; b.addEventListener('click', function () { INEMA.setPref && INEMA.setPref(m[1], b.getAttribute(m[0])); }); }); });
+        document.addEventListener('click', function (e) { var p = document.querySelector('[data-inema-appearance][data-open="true"]'); if (!p) return; var t = document.querySelector('[data-inema-appearance-toggle]'); if (!p.contains(e.target) && (!t || !t.contains(e.target))) { p.setAttribute('data-open', 'false'); t && t.setAttribute('aria-expanded', 'false'); } });
+      }
+      if (document.readyState !== 'loading') setTimeout(wire, 0); else document.addEventListener('DOMContentLoaded', wire);
+    })();
+  </script>
+</body>
+</html>

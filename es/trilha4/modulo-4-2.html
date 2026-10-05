@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="antigravity" name="inema-course"/>
+<title>Módulo 4.2 · Entregar y aplicar profesionalmente | AntiGravity</title>
+<!-- ANTI-FOUC: bloqueante, ANTES do Tailwind e de qualquer <style>/<link> -->
+<script>
+  (function () {
+    try {
+      var html = document.documentElement;
+      var DEF = { theme: 'inema-dark', font: 'inter', fontScale: 100, lineWidth: 68, leading: 1.7, accent: 'emerald' };
+      function clone(o) { var r = {}; for (var x in o) r[x] = o[x]; return r; }
+      var p = clone(DEF);
+      try {
+        var raw = localStorage.getItem('inema.prefs');
+        if (raw) {
+          var parsed = JSON.parse(raw);
+          if (parsed && typeof parsed === 'object') { for (var k in DEF) if (parsed[k] != null) p[k] = parsed[k]; }
+        } else {
+          var legacy = localStorage.getItem('theme');
+          if (legacy === 'light') p.theme = 'claro';
+          else if (legacy === 'dark') p.theme = 'inema-dark';
+        }
+      } catch (e) { p = clone(DEF); }
+      var THEMES = {
+        'inema-dark': { dark: true,  attr: null,        cs: 'dark'  },
+        'claro':      { dark: false, attr: null,        cs: 'light' },
+        'sepia':      { dark: false, attr: 'sepia',     cs: 'light' },
+        'foco':       { dark: null,  attr: 'foco',      cs: null    },
+        'contraste':  { dark: true,  attr: 'contraste', cs: 'dark'  }
+      };
+      var t = THEMES[p.theme] || THEMES['inema-dark'];
+      if (t.dark === true) html.classList.add('dark');
+      else if (t.dark === false) html.classList.remove('dark');
+      if (t.attr) html.setAttribute('data-theme', t.attr); else html.removeAttribute('data-theme');
+      html.style.colorScheme = (t.cs ? t.cs : (html.classList.contains('dark') ? 'dark' : 'light'));
+      html.setAttribute('data-font', p.font || 'inter');
+      html.setAttribute('data-accent', p.accent || 'emerald');
+      var s = html.style, scale = (+p.fontScale || 100);
+      s.setProperty('--inema-font-scale', (scale / 100).toString());
+      s.setProperty('font-size', scale + '%');
+      s.setProperty('--measure', (+p.lineWidth || 68) + 'ch');
+      s.setProperty('--lh-body', (+p.leading || 1.7).toString());
+      var fam = p.font === 'system' ? 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif'
+        : (p.font === 'leitura' ? '"Atkinson Hyperlegible", "Inter", system-ui, sans-serif' : '"Inter", system-ui, sans-serif');
+      s.setProperty('--font-body', fam);
+      var ACC = { emerald:[152,76,45], blue:[217,91,60], purple:[258,90,66], amber:[38,92,50], teal:[174,72,41], rose:[350,89,60] };
+      var a = ACC[p.accent] || ACC.emerald;
+      s.setProperty('--accent-h', a[0] + ''); s.setProperty('--accent-s', a[1] + '%'); s.setProperty('--accent-l', a[2] + '%');
+      s.setProperty('--accent', 'hsl(' + a[0] + ' ' + a[1] + '% ' + a[2] + '%)');
+    } catch (err) {
+      try { document.documentElement.classList.add('dark'); document.documentElement.style.colorScheme = 'dark'; } catch (e) {}
+    }
+  })();
+  </script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: { extend: { colors: {
+        primary: '#FACC15',
+        dark: { 900: '#111827', 800: '#1f2937', 700: '#374151', 600: '#4b5563' }
+      } } }
+    }
+  </script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<style>
+    body { font-family: 'Inter', sans-serif; }
+    .dark body { background-color: #111827; }
+    .topic-explanation { display: none; }
+    .topic-explanation.active { display: block; }
+    [id] { scroll-margin-top: 4.5rem; }
+    .skip { position:absolute; left:-999px; top:0; background:#FACC15; color:#111827; padding:.5rem 1rem; border-radius:.5rem; z-index:100; }
+    .skip:focus { left:1rem; top:.5rem; }
+    :focus-visible { outline: 3px solid #38bdf8; outline-offset: 2px; }
+
+    /* Light mode - base */
+    html:not(.dark) body { background-color: #f8fafc; }
+    html:not(.dark) .bg-dark-900 { background-color: #ffffff; }
+    html:not(.dark) .bg-dark-800 { background-color: #f9fafb; }
+    html:not(.dark) .bg-dark-700 { background-color: #f3f4f6; }
+    html:not(.dark) .bg-dark-600 { background-color: #e5e7eb; }
+    html:not(.dark) .text-neutral-100 { color: #111827; }
+    html:not(.dark) .text-neutral-300 { color: #4b5563; }
+    html:not(.dark) .text-neutral-400 { color: #6b7280; }
+    html:not(.dark) .text-neutral-500 { color: #9ca3af; }
+    html:not(.dark) .border-dark-600 { border-color: #d1d5db; }
+    html:not(.dark) .border-dark-700 { border-color: #e5e7eb; }
+
+    /* Light mode - cores de acento (todas as trilhas) */
+    html:not(.dark) .text-emerald-400 { color: #059669; }
+    html:not(.dark) .bg-emerald-500\/20 { background-color: rgba(5,150,105,0.12); }
+    html:not(.dark) .bg-emerald-500\/10 { background-color: rgba(5,150,105,0.08); }
+    html:not(.dark) .border-emerald-500\/30 { border-color: rgba(5,150,105,0.25); }
+    html:not(.dark) .hover\:bg-emerald-500\/30:hover { background-color: rgba(5,150,105,0.18); }
+    html:not(.dark) .hover\:text-emerald-400:hover { color: #059669; }
+    html:not(.dark) .hover\:bg-emerald-500\/10:hover { background-color: rgba(5,150,105,0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-emerald-400 { color: #059669; }
+    html:not(.dark) .text-blue-400 { color: #2563eb; }
+    html:not(.dark) .bg-blue-500\/20 { background-color: rgba(37,99,235,0.12); }
+    html:not(.dark) .bg-blue-500\/10 { background-color: rgba(37,99,235,0.08); }
+    html:not(.dark) .border-blue-500\/30 { border-color: rgba(37,99,235,0.25); }
+    html:not(.dark) .hover\:bg-blue-500\/30:hover { background-color: rgba(37,99,235,0.18); }
+    html:not(.dark) .hover\:text-blue-400:hover { color: #2563eb; }
+    html:not(.dark) .hover\:bg-blue-500\/10:hover { background-color: rgba(37,99,235,0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-blue-400 { color: #2563eb; }
+    html:not(.dark) .text-purple-400 { color: #7c3aed; }
+    html:not(.dark) .bg-purple-500\/20 { background-color: rgba(124,58,237,0.12); }
+    html:not(.dark) .bg-purple-500\/10 { background-color: rgba(124,58,237,0.08); }
+    html:not(.dark) .border-purple-500\/30 { border-color: rgba(124,58,237,0.25); }
+    html:not(.dark) .hover\:bg-purple-500\/30:hover { background-color: rgba(124,58,237,0.18); }
+    html:not(.dark) .hover\:text-purple-400:hover { color: #7c3aed; }
+    html:not(.dark) .hover\:bg-purple-500\/10:hover { background-color: rgba(124,58,237,0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-purple-400 { color: #7c3aed; }
+    html:not(.dark) .text-amber-400 { color: #92400e; }
+    html:not(.dark) .bg-amber-500\/20 { background-color: rgba(217,119,6,0.12); }
+    html:not(.dark) .bg-amber-500\/10 { background-color: rgba(217,119,6,0.08); }
+    html:not(.dark) .border-amber-500\/30 { border-color: rgba(217,119,6,0.25); }
+    html:not(.dark) .hover\:bg-amber-500\/30:hover { background-color: rgba(217,119,6,0.18); }
+    html:not(.dark) .hover\:text-amber-400:hover { color: #92400e; }
+    html:not(.dark) .hover\:bg-amber-500\/10:hover { background-color: rgba(217,119,6,0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-amber-400 { color: #92400e; }
+    html:not(.dark) .text-teal-400 { color: #0d9488; }
+    html:not(.dark) .bg-teal-500\/20 { background-color: rgba(13,148,136,0.12); }
+    html:not(.dark) .bg-teal-500\/10 { background-color: rgba(13,148,136,0.08); }
+    html:not(.dark) .border-teal-500\/30 { border-color: rgba(13,148,136,0.25); }
+    html:not(.dark) .hover\:bg-teal-500\/30:hover { background-color: rgba(13,148,136,0.18); }
+    html:not(.dark) .hover\:text-teal-400:hover { color: #0d9488; }
+    html:not(.dark) .hover\:bg-teal-500\/10:hover { background-color: rgba(13,148,136,0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-teal-400 { color: #0d9488; }
+
+    /* Light mode - remove gradientes + cores especiais */
+    html:not(.dark) [class*="bg-gradient-to"] { background-image: none !important; }
+    html:not(.dark) .text-primary { color: #a16207; }
+    html:not(.dark) .bg-primary\/10 { background-color: rgba(161,98,7,0.08); }
+    html:not(.dark) .border-primary\/30 { border-color: rgba(161,98,7,0.25); }
+    html:not(.dark) .border-primary\/40 { border-color: rgba(161,98,7,0.25); }
+    html:not(.dark) .text-sky-400 { color: #0369a1; }
+    html:not(.dark) .text-yellow-400 { color: #a16207; }
+    html:not(.dark) .hover\:text-sky-300:hover { color: #0284c7; }
+    html:not(.dark) .hover\:text-yellow-300:hover { color: #854d0e; }
+    html:not(.dark) .bg-dark-900\/95 { background-color: rgba(255,255,255,0.95); }
+
+    /* Dark mode - bordas suavizadas */
+    .dark .border-dark-600 { border-color: #374151; }
+    .dark .divide-dark-600 > :not([hidden]) ~ :not([hidden]) { border-color: #374151; }
+
+    /* SVG diagramas: suavizar no claro */
+    html:not(.dark) svg[role="img"] { filter: saturate(0.82) brightness(0.96); }
+
+    .inema-toc-link.is-active { color: #fbbf24; font-weight: 600; }
+  </style>
+<link href="../../assets/learn.css" rel="stylesheet"/>
+<script data-inema-manifest="" type="application/json">
+  {
+    "course": "antigravity",
+    "tracks": [
+      { "n": "1", "title": "Fundamentos", "modules": [
+        { "id": "1-1", "title": "AntiGravity & o bolo de 3 camadas", "topics": 7 },
+        { "id": "1-2", "title": "No-code vs. apps com IA", "topics": 6 },
+        { "id": "1-3", "title": "Setup completo do ambiente", "topics": 8 }
+      ]},
+      { "n": "2", "title": "Construir & Publicar", "modules": [
+        { "id": "2-1", "title": "Seu primeiro app", "topics": 8 },
+        { "id": "2-2", "title": "Publicar e manter", "topics": 8 }
+      ]},
+      { "n": "3", "title": "Escalar a Produção", "modules": [
+        { "id": "3-1", "title": "Sistema de clonagem", "topics": 7 },
+        { "id": "3-2", "title": "GoHighLevel/WordPress", "topics": 6 }
+      ]},
+      { "n": "4", "title": "Profissionalizar", "modules": [
+        { "id": "4-1", "title": "Fluxo de trabalho profissional", "topics": 6 },
+        { "id": "4-2", "title": "Entregar e aplicar", "topics": 7 }
+      ]},
+      { "n": "5", "title": "Maestria & Biblioteca", "modules": [
+        { "id": "5-1", "title": "CODA & Claude Code", "topics": 7 },
+        { "id": "5-2", "title": "Biblioteca de Skills & Prompts", "topics": 7 }
+      ]}
+    ]
+  }
+  </script>
+<link href="https://inematds.github.io/antigravity/trilha4/modulo-4-2.html" hreflang="pt-BR" rel="alternate"/><link href="https://inematds.github.io/antigravity/en/trilha4/modulo-4-2.html" hreflang="en" rel="alternate"/><link href="https://inematds.github.io/antigravity/es/trilha4/modulo-4-2.html" hreflang="es" rel="alternate"/></head>
+<body class="bg-dark-900 text-neutral-100 min-h-screen"><div class="inema-lang" style="position:fixed;right:14px;bottom:14px;z-index:9999;display:flex;gap:2px;padding:4px;border-radius:10px;background:rgba(12,12,16,.82);border:1px solid rgba(226,162,59,.45);font:600 12px/1 Sora,Inter,system-ui,sans-serif;backdrop-filter:blur(8px)" translate="no"><a href="../../trilha4/modulo-4-2.html" hreflang="pt-BR" style="padding:6px 8px;border-radius:7px;text-decoration:none;color:#e9e9ee">PT</a><a href="../../en/trilha4/modulo-4-2.html" hreflang="en" style="padding:6px 8px;border-radius:7px;text-decoration:none;color:#e9e9ee">EN</a><a href="modulo-4-2.html" hreflang="es" style="padding:6px 8px;border-radius:7px;text-decoration:none;color:#1a1206;background:#E2A23B">ES</a></div>
+<a class="skip" href="#conteudo">Saltar al contenido</a>
+<!-- NAVIGATION -->
+<nav class="sticky top-0 z-50 bg-dark-900/95 backdrop-blur-sm border-b border-dark-600">
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="flex justify-between items-center h-14">
+<div class="flex items-center space-x-4">
+<a class="flex items-center space-x-2 text-yellow-400 hover:text-yellow-300" href="../index.html">
+<span class="text-2xl">🛰️</span>
+<span class="font-bold text-lg hidden sm:inline">AntiGravity</span>
+</a>
+<span class="text-neutral-600">|</span>
+<a class="text-sky-400 hover:text-sky-300 text-sm font-medium" href="https://inema.club" target="_blank">INEMA.CLUB</a>
+</div>
+<div class="flex items-center space-x-1 sm:space-x-2">
+<a class="px-2.5 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-emerald-400 hover:bg-emerald-500/10 transition-colors" href="../trilha1/index.html"><span class="sm:hidden">T1</span><span class="hidden sm:inline">Fundamentos</span></a>
+<a class="px-2.5 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-blue-400 hover:bg-blue-500/10 transition-colors" href="../trilha2/index.html"><span class="sm:hidden">T2</span><span class="hidden sm:inline">Construir</span></a>
+<a class="px-2.5 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-purple-400 hover:bg-purple-500/10 transition-colors" href="../trilha3/index.html"><span class="sm:hidden">T3</span><span class="hidden sm:inline">Escalar</span></a>
+<a class="px-2.5 py-1.5 rounded-lg text-sm font-semibold text-amber-400 bg-amber-500/10" href="index.html"><span class="sm:hidden">T4</span><span class="hidden sm:inline">Profesional</span></a>
+<a class="px-2.5 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-teal-400 hover:bg-teal-500/10 transition-colors" href="../trilha5/index.html"><span class="sm:hidden">T5</span><span class="hidden sm:inline">Maestría</span></a>
+<div class="relative">
+<button aria-expanded="false" class="p-2 rounded-lg bg-dark-700 hover:bg-dark-600 transition-colors" data-inema-appearance-toggle="[data-inema-appearance]" title="Apariencia y lectura" type="button"><span aria-hidden="true">◑</span></button>
+<div class="inema-appearance-pop" data-inema-appearance="" style="right:0">
+<div><p class="text-xs text-neutral-400 mb-1">Tema</p><div class="inema-segment flex flex-wrap gap-1">
+<button class="px-2 py-1 text-xs rounded bg-dark-700" data-inema-set-theme="inema-dark">Oscuro</button>
+<button class="px-2 py-1 text-xs rounded bg-dark-700" data-inema-set-theme="claro">Claro</button>
+<button class="px-2 py-1 text-xs rounded bg-dark-700" data-inema-set-theme="sepia">Sepia</button>
+<button class="px-2 py-1 text-xs rounded bg-dark-700" data-inema-set-theme="foco">Enfoque</button>
+<button class="px-2 py-1 text-xs rounded bg-dark-700" data-inema-set-theme="contraste">Alto contraste</button>
+</div></div>
+<div><p class="text-xs text-neutral-400 mb-1">Fuente</p><div class="inema-segment flex gap-1">
+<button class="px-2 py-1 text-xs rounded bg-dark-700" data-inema-set-font="inter">Inter</button>
+<button class="px-2 py-1 text-xs rounded bg-dark-700" data-inema-set-font="system">Sistema</button>
+<button class="px-2 py-1 text-xs rounded bg-dark-700" data-inema-set-font="leitura">Lectura</button>
+</div></div>
+<div><p class="text-xs text-neutral-400 mb-1">Tamaño</p><div class="inema-segment flex gap-1">
+<button class="px-2 py-1 text-xs rounded bg-dark-700" data-inema-set-fontscale="100">A</button>
+<button class="px-2 py-1 text-xs rounded bg-dark-700" data-inema-set-fontscale="112">A+</button>
+<button class="px-2 py-1 text-xs rounded bg-dark-700" data-inema-set-fontscale="125">A++</button>
+</div></div>
+<div><p class="text-xs text-neutral-400 mb-1">Interlineado</p><div class="inema-segment flex gap-1">
+<button class="px-2 py-1 text-xs rounded bg-dark-700" data-inema-set-leading="1.45">Compacto</button>
+<button class="px-2 py-1 text-xs rounded bg-dark-700" data-inema-set-leading="1.7">Cómodo</button>
+</div></div>
+</div>
+</div>
+<button class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-sm text-neutral-300 hover:text-neutral-100 hover:bg-dark-700 transition-colors" data-inema-journey-open="" title="Mi recorrido" type="button">
+<span aria-hidden="true">◷</span><span class="hidden sm:inline">Trayectoria</span>
+<span class="inema-journey-badge" data-count="0" data-inema-journey-badge=""></span>
+</button>
+<button class="p-2 rounded-lg bg-dark-700 hover:bg-dark-600 transition-colors" id="theme-toggle" title="Alternar claro/oscuro">
+<svg class="hidden w-5 h-5 text-neutral-300" fill="currentColor" id="theme-toggle-dark-icon" viewbox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+<svg class="hidden w-5 h-5 text-neutral-300" fill="currentColor" id="theme-toggle-light-icon" viewbox="0 0 20 20"><path clip-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd"></path></svg>
+</button>
+</div>
+</div>
+</div>
+</nav>
+<!-- BREADCRUMB -->
+<nav class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+<div class="flex items-center space-x-2 text-sm text-neutral-400">
+<a class="hover:text-amber-400" href="../index.html">Inicio</a><span>/</span>
+<a class="hover:text-amber-400" href="index.html">Ruta 4</a><span>/</span>
+<span class="text-amber-400">Módulo 4.2</span>
+</div>
+</nav>
+<!-- HEADER -->
+<header class="bg-gradient-to-br from-amber-900/30 via-dark-800 to-dark-800 py-12 border-b border-dark-600">
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+<span class="inline-block px-3 py-1 bg-amber-500/20 text-amber-400 text-xs font-semibold rounded-full mb-4">MÓDULO 4.2</span>
+<h1 class="text-3xl sm:text-4xl font-bold mb-4">📦 Entregar y aplicar profesionalmente</h1>
+<p class="text-lg text-neutral-400 max-w-3xl">La construcción terminó; ahora viene la parte que separa al amateur del profesional: lo que entregas se convierte en un producto, con un modelo de propiedad claro, una lista de control de calidad y seguridad ejecutada rigurosamente, y un monitoreo que demuestra que todo funciona.</p>
+<div class="grid grid-cols-4 gap-4 mt-8 max-w-2xl">
+<div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600"><div class="text-xl font-bold text-amber-400">7</div><div class="text-xs text-neutral-400">Temas</div></div>
+<div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600"><div class="text-xl font-bold text-amber-400">65</div><div class="text-xs text-neutral-400">Minutos</div></div>
+<div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600"><div class="text-xl font-bold text-amber-400">Intermedio</div><div class="text-xs text-neutral-400">Nivel</div></div>
+<div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600"><div class="text-xl font-bold text-amber-400">Entrega</div><div class="text-xs text-neutral-400">Tipo</div></div>
+</div>
+</div>
+</header>
+<main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10" id="conteudo">
+<div class="lg:grid lg:grid-cols-[230px_minmax(0,1fr)] lg:gap-10">
+<!-- TOC -->
+<nav aria-label="Índice de la página" class="hidden lg:block sticky top-20 self-start" data-inema-toc="">
+<p class="text-sm text-neutral-400 mb-2">Sección <span data-inema-section-counter="">1 de 7</span></p>
+<ol class="space-y-1 text-sm">
+<li><a class="inema-toc-link text-neutral-400 hover:text-amber-400" href="#topico-1">1. De la automatización al software</a></li>
+<li><a class="inema-toc-link text-neutral-400 hover:text-amber-400" href="#topico-2">2. Modelos de propiedad</a></li>
+<li><a class="inema-toc-link text-neutral-400 hover:text-amber-400" href="#topico-3">3. Socio de transformación</a></li>
+<li><a class="inema-toc-link text-neutral-400 hover:text-amber-400" href="#topico-4">4. La lista de verificación previa al vuelo</a></li>
+<li><a class="inema-toc-link text-neutral-400 hover:text-amber-400" href="#topico-5">5. Seguridad &amp; compliance</a></li>
+<li><a class="inema-toc-link text-neutral-400 hover:text-amber-400" href="#topico-6">6. Deterioro del contexto</a></li>
+<li><a class="inema-toc-link text-neutral-400 hover:text-amber-400" href="#topico-7">7. Monitoreo y entrega</a></li>
+</ol>
+<div class="mt-4 pt-4 border-t border-dark-600">
+<div class="text-sm" data-inema-meter="modulo:4-2"><span class="text-neutral-400" data-inema-meter-frac="">0 de 7</span> · <span class="text-amber-400 font-bold" data-inema-meter-pct="">0%</span><div class="inema-bar h-1.5 mt-2 rounded-full bg-dark-600 overflow-hidden"><div class="inema-bar__fill h-full rounded-full bg-amber-500" data-inema-meter-fill="" style="width:0%"></div></div></div>
+</div>
+</nav>
+<article class="min-w-0" data-inema-module="4-2" data-inema-track="4">
+<!-- TÓPICO 1 -->
+<section class="mb-16" data-inema-topic="modulo-4-2#topico-1" id="topico-1">
+<div class="flex items-center justify-between mb-6 gap-3">
+<div class="flex items-center space-x-4">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-amber-500/20 text-amber-400 font-bold text-xl flex-shrink-0">1</span>
+<h2 class="text-2xl font-bold">🔁 De la automatización al software</h2>
+</div>
+<button aria-pressed="false" class="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm flex-shrink-0" data-inema-doubt-toggle="" title="Marcar una duda en este tema" type="button"><span aria-hidden="true">?</span><span>Duda</span></button>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed" data-inema-block="m42-t1-p1">Hay un enorme salto de valor cuando lo que entregas <strong class="text-amber-400">deja de ser una automatización aislada y se convierte en un software de verdad</strong>. La automatización resuelve una tarea; el software <strong>Es el producto</strong> — tiene interfaz, lógica propia y vida independiente.</p>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+<div class="bg-dark-800 rounded-xl border border-dark-600 p-6">
+<h4 class="font-bold text-neutral-300 mb-4">🔧 Automatización puntual</h4>
+<ul class="space-y-3 text-neutral-300 text-sm">
+<li class="flex items-start space-x-2"><span class="text-neutral-500">•</span><span>Resuelve una tarea específica</span></li>
+<li class="flex items-start space-x-2"><span class="text-neutral-500">•</span><span>Vive dentro de otra herramienta</span></li>
+<li class="flex items-start space-x-2"><span class="text-neutral-500">•</span><span>Difícil de cobrar como producto</span></li>
+</ul>
+</div>
+<div class="bg-gradient-to-br from-amber-900/30 to-dark-800 rounded-xl border border-amber-500/30 p-6">
+<h4 class="font-bold text-amber-400 mb-4">📦 Software como producto</h4>
+<ul class="space-y-3 text-neutral-300 text-sm">
+<li class="flex items-start space-x-2"><span class="text-amber-400">✓</span><span>Tiene interfaz e identidad propias</span></li>
+<li class="flex items-start space-x-2"><span class="text-amber-400">✓</span><span>Funciona por sí solo, es un activo</span></li>
+<li class="flex items-start space-x-2"><span class="text-amber-400">✓</span><span>Puede licenciarse, venderse, mantenerse</span></li>
+</ul>
+</div>
+</div>
+<!-- SVG -->
+<div class="rounded-2xl border border-amber-500/30 bg-dark-900/40 p-3 sm:p-4 mb-6 overflow-hidden">
+<svg aria-label="La evolución: una automatización puntual se transforma en un software que es el producto, con más valor e independencia" class="w-full h-auto" role="img" viewbox="0 0 1000 200">
+<defs>
+<lineargradient id="m42-grad" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#fbbf24"></stop><stop offset="1" stop-color="#f59e0b"></stop></lineargradient>
+<filter height="180%" id="m42-glow" width="180%" x="-40%" y="-40%"><fegaussianblur result="b" stddeviation="1.8"></fegaussianblur><femerge><femergenode in="b"></femergenode><femergenode in="SourceGraphic"></femergenode></femerge></filter>
+<pattern height="32" id="m42-grid" patternunits="userSpaceOnUse" width="32"><circle cx="1.3" cy="1.3" fill="#f59e0b" opacity="0.12" r="1.3"></circle></pattern>
+<marker id="m42-ah" markerheight="9" markerwidth="9" orient="auto" refx="6.5" refy="4.5"><path d="M0,0 L8,4.5 L0,9 L2.4,4.5 Z" fill="#fbbf24"></path></marker>
+</defs>
+<rect fill="url(#m42-grid)" height="200" width="1000" x="0" y="0"></rect>
+<rect fill="#1f1604" height="56" opacity="0.85" rx="12" stroke="#fbbf24" stroke-width="1.8" width="220" x="80" y="74"></rect>
+<text fill="#fde68a" font-family="Inter,sans-serif" font-size="15" font-weight="600" text-anchor="middle" x="190" y="100">Automatización puntual</text>
+<text fill="#fcd34d" font-family="Inter,sans-serif" font-size="12" text-anchor="middle" x="190" y="120">resuelve 1 tarea</text>
+<g filter="url(#m42-glow)"><rect fill="#1f1604" height="72" rx="14" stroke="url(#m42-grad)" stroke-width="2.5" width="220" x="700" y="66"></rect></g>
+<text fill="#fbbf24" font-family="Inter,sans-serif" font-size="16" font-weight="700" text-anchor="middle" x="810" y="96">Software = producto</text>
+<text fill="#fde68a" font-family="Inter,sans-serif" font-size="12" text-anchor="middle" x="810" y="118">interfaz · activo · valor</text>
+<g fill="none" opacity="0.65" stroke="#fbbf24" stroke-width="2.5"><path d="M300,102 L700,102" marker-end="url(#m42-ah)"></path></g>
+<text fill="#fbbf24" font-family="Inter,sans-serif" font-size="13" font-weight="600" text-anchor="middle" x="500" y="86">se convierte</text>
+<text fill="#9ca3af" font-family="Inter,sans-serif" font-size="12" text-anchor="middle" x="500" y="130">más valor + independencia</text>
+</svg>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-amber-400 font-bold mb-1">Tarea</div><p class="text-xs text-neutral-400">automatización</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-amber-400 font-bold mb-1">Producto</div><p class="text-xs text-neutral-400">software</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-amber-400 font-bold mb-1">Activo</div><p class="text-xs text-neutral-400">vida propia</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-amber-400 font-bold mb-1">Valor</div><p class="text-xs text-neutral-400">cambia las reglas del juego</p></div>
+</div>
+<div class="flex justify-start mt-6">
+<button aria-pressed="false" data-inema-read-toggle="" type="button">
+<span aria-hidden="true" class="inema-ico-todo">○</span><span aria-hidden="true" class="inema-ico-done">●</span><span class="inema-label-todo">Marcar como leído</span><span class="inema-label-done">Leído</span>
+</button>
+</div>
+</section>
+<!-- TÓPICO 2 -->
+<section class="mb-16" data-inema-topic="modulo-4-2#topico-2" id="topico-2">
+<div class="flex items-center justify-between mb-6 gap-3">
+<div class="flex items-center space-x-4">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-amber-500/20 text-amber-400 font-bold text-xl flex-shrink-0">2</span>
+<h2 class="text-2xl font-bold">🤝 Modelos de propiedad</h2>
+</div>
+<button aria-pressed="false" class="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm flex-shrink-0" data-inema-doubt-toggle="" title="Marcar una duda en este tema" type="button"><span aria-hidden="true">?</span><span>Duda</span></button>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed" data-inema-block="m42-t2-p1">Cuando le entregas un software a alguien, necesitas definir <strong class="text-amber-400">quién es el dueño</strong> e <strong>quién se encarga del mantenimiento</strong>. Hay tres modelos clásicos, cada uno con su propio equilibrio entre ingresos, responsabilidad y expectativas.</p>
+<div class="space-y-6 mb-6">
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-amber-500/20 flex items-center justify-center"><span class="text-amber-400 font-bold">1</span></div>
+<div class="flex-1 bg-dark-800 rounded-xl p-6 border border-dark-600">
+<h4 class="font-semibold text-white mb-2">Tú eres el dueño; el cliente obtiene una licencia</h4>
+<p class="text-sm text-neutral-400 mb-2">Ingresos recurrentes</p>
+<p class="text-neutral-300 text-sm">El cliente paga por usarlo; tú mantienes todo y sigues siendo el dueño. Ingresos previsibles, pero tú te haces cargo de la operación.</p>
+</div>
+</div>
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-amber-500/20 flex items-center justify-center"><span class="text-amber-400 font-bold">2</span></div>
+<div class="flex-1 bg-dark-800 rounded-xl p-6 border border-dark-600">
+<h4 class="font-semibold text-white mb-2">El cliente es dueño, entrega total</h4>
+<p class="text-sm text-neutral-400 mb-2">README detallado, sin soporte</p>
+<p class="text-neutral-300 text-sm">Entregas el código completo con documentación y terminas. Simple y cerrado, pero sin una relación continua.</p>
+</div>
+</div>
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-amber-500/20 flex items-center justify-center"><span class="text-amber-400 font-bold">★</span></div>
+<div class="flex-1 bg-gradient-to-br from-amber-900/30 to-dark-800 rounded-xl p-6 border border-amber-500/30">
+<h4 class="font-semibold text-amber-400 mb-2">El cliente es dueño + período de soporte (preferido)</h4>
+<p class="text-sm text-neutral-400 mb-2">Soporte de 30 a 90 días</p>
+<p class="text-neutral-300 text-sm">El cliente queda como dueño, pero tú mantienes y corriges durante un período acordado. Equilibrio entre confianza, responsabilidad limitada y una buena relación.</p>
+</div>
+</div>
+</div>
+<div class="overflow-x-auto mb-6">
+<table class="w-full text-sm border border-dark-600 rounded-lg overflow-hidden">
+<thead class="bg-dark-700/50 text-neutral-300"><tr><th class="text-left p-3">Modelo</th><th class="text-left p-3">Dueño</th><th class="text-left p-3">Soporte</th><th class="text-left p-3">Ingresos</th></tr></thead>
+<tbody class="divide-y divide-dark-600 text-neutral-400">
+<tr><td class="p-3 text-neutral-300">1. Tú licencias</td><td class="p-3">tú</td><td class="p-3">continuo</td><td class="p-3 text-amber-400">recurrente</td></tr>
+<tr><td class="p-3 text-neutral-300">2. Entrega total</td><td class="p-3">cliente</td><td class="p-3">ninguno</td><td class="p-3">único</td></tr>
+<tr><td class="p-3 text-amber-400">3. Responsable + ventana ★</td><td class="p-3">cliente</td><td class="p-3 text-amber-400">30–90 días</td><td class="p-3">proyecto + extra</td></tr>
+</tbody>
+</table>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-amber-400 font-bold mb-1">Licencia</div><p class="text-xs text-neutral-400">tú eres dueño</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-amber-400 font-bold mb-1">Entrega total</div><p class="text-xs text-neutral-400">README, sin soporte</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-amber-400 font-bold mb-1">30–90 días</div><p class="text-xs text-neutral-400">el preferido</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-amber-400 font-bold mb-1">Equilibrio</div><p class="text-xs text-neutral-400">confianza + límite</p></div>
+</div>
+<div class="flex justify-start mt-6">
+<button aria-pressed="false" data-inema-read-toggle="" type="button">
+<span aria-hidden="true" class="inema-ico-todo">○</span><span aria-hidden="true" class="inema-ico-done">●</span><span class="inema-label-todo">Marcar como leído</span><span class="inema-label-done">Leído</span>
+</button>
+</div>
+</section>
+<!-- TÓPICO 3 -->
+<section class="mb-16" data-inema-topic="modulo-4-2#topico-3" id="topico-3">
+<div class="flex items-center justify-between mb-6 gap-3">
+<div class="flex items-center space-x-4">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-amber-500/20 text-amber-400 font-bold text-xl flex-shrink-0">3</span>
+<h2 class="text-2xl font-bold">🧠 Socio de transformación</h2>
+</div>
+<button aria-pressed="false" class="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm flex-shrink-0" data-inema-doubt-toggle="" title="Marcar una duda en este tema" type="button"><span aria-hidden="true">?</span><span>Duda</span></button>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed" data-inema-block="m42-t3-p1">La forma en que te posicionas lo cambia todo. En lugar de ser un «freelancer ocasional» que hace una entrega y desaparece, posiciónate como <strong class="text-amber-400">socio de transformación a largo plazo</strong> — algo como un "director de IA" a tiempo parcial que ayuda a la organización a evolucionar.</p>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+<div class="bg-red-900/20 rounded-xl border border-red-500/30 p-6">
+<h4 class="font-bold text-red-400 mb-4">✗ Freelancer ocasional</h4>
+<ul class="space-y-3 text-neutral-300 text-sm">
+<li class="flex items-start space-x-2"><span class="text-red-400">✗</span><span>Hace la entrega y desaparece</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400">✗</span><span>Relación transaccional, siempre empezando de nuevo</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400">✗</span><span>Ingresos impredecibles, proyecto por proyecto</span></li>
+</ul>
+</div>
+<div class="bg-amber-900/20 rounded-xl border border-amber-500/30 p-6">
+<h4 class="font-bold text-amber-400 mb-4">✓ Socio de transformación</h4>
+<ul class="space-y-3 text-neutral-300 text-sm">
+<li class="flex items-start space-x-2"><span class="text-amber-400">✓</span><span>Acompaña la evolución a lo largo del tiempo</span></li>
+<li class="flex items-start space-x-2"><span class="text-amber-400">✓</span><span>Se convierte en una referencia interna en IA</span></li>
+<li class="flex items-start space-x-2"><span class="text-amber-400">✓</span><span>Relaciones e ingresos recurrentes</span></li>
+</ul>
+</div>
+</div>
+<div class="bg-primary/10 rounded-xl border border-primary/30 p-6 mb-6">
+<h3 class="text-lg font-semibold text-primary mb-3 flex items-center"><span class="mr-2">🎖️</span> El "director de IA" fraccionario</h3>
+<p class="text-neutral-300">Es como tener un cargo de liderazgo en IA, pero a tiempo parcial y para varias organizaciones. No entregas solo software: entregas <strong>dirección, criterio y continuidad</strong> — y eso vale mucho más que un proyecto aislado.</p>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-amber-400 font-bold mb-1">Largo plazo</div><p class="text-xs text-neutral-400">no a medias</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-amber-400 font-bold mb-1">Dirección</div><p class="text-xs text-neutral-400">director de IA</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-amber-400 font-bold mb-1">Recurrencia</div><p class="text-xs text-neutral-400">relación duradera</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-amber-400 font-bold mb-1">Posicionamiento</div><p class="text-xs text-neutral-400">socio, no proveedor</p></div>
+</div>
+<div class="flex justify-start mt-6">
+<button aria-pressed="false" data-inema-read-toggle="" type="button">
+<span aria-hidden="true" class="inema-ico-todo">○</span><span aria-hidden="true" class="inema-ico-done">●</span><span class="inema-label-todo">Marcar como leído</span><span class="inema-label-done">Leído</span>
+</button>
+</div>
+</section>
+<!-- TÓPICO 4 -->
+<section class="mb-16" data-inema-topic="modulo-4-2#topico-4" id="topico-4">
+<div class="flex items-center justify-between mb-6 gap-3">
+<div class="flex items-center space-x-4">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-amber-500/20 text-amber-400 font-bold text-xl flex-shrink-0">4</span>
+<h2 class="text-2xl font-bold">✅ La lista de verificación Pre-Flight (QA y prueba de estrés)</h2>
+</div>
+<button aria-pressed="false" class="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm flex-shrink-0" data-inema-doubt-toggle="" title="Marcar una duda en este tema" type="button"><span aria-hidden="true">?</span><span>Duda</span></button>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed" data-inema-block="m42-t4-p1">Antes de cualquier entrega, ejecuta el <strong class="text-amber-400">Pre-Flight Checklist</strong>: le pides a la IA que asuma el papel de <strong>ingeniero sénior de QA + auditor de seguridad</strong> y recorra el proyecto por fases, clasificando cada hallazgo como <strong class="text-red-400">Crítico</strong>, <strong class="text-amber-400">Aviso</strong> o <strong class="text-emerald-400">OK</strong>.</p>
+<div class="bg-gradient-to-br from-amber-900/30 to-dark-800 rounded-xl border border-amber-500/30 p-6 mb-6">
+<h3 class="text-lg font-semibold text-amber-400 mb-4 flex items-center"><span class="mr-2">🛫</span> Las fases de la lista de verificación</h3>
+<div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-sm text-neutral-300">
+<div class="flex items-center space-x-2"><span class="text-amber-400">→</span><span>Descubrimiento</span></div>
+<div class="flex items-center space-x-2"><span class="text-amber-400">→</span><span>Dependencias</span></div>
+<div class="flex items-center space-x-2"><span class="text-amber-400">→</span><span>Seguridad</span></div>
+<div class="flex items-center space-x-2"><span class="text-amber-400">→</span><span>Autenticación</span></div>
+<div class="flex items-center space-x-2"><span class="text-amber-400">→</span><span>Validación de entrada</span></div>
+<div class="flex items-center space-x-2"><span class="text-amber-400">→</span><span>Protección de datos</span></div>
+<div class="flex items-center space-x-2"><span class="text-amber-400">→</span><span>API</span></div>
+<div class="flex items-center space-x-2"><span class="text-amber-400">→</span><span>Infraestructura</span></div>
+<div class="flex items-center space-x-2"><span class="text-amber-400">→</span><span>Pruebas</span></div>
+<div class="flex items-center space-x-2"><span class="text-amber-400">→</span><span>Cumplimiento normativo</span></div>
+<div class="flex items-center space-x-2"><span class="text-amber-400">→</span><span>Accesibilidad</span></div>
+<div class="flex items-center space-x-2"><span class="text-amber-400">→</span><span>Deploy</span></div>
+<div class="flex items-center space-x-2"><span class="text-amber-400">→</span><span>Monitoreo</span></div>
+<div class="flex items-center space-x-2"><span class="text-amber-400">→</span><span>Backup</span></div>
+<div class="flex items-center space-x-2"><span class="text-amber-400">→</span><span>Preparación para la entrega</span></div>
+</div>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+<div class="bg-red-900/20 rounded-xl border border-red-500/30 p-5"><div class="text-red-400 font-bold mb-1">Crítico</div><p class="text-xs text-neutral-400">bloquea la entrega; corrígelo antes que nada</p></div>
+<div class="bg-amber-900/20 rounded-xl border border-amber-500/30 p-5"><div class="text-amber-400 font-bold mb-1">Aviso</div><p class="text-xs text-neutral-400">no bloquea, pero requiere atención</p></div>
+<div class="bg-emerald-900/20 rounded-xl border border-emerald-500/30 p-5"><div class="text-emerald-400 font-bold mb-1">OK</div><p class="text-xs text-neutral-400">pasó; está listo para esta fase</p></div>
+</div>
+<div class="bg-primary/10 rounded-xl border border-primary/30 p-6 mb-6">
+<h3 class="text-lg font-semibold text-primary mb-3 flex items-center"><span class="mr-2">📚</span> Lista de verificación completa</h3>
+<p class="text-neutral-300">La versión completa del Pre-Flight Checklist, con todas las preguntas de cada fase, está en la <strong>Biblioteca</strong> — en la Trilha 5. Aquí el objetivo es entender la lógica: fases + clasificación Crítico/Aviso/OK.</p>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-amber-400 font-bold mb-1">QA sénior</div><p class="text-xs text-neutral-400">papel de la IA</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-amber-400 font-bold mb-1">Por fases</div><p class="text-xs text-neutral-400">amplia cobertura</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-amber-400 font-bold mb-1">Clasifica</div><p class="text-xs text-neutral-400">Crítico/Aviso/OK</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-amber-400 font-bold mb-1">Antes de la entrega</div><p class="text-xs text-neutral-400">antes de entregar</p></div>
+</div>
+<div class="flex justify-start mt-6">
+<button aria-pressed="false" data-inema-read-toggle="" type="button">
+<span aria-hidden="true" class="inema-ico-todo">○</span><span aria-hidden="true" class="inema-ico-done">●</span><span class="inema-label-todo">Marcar como leído</span><span class="inema-label-done">Leído</span>
+</button>
+</div>
+</section>
+<!-- TÓPICO 5 -->
+<section class="mb-16" data-inema-topic="modulo-4-2#topico-5" id="topico-5">
+<div class="flex items-center justify-between mb-6 gap-3">
+<div class="flex items-center space-x-4">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-amber-500/20 text-amber-400 font-bold text-xl flex-shrink-0">5</span>
+<h2 class="text-2xl font-bold">🔒 Seguridad y cumplimiento</h2>
+</div>
+<button aria-pressed="false" class="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm flex-shrink-0" data-inema-doubt-toggle="" title="Marcar una duda en este tema" type="button"><span aria-hidden="true">?</span><span>Duda</span></button>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed" data-inema-block="m42-t5-p1">No pueden faltar tres frentes de seguridad en ninguna entrega: <strong class="text-amber-400">proteger secretos</strong>, <strong class="text-amber-400">auditar dependencias</strong> e <strong class="text-amber-400">respetar la privacidad</strong>. Un error aquí arruina cualquier trabajo bien hecho.</p>
+<div class="space-y-6 mb-6">
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-amber-500/20 flex items-center justify-center"><span class="text-amber-400 font-bold">🔑</span></div>
+<div class="flex-1 bg-dark-800 rounded-xl p-6 border border-dark-600">
+<h4 class="font-semibold text-white mb-2">Protege los secretos</h4>
+<p class="text-neutral-300 text-sm">Nunca dejes claves de API ni contraseñas en el código. Usa variables de entorno y mantenlas fuera del repositorio.</p>
+</div>
+</div>
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-amber-500/20 flex items-center justify-center"><span class="text-amber-400 font-bold">📦</span></div>
+<div class="flex-1 bg-dark-800 rounded-xl p-6 border border-dark-600">
+<h4 class="font-semibold text-white mb-2">Audita las dependencias</h4>
+<p class="text-neutral-300 text-sm">Las bibliotecas desactualizadas abren brechas conocidas. Verifica y actualiza antes de entregar.</p>
+</div>
+</div>
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-amber-500/20 flex items-center justify-center"><span class="text-amber-400 font-bold">⚖️</span></div>
+<div class="flex-1 bg-gradient-to-br from-amber-900/30 to-dark-800 rounded-xl p-6 border border-amber-500/30">
+<h4 class="font-semibold text-amber-400 mb-2">Considera la privacidad (LGPD/GDPR)</h4>
+<p class="text-neutral-300 text-sm">Si la app maneja datos de personas, piensa en el consentimiento, la retención y el acceso: reglas como LGPD y GDPR existen por una razón.</p>
+</div>
+</div>
+</div>
+<div class="bg-red-900/20 rounded-xl border border-red-500/30 p-6 mb-6">
+<h3 class="text-lg font-semibold text-red-400 mb-3 flex items-center"><span class="mr-2">⚠️</span> El costo de ignorarlo</h3>
+<p class="text-neutral-300">Una clave filtrada puede convertirse en una cuenta enorme o en datos robados. Una dependencia antigua puede abrir la puerta. Una multa por incumplimiento puede causar pérdidas. La seguridad no es opcional en una entrega profesional.</p>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-amber-400 font-bold mb-1">Secretos</div><p class="text-xs text-neutral-400">fuera del código</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-amber-400 font-bold mb-1">Dependencias</div><p class="text-xs text-neutral-400">audita y actualiza</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-amber-400 font-bold mb-1">Privacidad</div><p class="text-xs text-neutral-400">LGPD/GDPR</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-amber-400 font-bold mb-1">No es opcional</div><p class="text-xs text-neutral-400">parte de la entrega</p></div>
+</div>
+<div class="flex justify-start mt-6">
+<button aria-pressed="false" data-inema-read-toggle="" type="button">
+<span aria-hidden="true" class="inema-ico-todo">○</span><span aria-hidden="true" class="inema-ico-done">●</span><span class="inema-label-todo">Marcar como leído</span><span class="inema-label-done">Leído</span>
+</button>
+</div>
+</section>
+<!-- TÓPICO 6 -->
+<section class="mb-16" data-inema-topic="modulo-4-2#topico-6" id="topico-6">
+<div class="flex items-center justify-between mb-6 gap-3">
+<div class="flex items-center space-x-4">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-amber-500/20 text-amber-400 font-bold text-xl flex-shrink-0">6</span>
+<h2 class="text-2xl font-bold">🧪 Context rot</h2>
+</div>
+<button aria-pressed="false" class="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm flex-shrink-0" data-inema-doubt-toggle="" title="Marcar una duda en este tema" type="button"><span aria-hidden="true">?</span><span>Duda</span></button>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed" data-inema-block="m42-t6-p1">Una conversación larga y cargada hace que el contexto de la IA <strong class="text-amber-400">"pudrirse"</strong> — é o <strong>context rot</strong>. Por eso, ejecuta el QA en una <strong class="text-amber-400">ventana nueva y limpia</strong>, sin que el historial de construcción interfiera en la evaluación.</p>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+<div class="bg-red-900/20 rounded-xl border border-red-500/30 p-6">
+<h4 class="font-bold text-red-400 mb-4">✗ Ventana saturada</h4>
+<ul class="space-y-3 text-neutral-300 text-sm">
+<li class="flex items-start space-x-2"><span class="text-red-400">✗</span><span>La misma conversación donde construiste todo</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400">✗</span><span>La IA ya "alienta" su propio código</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400">✗</span><span>Un contexto saturado deja pasar problemas</span></li>
+</ul>
+</div>
+<div class="bg-amber-900/20 rounded-xl border border-amber-500/30 p-6">
+<h4 class="font-bold text-amber-400 mb-4">✓ Ventana nueva y limpia</h4>
+<ul class="space-y-3 text-neutral-300 text-sm">
+<li class="flex items-start space-x-2"><span class="text-amber-400">✓</span><span>Conversación reiniciada, mirada fresca y escéptica</span></li>
+<li class="flex items-start space-x-2"><span class="text-amber-400">✓</span><span>Ejecuta 2 veces para cubrir más</span></li>
+<li class="flex items-start space-x-2"><span class="text-amber-400">✓</span><span>Idealmente con modelos diferentes</span></li>
+</ul>
+</div>
+</div>
+<div class="bg-primary/10 rounded-xl border border-primary/30 p-6 mb-6">
+<h3 class="text-lg font-semibold text-primary mb-3 flex items-center"><span class="mr-2">🔁</span> Doble verificación</h3>
+<p class="text-neutral-300">Dos modelos diferentes ven cosas diferentes. Ejecutar la lista de verificación <strong>dos veces, en ventanas limpias y con modelos distintos</strong>, es como tener dos revisores independientes: es mucho más difícil que se les escape algo crítico.</p>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-amber-400 font-bold mb-1">Degradación del contexto</div><p class="text-xs text-neutral-400">el contexto se deteriora</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-amber-400 font-bold mb-1">Ventana limpia</div><p class="text-xs text-neutral-400">mirada fresca</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-amber-400 font-bold mb-1">2 veces</div><p class="text-xs text-neutral-400">cubre más</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-amber-400 font-bold mb-1">Modelos diff.</div><p class="text-xs text-neutral-400">dos revisores</p></div>
+</div>
+<div class="flex justify-start mt-6">
+<button aria-pressed="false" data-inema-read-toggle="" type="button">
+<span aria-hidden="true" class="inema-ico-todo">○</span><span aria-hidden="true" class="inema-ico-done">●</span><span class="inema-label-todo">Marcar como leído</span><span class="inema-label-done">Leído</span>
+</button>
+</div>
+</section>
+<!-- TÓPICO 7 -->
+<section class="mb-16" data-inema-topic="modulo-4-2#topico-7" id="topico-7">
+<div class="flex items-center justify-between mb-6 gap-3">
+<div class="flex items-center space-x-4">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-amber-500/20 text-amber-400 font-bold text-xl flex-shrink-0">7</span>
+<h2 class="text-2xl font-bold">📡 Monitoreo y entrega</h2>
+</div>
+<button aria-pressed="false" class="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm flex-shrink-0" data-inema-doubt-toggle="" title="Marcar una duda en este tema" type="button"><span aria-hidden="true">?</span><span>Duda</span></button>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed" data-inema-block="m42-t7-p1">El lema de la entrega profesional es <strong class="text-amber-400">"no confíes, compruébalo"</strong>. Entregar no es solo hacer el deploy: es tener <strong>monitoreo y uptime</strong> que demuestren, con datos, que el sistema sigue funcionando después de que dejó de estar en tus manos.</p>
+<!-- SVG -->
+<div class="rounded-2xl border border-amber-500/30 bg-dark-900/40 p-3 sm:p-4 mb-6 overflow-hidden">
+<svg aria-label="Después del deploy, el monitoreo observa la app continuamente y genera evidencia de uptime, demostrando que todo sigue en línea" class="w-full h-auto" role="img" viewbox="0 0 1000 200">
+<defs>
+<lineargradient id="m42b-grad" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#fbbf24"></stop><stop offset="1" stop-color="#f59e0b"></stop></lineargradient>
+<filter height="180%" id="m42b-glow" width="180%" x="-40%" y="-40%"><fegaussianblur result="b" stddeviation="1.8"></fegaussianblur><femerge><femergenode in="b"></femergenode><femergenode in="SourceGraphic"></femergenode></femerge></filter>
+<pattern height="32" id="m42b-grid" patternunits="userSpaceOnUse" width="32"><circle cx="1.3" cy="1.3" fill="#f59e0b" opacity="0.12" r="1.3"></circle></pattern>
+<marker id="m42b-ah" markerheight="9" markerwidth="9" orient="auto" refx="6.5" refy="4.5"><path d="M0,0 L8,4.5 L0,9 L2.4,4.5 Z" fill="#fbbf24"></path></marker>
+</defs>
+<rect fill="url(#m42b-grid)" height="200" width="1000" x="0" y="0"></rect>
+<rect fill="#1f1604" height="48" rx="12" stroke="#fbbf24" stroke-width="1.8" width="170" x="60" y="78"></rect>
+<text fill="#fde68a" font-family="Inter,sans-serif" font-size="15" font-weight="600" text-anchor="middle" x="145" y="107">Deploy</text>
+<g filter="url(#m42b-glow)"><rect fill="#1f1604" height="60" rx="14" stroke="url(#m42b-grad)" stroke-width="2.5" width="200" x="320" y="72"></rect></g>
+<text fill="#fbbf24" font-family="Inter,sans-serif" font-size="15" font-weight="600" text-anchor="middle" x="420" y="98">Monitoreo</text>
+<text fill="#fde68a" font-family="Inter,sans-serif" font-size="12" text-anchor="middle" x="420" y="118">observa siempre</text>
+<rect fill="#1f1604" height="48" rx="12" stroke="#fbbf24" stroke-width="1.8" width="150" x="610" y="78"></rect>
+<text fill="#fde68a" font-family="Inter,sans-serif" font-size="14" font-weight="600" text-anchor="middle" x="685" y="100">Disponibilidad</text>
+<text fill="#fcd34d" font-family="Inter,sans-serif" font-size="11" text-anchor="middle" x="685" y="117">99,9%</text>
+<rect fill="#0e2018" height="48" rx="12" stroke="#34d399" stroke-width="1.8" width="140" x="820" y="78"></rect>
+<text fill="#34d399" font-family="Inter,sans-serif" font-size="14" font-weight="600" text-anchor="middle" x="890" y="107">prueba ✓</text>
+<g fill="none" opacity="0.6" stroke="#fbbf24" stroke-width="2">
+<path d="M230,102 L320,102" marker-end="url(#m42b-ah)"></path>
+<path d="M520,102 L610,102" marker-end="url(#m42b-ah)"></path>
+<path d="M760,102 L820,102" marker-end="url(#m42b-ah)"></path>
+</g>
+<text fill="#9ca3af" font-family="Inter,sans-serif" font-size="13" font-weight="600" text-anchor="middle" x="500" y="160">"no confíes, compruébalo"</text>
+</svg>
+</div>
+<div class="bg-primary/10 rounded-xl border border-primary/30 p-6 mb-6">
+<h3 class="text-lg font-semibold text-primary mb-3 flex items-center"><span class="mr-2">📊</span> Evidencia, no promesas</h3>
+<p class="text-neutral-300">Decir «está funcionando» es una promesa. Mostrar un panel de <strong>tiempo de actividad y alertas</strong> es evidencia. El monitoreo convierte la confianza del cliente en algo verificable, y te protege si algo falla.</p>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-amber-400 font-bold mb-1">Demuestra</div><p class="text-xs text-neutral-400">no confíes</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-amber-400 font-bold mb-1">Disponibilidad</div><p class="text-xs text-neutral-400">sigue en línea</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-amber-400 font-bold mb-1">Alertas</div><p class="text-xs text-neutral-400">avisa si baja</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-amber-400 font-bold mb-1">Evidencia</div><p class="text-xs text-neutral-400">datos, no fe</p></div>
+</div>
+<div class="flex justify-start mt-6">
+<button aria-pressed="false" data-inema-read-toggle="" type="button">
+<span aria-hidden="true" class="inema-ico-todo">○</span><span aria-hidden="true" class="inema-ico-done">●</span><span class="inema-label-todo">Marcar como leído</span><span class="inema-label-done">Leído</span>
+</button>
+</div>
+</section>
+<!-- EXEMPLO PRÁTICO -->
+<section class="mb-12" id="exemplo">
+<h2 class="text-2xl font-bold mb-6 flex items-center"><span class="mr-3">🔬</span> Ejemplo práctico</h2>
+<div class="bg-dark-800 rounded-xl border border-dark-600 p-6">
+<p class="text-neutral-300 mb-4">Ejecuta el <strong class="text-amber-400">Pre-Flight Checklist en tu app</strong> y genera un informe con elementos Crítico / Aviso / OK antes de "entregar".</p>
+<ul class="space-y-2 text-neutral-300 mb-4">
+<li class="flex items-start space-x-2"><span class="text-amber-400 mt-1">1.</span><span><strong>Ventana limpia:</strong> abre una conversación nueva, sin el historial de la construcción.</span></li>
+<li class="flex items-start space-x-2"><span class="text-amber-400 mt-1">2.</span><span><strong>Papel + fases:</strong> pídele a la IA que sea QA sénior + auditor y recorra las fases.</span></li>
+<li class="flex items-start space-x-2"><span class="text-amber-400 mt-1">3.</span><span><strong>Informe clasificado:</strong> cada hallazgo marcado como Crítico, Aviso o OK.</span></li>
+</ul>
+<p class="text-neutral-400 text-sm">Al final, tienes una imagen fiel del estado de la app y una lista clara de lo que debes corregir antes de entregarla.</p>
+</div>
+</section>
+<!-- EXERCÍCIO -->
+<section class="mb-12" id="exercicio">
+<h2 class="text-2xl font-bold mb-6 flex items-center"><span class="mr-3">🏋️</span> Ejercicio</h2>
+<div class="bg-gradient-to-br from-amber-900/30 to-dark-800 rounded-xl border border-amber-500/30 p-6">
+<p class="text-neutral-300 mb-4">Ejecuta el <strong class="text-amber-400">Pre-Flight Checklist en tu app</strong> y clasifica los hallazgos. Después:</p>
+<ol class="space-y-2 text-neutral-300 mb-4 list-decimal list-inside">
+<li>Enumera los hallazgos en <strong>Crítico</strong>, <strong>Aviso</strong> e <strong>OK</strong>.</li>
+<li>Corrige al menos <strong>un crítico</strong> de principio a fin.</li>
+<li>Ejecuta el checklist de nuevo, en una <strong>ventana nueva</strong>, para confirmar que el problema crítico desapareció.</li>
+</ol>
+<p class="text-neutral-400 text-sm">Este ciclo —auditar, corregir, volver a auditar— es el corazón de la entrega profesional.</p>
+</div>
+</section>
+<!-- PROMPTS PRONTOS -->
+<section class="mb-12" id="prompts">
+<h2 class="text-2xl font-bold mb-6 flex items-center"><span class="mr-3">⚡</span> Prompts listos</h2>
+<p class="text-neutral-400 mb-4 text-sm">Copia, pega en tu asistente de IA y adapta a tu caso.</p>
+<div class="bg-dark-900 border border-dark-600 rounded-xl overflow-hidden mb-4" data-prompt="">
+<div class="flex items-center justify-between px-4 py-2 bg-dark-700/50 border-b border-dark-600"><span class="text-xs text-neutral-400 font-mono">pre-flight checklist (QA + seguridad)</span><button class="text-xs px-2 py-1 rounded bg-amber-600 hover:bg-amber-500 text-white" onclick="copyPrompt(this)">Copiar</button></div>
+<pre class="p-4 text-sm text-neutral-200 whitespace-pre-wrap font-mono">Eres un ingeniero sénior de QA y auditor de seguridad.
+Acabo de construir un proyecto y necesito una prueba de estrés antes de entregarlo.
+Guíame por fases (descubrimiento, dependencias, seguridad, autenticación,
+validación de entradas, protección de datos, API, infraestructura, pruebas,
+cumplimiento, accesibilidad, deploy, monitoreo, respaldo, preparación para la entrega).
+Haz preguntas cuando sea necesario, identifica riesgos y da recomendaciones prácticas,
+marcando cada elemento como crítico, aviso u ok.</pre>
+</div>
+<div class="bg-dark-900 border border-dark-600 rounded-xl overflow-hidden mb-4" data-prompt="">
+<div class="flex items-center justify-between px-4 py-2 bg-dark-700/50 border-b border-dark-600"><span class="text-xs text-neutral-400 font-mono">revisión escéptica en una ventana nueva</span><button class="text-xs px-2 py-1 rounded bg-amber-600 hover:bg-amber-500 text-white" onclick="copyPrompt(this)">Copiar</button></div>
+<pre class="p-4 text-sm text-neutral-200 whitespace-pre-wrap font-mono">En una ventana nueva y sin contexto anterior:
+revisa este código como un desarrollador sénior muy escéptico
+y enumera todo lo que fallaría en producción, de lo más grave a lo menos grave.
+Para cada punto, explica por qué falla y cómo corregirlo.</pre>
+</div>
+</section>
+<!-- RESUMO -->
+<section class="mb-12">
+<div class="bg-gradient-to-br from-amber-900/40 via-dark-800 to-dark-800 rounded-xl border border-amber-500/30 p-8">
+<h2 class="text-2xl font-bold mb-6 flex items-center"><span class="mr-3">✅</span> Resumen del módulo</h2>
+<div class="space-y-4 mb-8">
+<div class="flex items-start space-x-3"><span class="text-amber-400 mt-1">✓</span><div><strong class="text-white">De la automatización al software</strong><span class="text-neutral-400"> — el software es el producto; cambia el valor de lo que entregas.</span></div></div>
+<div class="flex items-start space-x-3"><span class="text-amber-400 mt-1">✓</span><div><strong class="text-white">Modelos de propiedad</strong><span class="text-neutral-400"> — licencia, entrega total o (preferido) cliente propietario + soporte de 30–90 días.</span></div></div>
+<div class="flex items-start space-x-3"><span class="text-amber-400 mt-1">✓</span><div><strong class="text-white">Pre-Flight Checklist</strong><span class="text-neutral-400"> — QA sénior + auditor, por fases, con clasificación Crítico/Aviso/OK.</span></div></div>
+<div class="flex items-start space-x-3"><span class="text-amber-400 mt-1">✓</span><div><strong class="text-white">Ventana limpia + supervisar</strong><span class="text-neutral-400"> — evita el context rot y demuestra el uptime: "no confíes, demuestra".</span></div></div>
+</div>
+<div class="bg-dark-800/50 rounded-lg p-4 mb-8"><h3 class="font-semibold text-amber-400 mb-2">Siguiente ruta:</h3><p class="text-neutral-300">Ruta 5 — Maestría y biblioteca (incl. la lista de verificación Pre-Flight completa)</p></div>
+<div class="flex flex-col sm:flex-row gap-4">
+<a class="flex-1 text-center px-6 py-3 bg-dark-700 text-neutral-300 rounded-lg font-semibold hover:bg-dark-600 transition-colors" href="index.html">← Volver a la ruta</a>
+<a class="flex-1 text-center px-6 py-3 bg-amber-600 text-white rounded-lg font-semibold hover:bg-amber-500 transition-colors" href="../trilha5/index.html">Ruta 5: Maestría y biblioteca →</a>
+</div>
+</div>
+</section>
+</article>
+</div>
+</main>
+<footer class="border-t border-dark-600 py-8 mt-16">
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-neutral-500 text-sm">
+<p>AntiGravity — de cero a la app publicada con IA · <a class="text-sky-400 hover:text-sky-300" href="https://inema.club" target="_blank">INEMA.CLUB</a> · 2026</p>
+</div>
+</footer>
+<script>
+    function toggleTopic(button) {
+      const topicItem = button.closest('.topic-item');
+      if (!topicItem) return;
+      const explanation = topicItem.querySelector('.topic-explanation');
+      const moduleCard = button.closest('.bg-dark-800') || document;
+      moduleCard.querySelectorAll('.topic-explanation.active').forEach(exp => { if (exp !== explanation) exp.classList.remove('active'); });
+      const willOpen = !explanation.classList.contains('active');
+      explanation.classList.toggle('active');
+      button.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+    }
+    (function () {
+      const themeToggle = document.getElementById('theme-toggle');
+      const di = document.getElementById('theme-toggle-dark-icon');
+      const li = document.getElementById('theme-toggle-light-icon');
+      const html = document.documentElement;
+      function paint() { const dark = html.classList.contains('dark'); di.classList.toggle('hidden', dark); li.classList.toggle('hidden', !dark); }
+      paint();
+      themeToggle && themeToggle.addEventListener('click', () => {
+        const nowDark = !html.classList.contains('dark');
+        if (window.INEMA && INEMA.setPref) { INEMA.setPref('theme', nowDark ? 'inema-dark' : 'claro'); }
+        else { html.classList.toggle('dark'); localStorage.setItem('theme', nowDark ? 'dark' : 'light'); }
+        paint();
+      });
+      document.addEventListener('inema:progress', paint);
+    })();
+    function openModal(modalId) { const m = document.getElementById(modalId); if (m) { m.classList.remove('hidden'); document.body.style.overflow = 'hidden'; } }
+    function closeModal() { document.querySelectorAll('.modal').forEach(m => m.classList.add('hidden')); document.body.style.overflow = 'auto'; }
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+    function copyPrompt(btn) {
+      const box = btn.closest('[data-prompt]'); const pre = box && box.querySelector('pre');
+      const txt = pre ? pre.innerText : '';
+      function done(){ const o = btn.textContent; btn.textContent = '✓ Copiado'; setTimeout(()=>{ btn.textContent = o; }, 1500); }
+      function fallback(){ const ta = document.createElement('textarea'); ta.value = txt; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch(e){} ta.remove(); done(); }
+      if (navigator.clipboard && window.isSecureContext) { navigator.clipboard.writeText(txt).then(done).catch(fallback); } else { fallback(); }
+    }
+  </script>
+<script src="../../assets/learn.js"></script>
+<script>
+    if (window.INEMA && typeof window.INEMA.init === 'function') { window.INEMA.init(); }
+    // Liga controles da nav (fora do <main>, onde o learn.js delega cliques) à API do learn.js
+    (function () {
+      function wire() {
+        if (!window.INEMA) return;
+        document.querySelectorAll('[data-inema-journey-open]').forEach(function (b) { if (b.__w) return; b.__w = 1; b.addEventListener('click', function () { INEMA.openJourney && INEMA.openJourney(); }); });
+        document.querySelectorAll('[data-inema-appearance-toggle]').forEach(function (b) { if (b.__w) return; b.__w = 1; b.addEventListener('click', function (e) { e.stopPropagation(); var sel = b.getAttribute('data-inema-appearance-toggle'); var p = sel ? document.querySelector(sel) : document.querySelector('[data-inema-appearance]'); if (!p) return; var open = p.getAttribute('data-open') === 'true'; p.setAttribute('data-open', open ? 'false' : 'true'); b.setAttribute('aria-expanded', open ? 'false' : 'true'); }); });
+        [['data-inema-set-theme','theme'],['data-inema-set-font','font'],['data-inema-set-fontscale','fontScale'],['data-inema-set-leading','leading'],['data-inema-set-accent','accent'],['data-inema-set-linewidth','lineWidth']].forEach(function (m) { document.querySelectorAll('[' + m[0] + ']').forEach(function (b) { if (b.__w) return; b.__w = 1; b.addEventListener('click', function () { INEMA.setPref && INEMA.setPref(m[1], b.getAttribute(m[0])); }); }); });
+        document.addEventListener('click', function (e) { var p = document.querySelector('[data-inema-appearance][data-open="true"]'); if (!p) return; var t = document.querySelector('[data-inema-appearance-toggle]'); if (!p.contains(e.target) && (!t || !t.contains(e.target))) { p.setAttribute('data-open', 'false'); t && t.setAttribute('aria-expanded', 'false'); } });
+      }
+      if (document.readyState !== 'loading') setTimeout(wire, 0); else document.addEventListener('DOMContentLoaded', wire);
+    })();
+  </script>
+</body>
+</html>

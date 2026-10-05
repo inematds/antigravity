@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="antigravity" name="inema-course"/>
+<title>Module 2.1 · Your first app | AntiGravity</title>
+<!-- ANTI-FOUC: bloqueante, ANTES do Tailwind e de qualquer <style>/<link> -->
+<script>
+  (function () {
+    try {
+      var html = document.documentElement;
+      var DEF = { theme: 'inema-dark', font: 'inter', fontScale: 100, lineWidth: 68, leading: 1.7, accent: 'emerald' };
+      function clone(o) { var r = {}; for (var x in o) r[x] = o[x]; return r; }
+      var p = clone(DEF);
+      try {
+        var raw = localStorage.getItem('inema.prefs');
+        if (raw) {
+          var parsed = JSON.parse(raw);
+          if (parsed && typeof parsed === 'object') { for (var k in DEF) if (parsed[k] != null) p[k] = parsed[k]; }
+        } else {
+          var legacy = localStorage.getItem('theme');
+          if (legacy === 'light') p.theme = 'claro';
+          else if (legacy === 'dark') p.theme = 'inema-dark';
+        }
+      } catch (e) { p = clone(DEF); }
+      var THEMES = {
+        'inema-dark': { dark: true,  attr: null,        cs: 'dark'  },
+        'claro':      { dark: false, attr: null,        cs: 'light' },
+        'sepia':      { dark: false, attr: 'sepia',     cs: 'light' },
+        'foco':       { dark: null,  attr: 'foco',      cs: null    },
+        'contraste':  { dark: true,  attr: 'contraste', cs: 'dark'  }
+      };
+      var t = THEMES[p.theme] || THEMES['inema-dark'];
+      if (t.dark === true) html.classList.add('dark');
+      else if (t.dark === false) html.classList.remove('dark');
+      if (t.attr) html.setAttribute('data-theme', t.attr); else html.removeAttribute('data-theme');
+      html.style.colorScheme = (t.cs ? t.cs : (html.classList.contains('dark') ? 'dark' : 'light'));
+      html.setAttribute('data-font', p.font || 'inter');
+      html.setAttribute('data-accent', p.accent || 'emerald');
+      var s = html.style, scale = (+p.fontScale || 100);
+      s.setProperty('--inema-font-scale', (scale / 100).toString());
+      s.setProperty('font-size', scale + '%');
+      s.setProperty('--measure', (+p.lineWidth || 68) + 'ch');
+      s.setProperty('--lh-body', (+p.leading || 1.7).toString());
+      var fam = p.font === 'system' ? 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif'
+        : (p.font === 'leitura' ? '"Atkinson Hyperlegible", "Inter", system-ui, sans-serif' : '"Inter", system-ui, sans-serif');
+      s.setProperty('--font-body', fam);
+      var ACC = { emerald:[152,76,45], blue:[217,91,60], purple:[258,90,66], amber:[38,92,50], teal:[174,72,41], rose:[350,89,60] };
+      var a = ACC[p.accent] || ACC.emerald;
+      s.setProperty('--accent-h', a[0] + ''); s.setProperty('--accent-s', a[1] + '%'); s.setProperty('--accent-l', a[2] + '%');
+      s.setProperty('--accent', 'hsl(' + a[0] + ' ' + a[1] + '% ' + a[2] + '%)');
+    } catch (err) {
+      try { document.documentElement.classList.add('dark'); document.documentElement.style.colorScheme = 'dark'; } catch (e) {}
+    }
+  })();
+  </script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: { extend: { colors: {
+        primary: '#FACC15',
+        dark: { 900: '#111827', 800: '#1f2937', 700: '#374151', 600: '#4b5563' }
+      } } }
+    }
+  </script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<style>
+    body { font-family: 'Inter', sans-serif; }
+    .dark body { background-color: #111827; }
+    .topic-explanation { display: none; }
+    .topic-explanation.active { display: block; }
+    [id] { scroll-margin-top: 4.5rem; }
+    .skip { position:absolute; left:-999px; top:0; background:#FACC15; color:#111827; padding:.5rem 1rem; border-radius:.5rem; z-index:100; }
+    .skip:focus { left:1rem; top:.5rem; }
+    :focus-visible { outline: 3px solid #38bdf8; outline-offset: 2px; }
+
+    /* Light mode - base */
+    html:not(.dark) body { background-color: #f8fafc; }
+    html:not(.dark) .bg-dark-900 { background-color: #ffffff; }
+    html:not(.dark) .bg-dark-800 { background-color: #f9fafb; }
+    html:not(.dark) .bg-dark-700 { background-color: #f3f4f6; }
+    html:not(.dark) .bg-dark-600 { background-color: #e5e7eb; }
+    html:not(.dark) .text-neutral-100 { color: #111827; }
+    html:not(.dark) .text-neutral-300 { color: #4b5563; }
+    html:not(.dark) .text-neutral-400 { color: #6b7280; }
+    html:not(.dark) .text-neutral-500 { color: #9ca3af; }
+    html:not(.dark) .border-dark-600 { border-color: #d1d5db; }
+    html:not(.dark) .border-dark-700 { border-color: #e5e7eb; }
+
+    /* Light mode - cores de acento (todas as trilhas) */
+    html:not(.dark) .text-emerald-400 { color: #059669; }
+    html:not(.dark) .bg-emerald-500\/20 { background-color: rgba(5,150,105,0.12); }
+    html:not(.dark) .bg-emerald-500\/10 { background-color: rgba(5,150,105,0.08); }
+    html:not(.dark) .border-emerald-500\/30 { border-color: rgba(5,150,105,0.25); }
+    html:not(.dark) .hover\:bg-emerald-500\/30:hover { background-color: rgba(5,150,105,0.18); }
+    html:not(.dark) .hover\:text-emerald-400:hover { color: #059669; }
+    html:not(.dark) .hover\:bg-emerald-500\/10:hover { background-color: rgba(5,150,105,0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-emerald-400 { color: #059669; }
+    html:not(.dark) .text-blue-400 { color: #2563eb; }
+    html:not(.dark) .bg-blue-500\/20 { background-color: rgba(37,99,235,0.12); }
+    html:not(.dark) .bg-blue-500\/10 { background-color: rgba(37,99,235,0.08); }
+    html:not(.dark) .border-blue-500\/30 { border-color: rgba(37,99,235,0.25); }
+    html:not(.dark) .hover\:bg-blue-500\/30:hover { background-color: rgba(37,99,235,0.18); }
+    html:not(.dark) .hover\:text-blue-400:hover { color: #2563eb; }
+    html:not(.dark) .hover\:bg-blue-500\/10:hover { background-color: rgba(37,99,235,0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-blue-400 { color: #2563eb; }
+    html:not(.dark) .text-purple-400 { color: #7c3aed; }
+    html:not(.dark) .bg-purple-500\/20 { background-color: rgba(124,58,237,0.12); }
+    html:not(.dark) .bg-purple-500\/10 { background-color: rgba(124,58,237,0.08); }
+    html:not(.dark) .border-purple-500\/30 { border-color: rgba(124,58,237,0.25); }
+    html:not(.dark) .hover\:bg-purple-500\/30:hover { background-color: rgba(124,58,237,0.18); }
+    html:not(.dark) .hover\:text-purple-400:hover { color: #7c3aed; }
+    html:not(.dark) .hover\:bg-purple-500\/10:hover { background-color: rgba(124,58,237,0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-purple-400 { color: #7c3aed; }
+    html:not(.dark) .text-amber-400 { color: #92400e; }
+    html:not(.dark) .bg-amber-500\/20 { background-color: rgba(217,119,6,0.12); }
+    html:not(.dark) .bg-amber-500\/10 { background-color: rgba(217,119,6,0.08); }
+    html:not(.dark) .border-amber-500\/30 { border-color: rgba(217,119,6,0.25); }
+    html:not(.dark) .hover\:bg-amber-500\/30:hover { background-color: rgba(217,119,6,0.18); }
+    html:not(.dark) .hover\:text-amber-400:hover { color: #92400e; }
+    html:not(.dark) .hover\:bg-amber-500\/10:hover { background-color: rgba(217,119,6,0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-amber-400 { color: #92400e; }
+    html:not(.dark) .text-teal-400 { color: #0d9488; }
+    html:not(.dark) .bg-teal-500\/20 { background-color: rgba(13,148,136,0.12); }
+    html:not(.dark) .bg-teal-500\/10 { background-color: rgba(13,148,136,0.08); }
+    html:not(.dark) .border-teal-500\/30 { border-color: rgba(13,148,136,0.25); }
+    html:not(.dark) .hover\:bg-teal-500\/30:hover { background-color: rgba(13,148,136,0.18); }
+    html:not(.dark) .hover\:text-teal-400:hover { color: #0d9488; }
+    html:not(.dark) .hover\:bg-teal-500\/10:hover { background-color: rgba(13,148,136,0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-teal-400 { color: #0d9488; }
+
+    /* Light mode - remove gradientes + cores especiais */
+    html:not(.dark) [class*="bg-gradient-to"] { background-image: none !important; }
+    html:not(.dark) .text-primary { color: #a16207; }
+    html:not(.dark) .bg-primary\/10 { background-color: rgba(161,98,7,0.08); }
+    html:not(.dark) .border-primary\/30 { border-color: rgba(161,98,7,0.25); }
+    html:not(.dark) .border-primary\/40 { border-color: rgba(161,98,7,0.25); }
+    html:not(.dark) .text-sky-400 { color: #0369a1; }
+    html:not(.dark) .text-yellow-400 { color: #a16207; }
+    html:not(.dark) .hover\:text-sky-300:hover { color: #0284c7; }
+    html:not(.dark) .hover\:text-yellow-300:hover { color: #854d0e; }
+    html:not(.dark) .bg-dark-900\/95 { background-color: rgba(255,255,255,0.95); }
+
+    /* Dark mode - bordas suavizadas */
+    .dark .border-dark-600 { border-color: #374151; }
+    .dark .divide-dark-600 > :not([hidden]) ~ :not([hidden]) { border-color: #374151; }
+
+    /* SVG diagramas: suavizar no claro */
+    html:not(.dark) svg[role="img"] { filter: saturate(0.82) brightness(0.96); }
+
+    .inema-toc-link.is-active { color: #60a5fa; font-weight: 600; }
+  </style>
+<link href="../../assets/learn.css" rel="stylesheet"/>
+<script data-inema-manifest="" type="application/json">
+  {
+    "course": "antigravity",
+    "tracks": [
+      { "n": "1", "title": "Fundamentos", "modules": [
+        { "id": "1-1", "title": "AntiGravity & o bolo de 3 camadas", "topics": 7 },
+        { "id": "1-2", "title": "No-code vs. apps com IA", "topics": 6 },
+        { "id": "1-3", "title": "Setup completo do ambiente", "topics": 8 }
+      ]},
+      { "n": "2", "title": "Construir & Publicar", "modules": [
+        { "id": "2-1", "title": "Seu primeiro app", "topics": 8 },
+        { "id": "2-2", "title": "Publicar e manter", "topics": 8 }
+      ]},
+      { "n": "3", "title": "Escalar a Produção", "modules": [
+        { "id": "3-1", "title": "Sistema de clonagem", "topics": 7 },
+        { "id": "3-2", "title": "GoHighLevel/WordPress", "topics": 6 }
+      ]},
+      { "n": "4", "title": "Profissionalizar", "modules": [
+        { "id": "4-1", "title": "Fluxo de trabalho profissional", "topics": 6 },
+        { "id": "4-2", "title": "Entregar e aplicar", "topics": 7 }
+      ]},
+      { "n": "5", "title": "Maestria & Biblioteca", "modules": [
+        { "id": "5-1", "title": "CODA & Claude Code", "topics": 7 },
+        { "id": "5-2", "title": "Biblioteca de Skills & Prompts", "topics": 7 }
+      ]}
+    ]
+  }
+  </script>
+<link href="https://inematds.github.io/antigravity/trilha2/modulo-2-1.html" hreflang="pt-BR" rel="alternate"/><link href="https://inematds.github.io/antigravity/en/trilha2/modulo-2-1.html" hreflang="en" rel="alternate"/><link href="https://inematds.github.io/antigravity/es/trilha2/modulo-2-1.html" hreflang="es" rel="alternate"/></head>
+<body class="bg-dark-900 text-neutral-100 min-h-screen"><div class="inema-lang" style="position:fixed;right:14px;bottom:14px;z-index:9999;display:flex;gap:2px;padding:4px;border-radius:10px;background:rgba(12,12,16,.82);border:1px solid rgba(226,162,59,.45);font:600 12px/1 Sora,Inter,system-ui,sans-serif;backdrop-filter:blur(8px)" translate="no"><a href="../../trilha2/modulo-2-1.html" hreflang="pt-BR" style="padding:6px 8px;border-radius:7px;text-decoration:none;color:#e9e9ee">PT</a><a href="modulo-2-1.html" hreflang="en" style="padding:6px 8px;border-radius:7px;text-decoration:none;color:#1a1206;background:#E2A23B">EN</a><a href="../../es/trilha2/modulo-2-1.html" hreflang="es" style="padding:6px 8px;border-radius:7px;text-decoration:none;color:#e9e9ee">ES</a></div>
+<a class="skip" href="#conteudo">Skip to content</a>
+<!-- NAVIGATION -->
+<nav class="sticky top-0 z-50 bg-dark-900/95 backdrop-blur-sm border-b border-dark-600">
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="flex justify-between items-center h-14">
+<div class="flex items-center space-x-4">
+<a class="flex items-center space-x-2 text-yellow-400 hover:text-yellow-300" href="../index.html">
+<span class="text-2xl">🛰️</span>
+<span class="font-bold text-lg hidden sm:inline">AntiGravity</span>
+</a>
+<span class="text-neutral-600">|</span>
+<a class="text-sky-400 hover:text-sky-300 text-sm font-medium" href="https://inema.club" target="_blank">INEMA.CLUB</a>
+</div>
+<div class="flex items-center space-x-1 sm:space-x-2">
+<a class="px-2.5 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-emerald-400 hover:bg-emerald-500/10 transition-colors" href="../trilha1/index.html"><span class="sm:hidden">T1</span><span class="hidden sm:inline">Fundamentals</span></a>
+<a class="px-2.5 py-1.5 rounded-lg text-sm font-semibold text-blue-400 bg-blue-500/10" href="index.html"><span class="sm:hidden">T2</span><span class="hidden sm:inline">Build</span></a>
+<a class="px-2.5 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-purple-400 hover:bg-purple-500/10 transition-colors" href="../trilha3/index.html"><span class="sm:hidden">T3</span><span class="hidden sm:inline">Scale</span></a>
+<a class="px-2.5 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-amber-400 hover:bg-amber-500/10 transition-colors" href="../trilha4/index.html"><span class="sm:hidden">T4</span><span class="hidden sm:inline">Professional</span></a>
+<a class="px-2.5 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-teal-400 hover:bg-teal-500/10 transition-colors" href="../trilha5/index.html"><span class="sm:hidden">T5</span><span class="hidden sm:inline">Mastery</span></a>
+<div class="relative">
+<button aria-expanded="false" class="p-2 rounded-lg bg-dark-700 hover:bg-dark-600 transition-colors" data-inema-appearance-toggle="[data-inema-appearance]" title="Appearance and readability" type="button"><span aria-hidden="true">◑</span></button>
+<div class="inema-appearance-pop" data-inema-appearance="" style="right:0">
+<div><p class="text-xs text-neutral-400 mb-1">Theme</p><div class="inema-segment flex flex-wrap gap-1">
+<button class="px-2 py-1 text-xs rounded bg-dark-700" data-inema-set-theme="inema-dark">Dark</button>
+<button class="px-2 py-1 text-xs rounded bg-dark-700" data-inema-set-theme="claro">Clear</button>
+<button class="px-2 py-1 text-xs rounded bg-dark-700" data-inema-set-theme="sepia">Sepia</button>
+<button class="px-2 py-1 text-xs rounded bg-dark-700" data-inema-set-theme="foco">Focus</button>
+<button class="px-2 py-1 text-xs rounded bg-dark-700" data-inema-set-theme="contraste">High contrast</button>
+</div></div>
+<div><p class="text-xs text-neutral-400 mb-1">Source</p><div class="inema-segment flex gap-1">
+<button class="px-2 py-1 text-xs rounded bg-dark-700" data-inema-set-font="inter">Inter</button>
+<button class="px-2 py-1 text-xs rounded bg-dark-700" data-inema-set-font="system">System</button>
+<button class="px-2 py-1 text-xs rounded bg-dark-700" data-inema-set-font="leitura">Reading</button>
+</div></div>
+<div><p class="text-xs text-neutral-400 mb-1">Size</p><div class="inema-segment flex gap-1">
+<button class="px-2 py-1 text-xs rounded bg-dark-700" data-inema-set-fontscale="100">A</button>
+<button class="px-2 py-1 text-xs rounded bg-dark-700" data-inema-set-fontscale="112">A+</button>
+<button class="px-2 py-1 text-xs rounded bg-dark-700" data-inema-set-fontscale="125">A++</button>
+</div></div>
+<div><p class="text-xs text-neutral-400 mb-1">Line spacing</p><div class="inema-segment flex gap-1">
+<button class="px-2 py-1 text-xs rounded bg-dark-700" data-inema-set-leading="1.45">Compact</button>
+<button class="px-2 py-1 text-xs rounded bg-dark-700" data-inema-set-leading="1.7">Comfortable</button>
+</div></div>
+</div>
+</div>
+<button class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-sm text-neutral-300 hover:text-neutral-100 hover:bg-dark-700 transition-colors" data-inema-journey-open="" title="My journey" type="button">
+<span aria-hidden="true">◷</span><span class="hidden sm:inline">Journey</span>
+<span class="inema-journey-badge" data-count="0" data-inema-journey-badge=""></span>
+</button>
+<button class="p-2 rounded-lg bg-dark-700 hover:bg-dark-600 transition-colors" id="theme-toggle" title="Toggle light/dark">
+<svg class="hidden w-5 h-5 text-neutral-300" fill="currentColor" id="theme-toggle-dark-icon" viewbox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+<svg class="hidden w-5 h-5 text-neutral-300" fill="currentColor" id="theme-toggle-light-icon" viewbox="0 0 20 20"><path clip-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd"></path></svg>
+</button>
+</div>
+</div>
+</div>
+</nav>
+<!-- BREADCRUMB -->
+<nav class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+<div class="flex items-center space-x-2 text-sm text-neutral-400">
+<a class="hover:text-blue-400" href="../index.html">Start</a><span>/</span>
+<a class="hover:text-blue-400" href="index.html">Track 2</a><span>/</span>
+<span class="text-blue-400">Module 2.1</span>
+</div>
+</nav>
+<!-- HEADER -->
+<header class="bg-gradient-to-br from-blue-900/30 via-dark-800 to-dark-800 py-12 border-b border-dark-600">
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+<span class="inline-block px-3 py-1 bg-blue-500/20 text-blue-400 text-xs font-semibold rounded-full mb-4">MODULE 2.1</span>
+<h1 class="text-3xl sm:text-4xl font-bold mb-4">🎯 Your First App: From Problem to Localhost</h1>
+<p class="text-lg text-neutral-400 max-w-3xl">Real building starts before the code. Define the problem well, use AI as a sparring partner, generate an SOP, provide visual references, and orchestrate agents — until you have an app running on localhost.</p>
+<div class="grid grid-cols-4 gap-4 mt-8 max-w-2xl">
+<div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600"><div class="text-xl font-bold text-blue-400">8</div><div class="text-xs text-neutral-400">Topics</div></div>
+<div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600"><div class="text-xl font-bold text-blue-400">75</div><div class="text-xs text-neutral-400">Minutes</div></div>
+<div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600"><div class="text-xl font-bold text-blue-400">Intermediate</div><div class="text-xs text-neutral-400">Level</div></div>
+<div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600"><div class="text-xl font-bold text-blue-400">Practice</div><div class="text-xs text-neutral-400">Type</div></div>
+</div>
+</div>
+</header>
+<main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10" id="conteudo">
+<div class="lg:grid lg:grid-cols-[230px_minmax(0,1fr)] lg:gap-10">
+<!-- TOC -->
+<nav aria-label="Page index" class="hidden lg:block sticky top-20 self-start" data-inema-toc="">
+<p class="text-sm text-neutral-400 mb-2">Section <span data-inema-section-counter="">1 of 8</span></p>
+<ol class="space-y-1 text-sm">
+<li><a class="inema-toc-link text-neutral-400 hover:text-blue-400" href="#topico-1">1. Problem before solution</a></li>
+<li><a class="inema-toc-link text-neutral-400 hover:text-blue-400" href="#topico-2">2. AI as a sparring partner → SOP</a></li>
+<li><a class="inema-toc-link text-neutral-400 hover:text-blue-400" href="#topico-3">3. Design inspiration</a></li>
+<li><a class="inema-toc-link text-neutral-400 hover:text-blue-400" href="#topico-4">4. Parallel agents</a></li>
+<li><a class="inema-toc-link text-neutral-400 hover:text-blue-400" href="#topico-5">5. Agents = employees</a></li>
+<li><a class="inema-toc-link text-neutral-400 hover:text-blue-400" href="#topico-6">6. Planning mode &amp; inbox</a></li>
+<li><a class="inema-toc-link text-neutral-400 hover:text-blue-400" href="#topico-7">7. Context file</a></li>
+<li><a class="inema-toc-link text-neutral-400 hover:text-blue-400" href="#topico-8">8. MCP + Supabase</a></li>
+</ol>
+<div class="mt-4 pt-4 border-t border-dark-600">
+<div class="text-sm" data-inema-meter="modulo:2-1"><span class="text-neutral-400" data-inema-meter-frac="">0 of 8</span> · <span class="text-blue-400 font-bold" data-inema-meter-pct="">0%</span><div class="inema-bar h-1.5 mt-2 rounded-full bg-dark-600 overflow-hidden"><div class="inema-bar__fill h-full rounded-full bg-blue-500" data-inema-meter-fill="" style="width:0%"></div></div></div>
+</div>
+</nav>
+<article class="min-w-0" data-inema-module="2-1" data-inema-track="2">
+<!-- TÓPICO 1 -->
+<section class="mb-16" data-inema-topic="modulo-2-1#topico-1" id="topico-1">
+<div class="flex items-center justify-between mb-6 gap-3">
+<div class="flex items-center space-x-4">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xl flex-shrink-0">1</span>
+<h2 class="text-2xl font-bold">🎯 Problem Before Solution</h2>
+</div>
+<button aria-pressed="false" class="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm flex-shrink-0" data-inema-doubt-toggle="" title="Flag a question on this topic" type="button"><span aria-hidden="true">?</span><span>Question</span></button>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed" data-inema-block="m21-t1-p1">The biggest trap for beginners is rushing to the code. There’s a simple rule to avoid this: <strong class="text-blue-400">55-5 rule</strong>. For every 60 minutes, invest about <strong>55 understanding the problem</strong> and only <strong>5 on rushing the solution</strong>. Most tutorials do the opposite — and produce apps no one uses.</p>
+<div class="bg-gradient-to-br from-blue-900/30 to-dark-800 rounded-xl border border-blue-500/30 p-6 mb-6">
+<h3 class="text-lg font-semibold text-blue-400 mb-4 flex items-center"><span class="mr-2">⏱️</span> The 55-5 rule</h3>
+<p class="text-neutral-300 mb-4">Think of a time budget. Where you spend it determines the quality of what you build:</p>
+<ul class="space-y-2 text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-blue-400 mt-1">•</span><span><strong>55 min on the problem</strong> — who it’s for, what hurts, which result matters.</span></li>
+<li class="flex items-start space-x-2"><span class="text-blue-400 mt-1">•</span><span><strong>5 min on the solution</strong> — when the problem is clear, the solution almost writes itself.</span></li>
+<li class="flex items-start space-x-2"><span class="text-blue-400 mt-1">•</span><span><strong>Don’t skip</strong> the code before knowing what it’s solving.</span></li>
+</ul>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+<div class="bg-blue-900/20 rounded-xl border border-blue-500/30 p-6">
+<h4 class="font-bold text-blue-400 mb-4">✓ Start with the problem</h4>
+<ul class="space-y-3 text-neutral-300 text-sm">
+<li class="flex items-start space-x-2"><span class="text-blue-400">✓</span><span>Define who has the problem and why</span></li>
+<li class="flex items-start space-x-2"><span class="text-blue-400">✓</span><span>Write the desired outcome in one sentence</span></li>
+<li class="flex items-start space-x-2"><span class="text-blue-400">✓</span><span>Only then think about the screen and the features</span></li>
+</ul>
+</div>
+<div class="bg-red-900/20 rounded-xl border border-red-500/30 p-6">
+<h4 class="font-bold text-red-400 mb-4">✗ The trap of coding too early</h4>
+<ul class="space-y-3 text-neutral-300 text-sm">
+<li class="flex items-start space-x-2"><span class="text-red-400">✗</span><span>"I'll just start coding and figure it out as I go"</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400">✗</span><span>Tutorials that open the editor in the first minute</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400">✗</span><span>A beautiful app that solves the wrong problem</span></li>
+</ul>
+</div>
+</div>
+<div class="bg-primary/10 rounded-xl border border-primary/30 p-6 mb-6">
+<h3 class="text-lg font-semibold text-primary mb-3 flex items-center"><span class="mr-2">💡</span> Practical tip</h3>
+<p class="text-neutral-300">Before opening the editor, complete the sentence: <em>"This app exists so [who] can achieve [result] without [today's pain point]."</em> If you can't fill it in, you're still within the 55 minutes.</p>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-blue-400 font-bold mb-1">55-5</div><p class="text-xs text-neutral-400">problem × solution</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-blue-400 font-bold mb-1">Who</div><p class="text-xs text-neutral-400">feels the pain</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-blue-400 font-bold mb-1">Result</div><p class="text-xs text-neutral-400">in one sentence</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-blue-400 font-bold mb-1">Don’t skip</div><p class="text-xs text-neutral-400">the code early</p></div>
+</div>
+<div class="flex justify-start mt-6">
+<button aria-pressed="false" data-inema-read-toggle="" type="button">
+<span aria-hidden="true" class="inema-ico-todo">○</span><span aria-hidden="true" class="inema-ico-done">●</span><span class="inema-label-todo">Mark as read</span><span class="inema-label-done">Read</span>
+</button>
+</div>
+</section>
+<!-- TÓPICO 2 -->
+<section class="mb-16" data-inema-topic="modulo-2-1#topico-2" id="topico-2">
+<div class="flex items-center justify-between mb-6 gap-3">
+<div class="flex items-center space-x-4">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xl flex-shrink-0">2</span>
+<h2 class="text-2xl font-bold">🥊 AI as a sparring partner → SOP</h2>
+</div>
+<button aria-pressed="false" class="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm flex-shrink-0" data-inema-doubt-toggle="" title="Flag a question on this topic" type="button"><span aria-hidden="true">?</span><span>Question</span></button>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed" data-inema-block="m21-t2-p1">AI isn’t just for writing code — it’s a great <strong class="text-blue-400">training partner</strong>. Instead of asking for a ready-made answer, ask it to <strong>challenge your reasoning</strong>. After refining the problem, ask for a <strong class="text-blue-400">SOP</strong> (operating procedure) that’s short, with a maximum of <strong>800 characters</strong>.</p>
+<div class="space-y-4 mb-6">
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center"><span class="text-blue-400 font-bold">1</span></div>
+<div class="flex-1 bg-dark-800 rounded-xl p-5 border border-dark-600"><h4 class="font-semibold text-white mb-1">Describe the desired result</h4><p class="text-neutral-300 text-sm">"This is the result I want: […]." Give the destination, not the route.</p></div>
+</div>
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center"><span class="text-blue-400 font-bold">2</span></div>
+<div class="flex-1 bg-dark-800 rounded-xl p-5 border border-dark-600"><h4 class="font-semibold text-white mb-1">Ask for a counterargument</h4><p class="text-neutral-300 text-sm">"Challenge my reasoning and help me define the problem clearly." Let the AI find the gaps.</p></div>
+</div>
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center"><span class="text-blue-400 font-bold">3</span></div>
+<div class="flex-1 bg-gradient-to-br from-blue-900/30 to-dark-800 rounded-xl p-5 border border-blue-500/30"><h4 class="font-semibold text-blue-400 mb-1">Generate the SOP</h4><p class="text-neutral-300 text-sm">"Create an SOP for this, with no more than 800 characters." This short procedure becomes the build plan.</p></div>
+</div>
+</div>
+<div class="bg-primary/10 rounded-xl border border-primary/30 p-6 mb-6">
+<h3 class="text-lg font-semibold text-primary mb-3 flex items-center"><span class="mr-2">💡</span> Why limit it to 800 characters</h3>
+<p class="text-neutral-300">A short SOP forces clarity: it includes only the essentials. It’s easy to paste into a context file and for the agent to reread without “blowing” its memory.</p>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-blue-400 font-bold mb-1">Sparring</div><p class="text-xs text-neutral-400">training, not an answer</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-blue-400 font-bold mb-1">Challenge</div><p class="text-xs text-neutral-400">find gaps</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-blue-400 font-bold mb-1">SOP</div><p class="text-xs text-neutral-400">procedure</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-blue-400 font-bold mb-1">≤ 800</div><p class="text-xs text-neutral-400">characters</p></div>
+</div>
+<div class="flex justify-start mt-6">
+<button aria-pressed="false" data-inema-read-toggle="" type="button">
+<span aria-hidden="true" class="inema-ico-todo">○</span><span aria-hidden="true" class="inema-ico-done">●</span><span class="inema-label-todo">Mark as read</span><span class="inema-label-done">Read</span>
+</button>
+</div>
+</section>
+<!-- TÓPICO 3 -->
+<section class="mb-16" data-inema-topic="modulo-2-1#topico-3" id="topico-3">
+<div class="flex items-center justify-between mb-6 gap-3">
+<div class="flex items-center space-x-4">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xl flex-shrink-0">3</span>
+<h2 class="text-2xl font-bold">🎨 Design inspiration</h2>
+</div>
+<button aria-pressed="false" class="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm flex-shrink-0" data-inema-doubt-toggle="" title="Flag a question on this topic" type="button"><span aria-hidden="true">?</span><span>Question</span></button>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed" data-inema-block="m21-t3-p1">AI is <strong class="text-blue-400">great at design</strong>, but it works much better with <strong>specificity</strong>. Instead of asking "make it look nice," give the agent <strong class="text-blue-400">visual references</strong>: screenshots of sites you like. An image communicates intent in seconds.</p>
+<!-- SVG -->
+<div class="rounded-2xl border border-blue-500/30 bg-dark-900/40 p-3 sm:p-4 mb-6 overflow-hidden">
+<svg aria-label="Visual references from design galleries are provided to the agent as context, and it returns an interface aligned with the chosen aesthetic" class="w-full h-auto" role="img" viewbox="0 0 1000 220">
+<defs>
+<lineargradient id="m21-grad" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#60a5fa"></stop><stop offset="1" stop-color="#3b82f6"></stop></lineargradient>
+<filter height="180%" id="m21-glow" width="180%" x="-40%" y="-40%"><fegaussianblur result="b" stddeviation="1.8"></fegaussianblur><femerge><femergenode in="b"></femergenode><femergenode in="SourceGraphic"></femergenode></femerge></filter>
+<pattern height="32" id="m21-grid" patternunits="userSpaceOnUse" width="32"><circle cx="1.3" cy="1.3" fill="#3b82f6" opacity="0.12" r="1.3"></circle></pattern>
+<marker id="m21-ah" markerheight="9" markerwidth="9" orient="auto" refx="6.5" refy="4.5"><path d="M0,0 L8,4.5 L0,9 L2.4,4.5 Z" fill="#60a5fa"></path></marker>
+</defs>
+<rect fill="url(#m21-grid)" height="220" width="1000" x="0" y="0"></rect>
+<g font-family="Inter,sans-serif" font-size="12.5" font-weight="600">
+<g><rect fill="#0e1622" height="34" rx="9" stroke="#60a5fa" stroke-width="2" width="180" x="40" y="26"></rect><text fill="#bfdbfe" text-anchor="middle" x="130" y="48">Awwwards</text></g>
+<g><rect fill="#0e1622" height="34" rx="9" stroke="#60a5fa" stroke-width="2" width="180" x="40" y="72"></rect><text fill="#bfdbfe" text-anchor="middle" x="130" y="94">Dribbble</text></g>
+<g><rect fill="#0e1622" height="34" rx="9" stroke="#60a5fa" stroke-width="2" width="180" x="40" y="118"></rect><text fill="#bfdbfe" text-anchor="middle" x="130" y="140">Mobbin</text></g>
+<g><rect fill="#0e1622" height="34" rx="9" stroke="#60a5fa" stroke-width="2" width="180" x="40" y="164"></rect><text fill="#bfdbfe" text-anchor="middle" x="130" y="186">Land-book</text></g>
+</g>
+<g fill="none" opacity="0.55" stroke="#60a5fa" stroke-width="2">
+<path d="M220,43 C320,43 360,110 430,110" marker-end="url(#m21-ah)"></path>
+<path d="M220,89 C320,89 360,110 430,110" marker-end="url(#m21-ah)"></path>
+<path d="M220,135 C320,135 360,110 430,110" marker-end="url(#m21-ah)"></path>
+<path d="M220,181 C320,181 360,110 430,110" marker-end="url(#m21-ah)"></path>
+</g>
+<g filter="url(#m21-glow)"><rect fill="#0e2018" height="60" rx="14" stroke="url(#m21-grad)" stroke-width="2.5" width="240" x="430" y="80"></rect></g>
+<text fill="#60a5fa" font-family="Inter,sans-serif" font-size="16" font-weight="600" text-anchor="middle" x="550" y="106">Agent + references</text>
+<text fill="#dbeafe" font-family="Inter,sans-serif" font-size="12" text-anchor="middle" x="550" y="126">with specificity</text>
+<g fill="none" opacity="0.6" stroke="#60a5fa" stroke-width="2"><path d="M670,110 L756,110" marker-end="url(#m21-ah)"></path></g>
+<rect fill="#0e1622" height="60" rx="14" stroke="#60a5fa" stroke-width="2" width="200" x="760" y="80"></rect>
+<text fill="#bfdbfe" font-family="Inter,sans-serif" font-size="16" font-weight="600" text-anchor="middle" x="860" y="106">Aligned interface</text>
+<text fill="#dbeafe" font-family="Inter,sans-serif" font-size="12" text-anchor="middle" x="860" y="126">to the chosen aesthetic</text>
+</svg>
+</div>
+<div class="bg-primary/10 rounded-xl border border-primary/30 p-6 mb-6">
+<h3 class="text-lg font-semibold text-primary mb-3 flex items-center"><span class="mr-2">🎯</span> Build a curated list</h3>
+<p class="text-neutral-300">Save a short list of reference websites — <strong>Awwwards, Dribbble, Mobbin, Land-book</strong> are good starting points. When you build, choose 1 or 2 screenshots that represent the desired visual "feel" and give them to the agent.</p>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-blue-400 font-bold mb-1">Reference</div><p class="text-xs text-neutral-400">screenshot</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-blue-400 font-bold mb-1">Specific</div><p class="text-xs text-neutral-400">not “pretty”</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-blue-400 font-bold mb-1">Galleries</div><p class="text-xs text-neutral-400">curated</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-blue-400 font-bold mb-1">Mood</div><p class="text-xs text-neutral-400">clear visual</p></div>
+</div>
+<div class="flex justify-start mt-6">
+<button aria-pressed="false" data-inema-read-toggle="" type="button">
+<span aria-hidden="true" class="inema-ico-todo">○</span><span aria-hidden="true" class="inema-ico-done">●</span><span class="inema-label-todo">Mark as read</span><span class="inema-label-done">Read</span>
+</button>
+</div>
+</section>
+<!-- TÓPICO 4 -->
+<section class="mb-16" data-inema-topic="modulo-2-1#topico-4" id="topico-4">
+<div class="flex items-center justify-between mb-6 gap-3">
+<div class="flex items-center space-x-4">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xl flex-shrink-0">4</span>
+<h2 class="text-2xl font-bold">⚡ Agent Manager &amp; parallel agents</h2>
+</div>
+<button aria-pressed="false" class="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm flex-shrink-0" data-inema-doubt-toggle="" title="Flag a question on this topic" type="button"><span aria-hidden="true">?</span><span>Question</span></button>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed" data-inema-block="m21-t4-p1">O <strong class="text-blue-400">Agent Manager</strong> lets you manage multiple agents and projects at the same time. The rule is simple: <strong>each workspace = one project</strong>. With agents working in parallel, you move much faster — while one works, you review or start another.</p>
+<div class="bg-gradient-to-br from-blue-900/30 to-dark-800 rounded-xl border border-blue-500/30 p-6 mb-6">
+<h3 class="text-lg font-semibold text-blue-400 mb-4 flex items-center"><span class="mr-2">🗂️</span> One workspace per project</h3>
+<p class="text-neutral-300 mb-4">Separating projects into workspaces keeps each context clean and prevents one agent from messing up another's work.</p>
+<ul class="space-y-2 text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-blue-400 mt-1">•</span><span>Workspace A: the price tracker</span></li>
+<li class="flex items-start space-x-2"><span class="text-blue-400 mt-1">•</span><span>Workspace B: a personal website</span></li>
+<li class="flex items-start space-x-2"><span class="text-blue-400 mt-1">•</span><span>Each one with its own agent, context, and history.</span></li>
+</ul>
+</div>
+<div class="overflow-x-auto mb-6">
+<table class="w-full text-sm border border-dark-600 rounded-lg overflow-hidden">
+<thead class="bg-dark-700/50 text-neutral-300"><tr><th class="text-left p-3">Mode</th><th class="text-left p-3">How it works</th><th class="text-left p-3">Speed</th></tr></thead>
+<tbody class="divide-y divide-dark-600 text-neutral-400">
+<tr><td class="p-3 text-neutral-300">One agent at a time</td><td class="p-3">you wait for each task</td><td class="p-3">slow</td></tr>
+<tr><td class="p-3 text-neutral-300">Parallel agents</td><td class="p-3 text-blue-400">several work together</td><td class="p-3 text-blue-400">fast</td></tr>
+<tr><td class="p-3 text-neutral-300">Workspace per project</td><td class="p-3 text-blue-400">isolated context</td><td class="p-3">organized</td></tr>
+</tbody>
+</table>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-blue-400 font-bold mb-1">Manager</div><p class="text-xs text-neutral-400">you see them all</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-blue-400 font-bold mb-1">Workspace</div><p class="text-xs text-neutral-400">= 1 project</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-blue-400 font-bold mb-1">Parallel</div><p class="text-xs text-neutral-400">several at once</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-blue-400 font-bold mb-1">Fast</div><p class="text-xs text-neutral-400">more production</p></div>
+</div>
+<div class="flex justify-start mt-6">
+<button aria-pressed="false" data-inema-read-toggle="" type="button">
+<span aria-hidden="true" class="inema-ico-todo">○</span><span aria-hidden="true" class="inema-ico-done">●</span><span class="inema-label-todo">Mark as read</span><span class="inema-label-done">Read</span>
+</button>
+</div>
+</section>
+<!-- TÓPICO 5 -->
+<section class="mb-16" data-inema-topic="modulo-2-1#topico-5" id="topico-5">
+<div class="flex items-center justify-between mb-6 gap-3">
+<div class="flex items-center space-x-4">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xl flex-shrink-0">5</span>
+<h2 class="text-2xl font-bold">👥 Agents = Employees</h2>
+</div>
+<button aria-pressed="false" class="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm flex-shrink-0" data-inema-doubt-toggle="" title="Flag a question on this topic" type="button"><span aria-hidden="true">?</span><span>Question</span></button>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed" data-inema-block="m21-t5-p1">Treat each agent like an <strong class="text-blue-400">employee</strong> on your team. The golden rule: give <strong>separate jobs</strong>. <strong class="text-blue-400">Never assign two agents to the same task</strong> — they collide, overwrite each other’s work, and create confusion. It’s like a team where no one does anyone else’s work.</p>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+<div class="bg-blue-900/20 rounded-xl border border-blue-500/30 p-6">
+<h4 class="font-bold text-blue-400 mb-4">✓ Separate jobs</h4>
+<ul class="space-y-3 text-neutral-300 text-sm">
+<li class="flex items-start space-x-2"><span class="text-blue-400">✓</span><span>Agent A handles the front end</span></li>
+<li class="flex items-start space-x-2"><span class="text-blue-400">✓</span><span>Agent B handles the database</span></li>
+<li class="flex items-start space-x-2"><span class="text-blue-400">✓</span><span>Each one with a clear responsibility</span></li>
+</ul>
+</div>
+<div class="bg-red-900/20 rounded-xl border border-red-500/30 p-6">
+<h4 class="font-bold text-red-400 mb-4">✗ Two on the same task</h4>
+<ul class="space-y-3 text-neutral-300 text-sm">
+<li class="flex items-start space-x-2"><span class="text-red-400">✗</span><span>Edit the same files at the same time</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400">✗</span><span>One undoes what the other did</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400">✗</span><span>Result: conflict and rework</span></li>
+</ul>
+</div>
+</div>
+<div class="bg-primary/10 rounded-xl border border-primary/30 p-6 mb-6">
+<h3 class="text-lg font-semibold text-primary mb-3 flex items-center"><span class="mr-2">🧠</span> Think like a manager</h3>
+<p class="text-neutral-300">Before releasing the agents, make a small “org chart”: list the tasks and assign each one to an agent. If two tasks touch the same file, do them in sequence, not in parallel.</p>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-blue-400 font-bold mb-1">Employee</div><p class="text-xs text-neutral-400">with function</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-blue-400 font-bold mb-1">Separate</div><p class="text-xs text-neutral-400">separate jobs</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-blue-400 font-bold mb-1">No collision</div><p class="text-xs text-neutral-400">separate files</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-blue-400 font-bold mb-1">Team</div><p class="text-xs text-neutral-400">each to their own</p></div>
+</div>
+<div class="flex justify-start mt-6">
+<button aria-pressed="false" data-inema-read-toggle="" type="button">
+<span aria-hidden="true" class="inema-ico-todo">○</span><span aria-hidden="true" class="inema-ico-done">●</span><span class="inema-label-todo">Mark as read</span><span class="inema-label-done">Read</span>
+</button>
+</div>
+</section>
+<!-- TÓPICO 6 -->
+<section class="mb-16" data-inema-topic="modulo-2-1#topico-6" id="topico-6">
+<div class="flex items-center justify-between mb-6 gap-3">
+<div class="flex items-center space-x-4">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xl flex-shrink-0">6</span>
+<h2 class="text-2xl font-bold">📋 Planning Mode &amp; Inbox</h2>
+</div>
+<button aria-pressed="false" class="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm flex-shrink-0" data-inema-doubt-toggle="" title="Flag a question on this topic" type="button"><span aria-hidden="true">?</span><span>Question</span></button>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed" data-inema-block="m21-t6-p1">Before letting the agent run, put it in <strong class="text-blue-400">planning mode</strong>. It proposes a plan; you <strong>review and approve</strong>, exactly as you would with an employee. The actions wait for your <strong class="text-blue-400">approval in the inbox</strong>.</p>
+<div class="space-y-6 mb-6">
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center"><span class="text-blue-400 font-bold">1</span></div>
+<div class="flex-1 bg-dark-800 rounded-xl p-6 border border-dark-600">
+<h4 class="font-semibold text-white mb-2">The agent plans</h4>
+<p class="text-neutral-300 text-sm">In planning mode, it describes the steps before touching any files.</p>
+</div>
+</div>
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center"><span class="text-blue-400 font-bold">2</span></div>
+<div class="flex-1 bg-dark-800 rounded-xl p-6 border border-dark-600">
+<h4 class="font-semibold text-white mb-2">You review</h4>
+<p class="text-neutral-300 text-sm">Read the plan like a manager: does it make sense? Is anything missing? Is it in the right order?</p>
+</div>
+</div>
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center"><span class="text-blue-400 font-bold">3</span></div>
+<div class="flex-1 bg-gradient-to-br from-blue-900/30 to-dark-800 rounded-xl p-6 border border-blue-500/30">
+<h4 class="font-semibold text-blue-400 mb-2">Approve in the inbox</h4>
+<p class="text-neutral-300 text-sm">Sensitive actions require approval. Only then does the agent carry out what was agreed.</p>
+</div>
+</div>
+</div>
+<div class="bg-primary/10 rounded-xl border border-primary/30 p-6 mb-6">
+<h3 class="text-lg font-semibold text-primary mb-3 flex items-center"><span class="mr-2">🛡️</span> Why approve first</h3>
+<p class="text-neutral-300">Approving the plan keeps the agent from spending hours building the wrong thing. Five minutes of review can save a whole round of rework.</p>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-blue-400 font-bold mb-1">Plans</div><p class="text-xs text-neutral-400">before acting</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-blue-400 font-bold mb-1">Reviews</div><p class="text-xs text-neutral-400">as a manager</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-blue-400 font-bold mb-1">Inbox</div><p class="text-xs text-neutral-400">approves actions</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-blue-400 font-bold mb-1">Runs</div><p class="text-xs text-neutral-400">only after approval</p></div>
+</div>
+<div class="flex justify-start mt-6">
+<button aria-pressed="false" data-inema-read-toggle="" type="button">
+<span aria-hidden="true" class="inema-ico-todo">○</span><span aria-hidden="true" class="inema-ico-done">●</span><span class="inema-label-todo">Mark as read</span><span class="inema-label-done">Read</span>
+</button>
+</div>
+</section>
+<!-- TÓPICO 7 -->
+<section class="mb-16" data-inema-topic="modulo-2-1#topico-7" id="topico-7">
+<div class="flex items-center justify-between mb-6 gap-3">
+<div class="flex items-center space-x-4">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xl flex-shrink-0">7</span>
+<h2 class="text-2xl font-bold">📝 Context File (Gemini.md)</h2>
+</div>
+<button aria-pressed="false" class="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm flex-shrink-0" data-inema-doubt-toggle="" title="Flag a question on this topic" type="button"><span aria-hidden="true">?</span><span>Question</span></button>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed" data-inema-block="m21-t7-p1">An agent’s context window is limited — on long projects, it “overflows” and it forgets what you agreed on. The solution is a <strong class="text-blue-400">context file</strong> (e.g., <code class="text-blue-400">Gemini.md</code>): a <code>.md</code> with the project rules that the agent <strong>always reread</strong>.</p>
+<div class="overflow-x-auto mb-6">
+<table class="w-full text-sm border border-dark-600 rounded-lg overflow-hidden">
+<thead class="bg-dark-700/50 text-neutral-300"><tr><th class="text-left p-3">File</th><th class="text-left p-3">Saves</th><th class="text-left p-3">What for</th></tr></thead>
+<tbody class="divide-y divide-dark-600 text-neutral-400">
+<tr><td class="p-3 text-blue-400 font-mono">Gemini.md</td><td class="p-3 text-neutral-300">rules: source, colors, purpose</td><td class="p-3">maintain the project's standard</td></tr>
+<tr><td class="p-3 text-blue-400 font-mono">research.md</td><td class="p-3 text-neutral-300">reusable research</td><td class="p-3">not research the same thing twice</td></tr>
+</tbody>
+</table>
+</div>
+<div class="bg-dark-900 border border-dark-600 rounded-xl overflow-hidden mb-6">
+<div class="px-4 py-2 bg-dark-700/50 border-b border-dark-600"><span class="text-xs text-neutral-400 font-mono">Gemini.md (example)</span></div>
+<pre class="p-4 text-sm text-neutral-200 whitespace-pre-wrap font-mono"># Projeto: rastreador de preços
+Propósito: acompanhar 5 produtos e mostrar a variação de preço de forma calma.
+Fonte: Inter. Cores: fundo escuro, acento azul.
+Regra: nada de alertas barulhentos; UI sóbria.
+Banco: Supabase (tabela "produtos").</pre>
+</div>
+<div class="bg-primary/10 rounded-xl border border-primary/30 p-6 mb-6">
+<h3 class="text-lg font-semibold text-primary mb-3 flex items-center"><span class="mr-2">💡</span> Long-term memory</h3>
+<p class="text-neutral-300">The context file survives the window filling up: even when the agent "forgets" the conversation, it rereads the <code>Gemini.md</code> and gets back on track. It’s the project’s durable memory.</p>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-blue-400 font-bold mb-1">Gemini.md</div><p class="text-xs text-neutral-400">project rules</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-blue-400 font-bold mb-1">Always reread</div><p class="text-xs text-neutral-400">don’t forget</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-blue-400 font-bold mb-1">Survives</div><p class="text-xs text-neutral-400">when it overflows</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-blue-400 font-bold mb-1">research.md</div><p class="text-xs text-neutral-400">saved research</p></div>
+</div>
+<div class="flex justify-start mt-6">
+<button aria-pressed="false" data-inema-read-toggle="" type="button">
+<span aria-hidden="true" class="inema-ico-todo">○</span><span aria-hidden="true" class="inema-ico-done">●</span><span class="inema-label-todo">Mark as read</span><span class="inema-label-done">Read</span>
+</button>
+</div>
+</section>
+<!-- TÓPICO 8 -->
+<section class="mb-16" data-inema-topic="modulo-2-1#topico-8" id="topico-8">
+<div class="flex items-center justify-between mb-6 gap-3">
+<div class="flex items-center space-x-4">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xl flex-shrink-0">8</span>
+<h2 class="text-2xl font-bold">🔌 MCP + Supabase</h2>
+</div>
+<button aria-pressed="false" class="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm flex-shrink-0" data-inema-doubt-toggle="" title="Flag a question on this topic" type="button"><span aria-hidden="true">?</span><span>Question</span></button>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed" data-inema-block="m21-t8-p1">For the app to store real data, it needs a database. The <strong class="text-blue-400">MCP (Model Context Protocol)</strong> is the “universal language” that lets apps and services talk to each other. Connect a database (<strong class="text-blue-400">Supabase</strong>) via token, and the agent creates the project and writes the <strong>SQL alone</strong>.</p>
+<!-- SVG -->
+<div class="rounded-2xl border border-blue-500/30 bg-dark-900/40 p-3 sm:p-4 mb-6 overflow-hidden">
+<svg aria-label="The agent uses MCP as a bridge to Supabase via a token; Supabase stores the data and returns the tables, with the SQL written by the agent itself" class="w-full h-auto" role="img" viewbox="0 0 1000 200">
+<defs>
+<lineargradient id="m21b-grad" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#60a5fa"></stop><stop offset="1" stop-color="#3b82f6"></stop></lineargradient>
+<filter height="180%" id="m21b-glow" width="180%" x="-40%" y="-40%"><fegaussianblur result="b" stddeviation="1.8"></fegaussianblur><femerge><femergenode in="b"></femergenode><femergenode in="SourceGraphic"></femergenode></femerge></filter>
+<pattern height="32" id="m21b-grid" patternunits="userSpaceOnUse" width="32"><circle cx="1.3" cy="1.3" fill="#3b82f6" opacity="0.12" r="1.3"></circle></pattern>
+<marker id="m21b-ah" markerheight="9" markerwidth="9" orient="auto" refx="6.5" refy="4.5"><path d="M0,0 L8,4.5 L0,9 L2.4,4.5 Z" fill="#60a5fa"></path></marker>
+</defs>
+<rect fill="url(#m21b-grid)" height="200" width="1000" x="0" y="0"></rect>
+<g filter="url(#m21b-glow)"><rect fill="#0e2018" height="60" rx="14" stroke="url(#m21b-grad)" stroke-width="2.5" width="200" x="40" y="70"></rect></g>
+<text fill="#60a5fa" font-family="Inter,sans-serif" font-size="16" font-weight="600" text-anchor="middle" x="140" y="96">Agent</text>
+<text fill="#dbeafe" font-family="Inter,sans-serif" font-size="12" text-anchor="middle" x="140" y="116">writes the SQL</text>
+<rect fill="#0e1622" height="60" rx="14" stroke="#60a5fa" stroke-width="2" width="200" x="400" y="70"></rect>
+<text fill="#bfdbfe" font-family="Inter,sans-serif" font-size="16" font-weight="600" text-anchor="middle" x="500" y="96">MCP</text>
+<text fill="#dbeafe" font-family="Inter,sans-serif" font-size="12" text-anchor="middle" x="500" y="116">universal language</text>
+<g filter="url(#m21b-glow)"><rect fill="#0e2018" height="60" rx="14" stroke="url(#m21b-grad)" stroke-width="2.5" width="200" x="760" y="70"></rect></g>
+<text fill="#60a5fa" font-family="Inter,sans-serif" font-size="16" font-weight="600" text-anchor="middle" x="860" y="96">Supabase</text>
+<text fill="#dbeafe" font-family="Inter,sans-serif" font-size="12" text-anchor="middle" x="860" y="116">stores the data</text>
+<g fill="none" opacity="0.6" stroke="#60a5fa" stroke-width="2">
+<path d="M240,90 L396,90" marker-end="url(#m21b-ah)"></path>
+<path d="M600,90 L756,90" marker-end="url(#m21b-ah)"></path>
+</g>
+<text fill="#93c5fd" font-family="Inter,sans-serif" font-size="11" text-anchor="middle" x="320" y="80">connects</text>
+<text fill="#93c5fd" font-family="Inter,sans-serif" font-size="11" text-anchor="middle" x="680" y="80">via token</text>
+</svg>
+</div>
+<div class="bg-gradient-to-br from-blue-900/30 to-dark-800 rounded-xl border border-blue-500/30 p-6 mb-6">
+<h3 class="text-lg font-semibold text-blue-400 mb-4 flex items-center"><span class="mr-2">🔗</span> The path to the data</h3>
+<ul class="space-y-2 text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-blue-400 mt-1">1.</span><span>Enable the Supabase MCP and paste the <strong>token</strong> of access.</span></li>
+<li class="flex items-start space-x-2"><span class="text-blue-400 mt-1">2.</span><span>Ask the agent: “create a project called [name].”</span></li>
+<li class="flex items-start space-x-2"><span class="text-blue-400 mt-1">3.</span><span>It creates the tables and writes the <strong>SQL</strong> — you don’t type database code by hand.</span></li>
+</ul>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-blue-400 font-bold mb-1">MCP</div><p class="text-xs text-neutral-400">universal language</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-blue-400 font-bold mb-1">Supabase</div><p class="text-xs text-neutral-400">the database</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-blue-400 font-bold mb-1">Token</div><p class="text-xs text-neutral-400">the connection</p></div>
+<div class="bg-dark-800 rounded-lg p-4 border border-dark-600"><div class="text-blue-400 font-bold mb-1">SQL</div><p class="text-xs text-neutral-400">the agent writes</p></div>
+</div>
+<div class="flex justify-start mt-6">
+<button aria-pressed="false" data-inema-read-toggle="" type="button">
+<span aria-hidden="true" class="inema-ico-todo">○</span><span aria-hidden="true" class="inema-ico-done">●</span><span class="inema-label-todo">Mark as read</span><span class="inema-label-done">Read</span>
+</button>
+</div>
+</section>
+<!-- EXEMPLO PRÁTICO -->
+<section class="mb-12" id="exemplo">
+<h2 class="text-2xl font-bold mb-6 flex items-center"><span class="mr-3">🔬</span> Practical example</h2>
+<div class="bg-dark-800 rounded-xl border border-dark-600 p-6">
+<p class="text-neutral-300 mb-4">Let’s build an app that <strong class="text-blue-400">tracks 5 products and shows price changes</strong> calmly and beautifully. The path follows the module’s exact order:</p>
+<ol class="space-y-2 text-neutral-300 mb-4 list-decimal list-inside">
+<li><strong>Define the problem</strong> — “I want to know when it’s worth buying, without anxiously getting an alert for every cent.”</li>
+<li><strong>Generate the SOP</strong> (≤ 800 characters) with AI as a sparring partner.</li>
+<li><strong>Visual inspiration</strong> — choose 1 screenshot of a sober dashboard you admire.</li>
+<li><strong>Build locally</strong> — agent in planning mode, database in Supabase via MCP, app running on localhost.</li>
+</ol>
+<p class="text-neutral-400 text-sm">Notice: 4 of the 5 steps happen before "building the app." That’s where quality comes from.</p>
+</div>
+</section>
+<!-- EXERCÍCIO -->
+<section class="mb-12" id="exercicio">
+<h2 class="text-2xl font-bold mb-6 flex items-center"><span class="mr-3">🏋️</span> Exercise</h2>
+<div class="bg-gradient-to-br from-blue-900/30 to-dark-800 rounded-xl border border-blue-500/30 p-6">
+<p class="text-neutral-300 mb-4">Take one of your ideas and take it from problem to localhost:</p>
+<ol class="space-y-2 text-neutral-300 mb-4 list-decimal list-inside">
+<li><strong>Define the problem with AI</strong> — ask it to challenge your reasoning.</li>
+<li><strong>Generate an SOP of no more than 800 characters</strong>.</li>
+<li><strong>Build a simple app running on localhost</strong> — start small, with just one screen.</li>
+</ol>
+<p class="text-neutral-400 text-sm">In Track 2.2, we'll publish this same app to the world.</p>
+</div>
+</section>
+<!-- PROMPTS PRONTOS -->
+<section class="mb-12" id="prompts">
+<h2 class="text-2xl font-bold mb-6 flex items-center"><span class="mr-3">⚡</span> Ready-made prompts</h2>
+<p class="text-neutral-400 mb-4 text-sm">Copy, paste into your AI assistant, and adapt to your use case.</p>
+<div class="bg-dark-900 border border-dark-600 rounded-xl overflow-hidden mb-4" data-prompt="">
+<div class="flex items-center justify-between px-4 py-2 bg-dark-700/50 border-b border-dark-600"><span class="text-xs text-neutral-400 font-mono">define the problem (sparring)</span><button class="text-xs px-2 py-1 rounded bg-blue-600 hover:bg-blue-500 text-white" onclick="copyPrompt(this)">Copy</button></div>
+<pre class="p-4 text-sm text-neutral-200 whitespace-pre-wrap font-mono">This is the desired outcome: "[describe the outcome you want]".
+Challenge my reasoning and help me clearly define the problem.
+Ask any questions you need before proposing a solution.</pre>
+</div>
+<div class="bg-dark-900 border border-dark-600 rounded-xl overflow-hidden mb-4" data-prompt="">
+<div class="flex items-center justify-between px-4 py-2 bg-dark-700/50 border-b border-dark-600"><span class="text-xs text-neutral-400 font-mono">generate the SOP</span><button class="text-xs px-2 py-1 rounded bg-blue-600 hover:bg-blue-500 text-white" onclick="copyPrompt(this)">Copy</button></div>
+<pre class="p-4 text-sm text-neutral-200 whitespace-pre-wrap font-mono">Create an SOP for this, with no more than 800 characters.
+List the steps in order and the expected result of each one.</pre>
+</div>
+<div class="bg-dark-900 border border-dark-600 rounded-xl overflow-hidden mb-4" data-prompt="">
+<div class="flex items-center justify-between px-4 py-2 bg-dark-700/50 border-b border-dark-600"><span class="text-xs text-neutral-400 font-mono">reusable research (research.md)</span><button class="text-xs px-2 py-1 rounded bg-blue-600 hover:bg-blue-500 text-white" onclick="copyPrompt(this)">Copy</button></div>
+<pre class="p-4 text-sm text-neutral-200 whitespace-pre-wrap font-mono">Pesquise o que os melhores [tipo de app] têm em comum
+(estrutura, telas, padrões de uso) e salve num arquivo research.md
+que eu possa reusar nos próximos projetos.</pre>
+</div>
+<div class="bg-dark-900 border border-dark-600 rounded-xl overflow-hidden mb-4" data-prompt="">
+<div class="flex items-center justify-between px-4 py-2 bg-dark-700/50 border-b border-dark-600"><span class="text-xs text-neutral-400 font-mono">create a project via the Supabase MCP</span><button class="text-xs px-2 py-1 rounded bg-blue-600 hover:bg-blue-500 text-white" onclick="copyPrompt(this)">Copy</button></div>
+<pre class="p-4 text-sm text-neutral-200 whitespace-pre-wrap font-mono">Usando o MCP do Supabase, crie um projeto chamado [nome].
+Crie as tabelas necessárias e escreva o SQL você mesmo.</pre>
+</div>
+</section>
+<!-- RESUMO -->
+<section class="mb-12">
+<div class="bg-gradient-to-br from-blue-900/40 via-dark-800 to-dark-800 rounded-xl border border-blue-500/30 p-8">
+<h2 class="text-2xl font-bold mb-6 flex items-center"><span class="mr-3">✅</span> Module summary</h2>
+<div class="space-y-4 mb-8">
+<div class="flex items-start space-x-3"><span class="text-blue-400 mt-1">✓</span><div><strong class="text-white">Problem before solution</strong><span class="text-neutral-400"> — the 55-5 rule; don’t jump to the code.</span></div></div>
+<div class="flex items-start space-x-3"><span class="text-blue-400 mt-1">✓</span><div><strong class="text-white">AI as a sparring partner → SOP</strong><span class="text-neutral-400"> — challenge the reasoning and generate a procedure ≤ 800 characters.</span></div></div>
+<div class="flex items-start space-x-3"><span class="text-blue-400 mt-1">✓</span><div><strong class="text-white">References + agents</strong><span class="text-neutral-400"> — design screenshots, parallel agents with separate jobs.</span></div></div>
+<div class="flex items-start space-x-3"><span class="text-blue-400 mt-1">✓</span><div><strong class="text-white">Context + MCP</strong><span class="text-neutral-400"> — Gemini.md as durable memory; Supabase via MCP for the data.</span></div></div>
+</div>
+<div class="bg-dark-800/50 rounded-lg p-4 mb-8"><h3 class="font-semibold text-blue-400 mb-2">Next module:</h3><p class="text-neutral-300">2.2 — Publish and maintain your app</p></div>
+<div class="flex flex-col sm:flex-row gap-4">
+<a class="flex-1 text-center px-6 py-3 bg-dark-700 text-neutral-300 rounded-lg font-semibold hover:bg-dark-600 transition-colors" href="index.html">← Back to Track</a>
+<a class="flex-1 text-center px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-500 transition-colors" href="modulo-2-2.html">Next Module →</a>
+</div>
+</div>
+</section>
+</article>
+</div>
+</main>
+<footer class="border-t border-dark-600 py-8 mt-16">
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-neutral-500 text-sm">
+<p>AntiGravity — From Zero to a Published App with AI · <a class="text-sky-400 hover:text-sky-300" href="https://inema.club" target="_blank">INEMA.CLUB</a> · 2026</p>
+</div>
+</footer>
+<script>
+    function toggleTopic(button) {
+      const topicItem = button.closest('.topic-item');
+      if (!topicItem) return;
+      const explanation = topicItem.querySelector('.topic-explanation');
+      const moduleCard = button.closest('.bg-dark-800') || document;
+      moduleCard.querySelectorAll('.topic-explanation.active').forEach(exp => { if (exp !== explanation) exp.classList.remove('active'); });
+      const willOpen = !explanation.classList.contains('active');
+      explanation.classList.toggle('active');
+      button.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+    }
+    (function () {
+      const themeToggle = document.getElementById('theme-toggle');
+      const di = document.getElementById('theme-toggle-dark-icon');
+      const li = document.getElementById('theme-toggle-light-icon');
+      const html = document.documentElement;
+      function paint() { const dark = html.classList.contains('dark'); di.classList.toggle('hidden', dark); li.classList.toggle('hidden', !dark); }
+      paint();
+      themeToggle && themeToggle.addEventListener('click', () => {
+        const nowDark = !html.classList.contains('dark');
+        if (window.INEMA && INEMA.setPref) { INEMA.setPref('theme', nowDark ? 'inema-dark' : 'claro'); }
+        else { html.classList.toggle('dark'); localStorage.setItem('theme', nowDark ? 'dark' : 'light'); }
+        paint();
+      });
+      document.addEventListener('inema:progress', paint);
+    })();
+    function openModal(modalId) { const m = document.getElementById(modalId); if (m) { m.classList.remove('hidden'); document.body.style.overflow = 'hidden'; } }
+    function closeModal() { document.querySelectorAll('.modal').forEach(m => m.classList.add('hidden')); document.body.style.overflow = 'auto'; }
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+    function copyPrompt(btn) {
+      const box = btn.closest('[data-prompt]'); const pre = box && box.querySelector('pre');
+      const txt = pre ? pre.innerText : '';
+      function done(){ const o = btn.textContent; btn.textContent = '✓ Copiado'; setTimeout(()=>{ btn.textContent = o; }, 1500); }
+      function fallback(){ const ta = document.createElement('textarea'); ta.value = txt; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch(e){} ta.remove(); done(); }
+      if (navigator.clipboard && window.isSecureContext) { navigator.clipboard.writeText(txt).then(done).catch(fallback); } else { fallback(); }
+    }
+  </script>
+<script src="../../assets/learn.js"></script>
+<script>
+    if (window.INEMA && typeof window.INEMA.init === 'function') { window.INEMA.init(); }
+    // Liga controles da nav (fora do <main>, onde o learn.js delega cliques) à API do learn.js
+    (function () {
+      function wire() {
+        if (!window.INEMA) return;
+        document.querySelectorAll('[data-inema-journey-open]').forEach(function (b) { if (b.__w) return; b.__w = 1; b.addEventListener('click', function () { INEMA.openJourney && INEMA.openJourney(); }); });
+        document.querySelectorAll('[data-inema-appearance-toggle]').forEach(function (b) { if (b.__w) return; b.__w = 1; b.addEventListener('click', function (e) { e.stopPropagation(); var sel = b.getAttribute('data-inema-appearance-toggle'); var p = sel ? document.querySelector(sel) : document.querySelector('[data-inema-appearance]'); if (!p) return; var open = p.getAttribute('data-open') === 'true'; p.setAttribute('data-open', open ? 'false' : 'true'); b.setAttribute('aria-expanded', open ? 'false' : 'true'); }); });
+        [['data-inema-set-theme','theme'],['data-inema-set-font','font'],['data-inema-set-fontscale','fontScale'],['data-inema-set-leading','leading'],['data-inema-set-accent','accent'],['data-inema-set-linewidth','lineWidth']].forEach(function (m) { document.querySelectorAll('[' + m[0] + ']').forEach(function (b) { if (b.__w) return; b.__w = 1; b.addEventListener('click', function () { INEMA.setPref && INEMA.setPref(m[1], b.getAttribute(m[0])); }); }); });
+        document.addEventListener('click', function (e) { var p = document.querySelector('[data-inema-appearance][data-open="true"]'); if (!p) return; var t = document.querySelector('[data-inema-appearance-toggle]'); if (!p.contains(e.target) && (!t || !t.contains(e.target))) { p.setAttribute('data-open', 'false'); t && t.setAttribute('aria-expanded', 'false'); } });
+      }
+      if (document.readyState !== 'loading') setTimeout(wire, 0); else document.addEventListener('DOMContentLoaded', wire);
+    })();
+  </script>
+</body>
+</html>
